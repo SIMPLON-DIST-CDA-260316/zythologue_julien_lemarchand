@@ -1,0 +1,197 @@
+Enum "account_role" {
+  "customer"
+  "brewer"
+  "admin"
+}
+
+Enum "production_type" {
+  "craft"
+  "industrial"
+  "microbrewery"
+}
+
+Enum "outlet_type" {
+  "cellar"
+  "bar"
+  "restaurant"
+  "supermarket"
+}
+
+Table "address" {
+  "id"       SERIAL       [pk]
+  "number"   VARCHAR(10)
+  "street"   VARCHAR(255) [NOT NULL]
+  "zip_code" VARCHAR(10)  [NOT NULL]
+  "city"     VARCHAR(100) [NOT NULL]
+  "country"  VARCHAR(60)  [NOT NULL]
+}
+
+Table "photo" {
+  "id"         SERIAL       [pk]
+  "url"        VARCHAR(255) [NOT NULL]
+  "caption"    VARCHAR(255)
+  "created_at" TIMESTAMPTZ  [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ  [NOT NULL, default: `now()`]
+}
+
+Table "category" {
+  "id"          SERIAL      [pk]
+  "name"        VARCHAR(60) [NOT NULL, unique]
+  "description" TEXT
+}
+
+Table "ingredient" {
+  "id"          SERIAL      [pk]
+  "name"        VARCHAR(80) [NOT NULL, unique]
+  "is_allergen" BOOLEAN     [NOT NULL, default: false]
+}
+
+Table "account" {
+  "id"            SERIAL         [pk]
+  "email"         VARCHAR(255)   [NOT NULL, unique]
+  "last_name"     VARCHAR(80)    [NOT NULL]
+  "first_name"    VARCHAR(80)    [NOT NULL]
+  "password"      VARCHAR(255)   [NOT NULL]
+  "role"          "account_role" [NOT NULL, default: 'customer']
+  "created_at"    TIMESTAMPTZ    [NOT NULL, default: `now()`]
+  "updated_at"    TIMESTAMPTZ    [NOT NULL, default: `now()`]
+  "photo_id"      INTEGER        [NULL]
+}
+
+Table "brewery" {
+  "id"                  SERIAL            [pk]
+  "name"                VARCHAR(120)      [NOT NULL]
+  "description"         TEXT
+  "founding_year"       SMALLINT
+  "production_capacity" INTEGER           [note: 'CHECK (production_capacity > 0)']
+  "production_type"     "production_type"
+  "phone"               VARCHAR(20)
+  "website"             VARCHAR(255)
+  "created_at"          TIMESTAMPTZ       [NOT NULL, default: `now()`]
+  "updated_at"          TIMESTAMPTZ       [NOT NULL, default: `now()`]
+  "address_id"          INTEGER           [NULL]
+}
+
+Table "beer" {
+  "id"              SERIAL       [pk]
+  "name"            VARCHAR(120) [NOT NULL]
+  "description"     TEXT
+  "alcohol_content" NUMERIC(4,2) [note: 'CHECK (alcohol_content BETWEEN 0 AND 100)']
+  "created_at"      TIMESTAMPTZ  [NOT NULL, default: `now()`]
+  "updated_at"      TIMESTAMPTZ  [NOT NULL, default: `now()`]
+  "brewery_id"      INTEGER      [NOT NULL]
+}
+
+Table "outlet" {
+  "id"           SERIAL         [pk]
+  "name"         VARCHAR(120)   [NOT NULL]
+  "type"         "outlet_type"
+  "online_sales" BOOLEAN        [NOT NULL, default: false]
+  "phone"        VARCHAR(20)
+  "website"      VARCHAR(255)
+  "created_at"   TIMESTAMPTZ    [NOT NULL, default: `now()`]
+  "updated_at"   TIMESTAMPTZ    [NOT NULL, default: `now()`]
+  "address_id"   INTEGER        [NULL]
+  "brewery_id"   INTEGER        [NULL]
+
+  Note: 'CHECK (address_id IS NOT NULL OR online_sales = true)'
+}
+
+Table "review" {
+  "id"         SERIAL      [pk]
+  "rating"     SMALLINT    [NOT NULL, note: 'CHECK (rating BETWEEN 1 AND 5)']
+  "comment"    TEXT
+  "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
+  "reported"   BOOLEAN     [NOT NULL, default: false]
+  "reply"      TEXT
+  "beer_id"    INTEGER     [NOT NULL]
+  "photo_id"   INTEGER     [NULL]
+  "account_id" INTEGER     [NOT NULL]
+
+  Indexes {
+    (account_id, beer_id) [unique, name: "uq_review_account_beer"]
+  }
+}
+
+Table "categorization" {
+  "beer_id"     INTEGER [NOT NULL]
+  "category_id" INTEGER [NOT NULL]
+  Indexes {
+    ("beer_id", "category_id") [pk]
+  }
+}
+
+Table "composition" {
+  "beer_id"       INTEGER [NOT NULL]
+  "ingredient_id" INTEGER [NOT NULL]
+  Indexes {
+    ("beer_id", "ingredient_id") [pk]
+  }
+}
+
+Table "favorite_beer" {
+  "account_id" INTEGER [NOT NULL]
+  "beer_id"    INTEGER [NOT NULL]
+  Indexes {
+    ("account_id", "beer_id") [pk]
+  }
+}
+
+Table "favorite_brewery" {
+  "account_id" INTEGER [NOT NULL]
+  "brewery_id" INTEGER [NOT NULL]
+  Indexes {
+    ("account_id", "brewery_id") [pk]
+  }
+}
+
+Table "illustration_beer" {
+  "beer_id"  INTEGER [NOT NULL]
+  "photo_id" INTEGER [NOT NULL]
+  Indexes {
+    ("beer_id", "photo_id") [pk]
+  }
+}
+
+Table "illustration_brewery" {
+  "brewery_id" INTEGER [NOT NULL]
+  "photo_id"   INTEGER [NOT NULL]
+  Indexes {
+    ("brewery_id", "photo_id") [pk]
+  }
+}
+
+Table "sale" {
+  "outlet_id" INTEGER      [NOT NULL]
+  "beer_id"   INTEGER      [NOT NULL]
+  "price"      NUMERIC(8,2) [NOT NULL, note: 'CHECK (price > 0)']
+  "created_at" TIMESTAMPTZ  [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ  [NOT NULL, default: `now()`]
+  Indexes {
+    ("outlet_id", "beer_id") [pk]
+  }
+}
+
+Ref:"account"."photo_id" > "photo"."id" [delete: set null]
+Ref:"brewery"."address_id" > "address"."id" [delete: set null]
+Ref:"beer"."brewery_id" > "brewery"."id" [delete: restrict]
+Ref:"outlet"."address_id" > "address"."id" [delete: set null]
+Ref:"outlet"."brewery_id" > "brewery"."id" [delete: set null]
+Ref:"review"."beer_id" > "beer"."id" [delete: cascade]
+Ref:"review"."photo_id" > "photo"."id" [delete: set null]
+Ref:"review"."account_id" > "account"."id" [delete: cascade]
+Ref:"categorization"."beer_id" > "beer"."id" [delete: cascade]
+Ref:"categorization"."category_id" > "category"."id" [delete: restrict]
+Ref:"composition"."beer_id" > "beer"."id" [delete: cascade]
+Ref:"composition"."ingredient_id" > "ingredient"."id" [delete: cascade]
+Ref:"favorite_beer"."account_id" > "account"."id" [delete: cascade]
+Ref:"favorite_beer"."beer_id" > "beer"."id" [delete: cascade]
+Ref:"favorite_brewery"."account_id" > "account"."id" [delete: cascade]
+Ref:"favorite_brewery"."brewery_id" > "brewery"."id" [delete: cascade]
+Ref:"illustration_beer"."beer_id" > "beer"."id" [delete: cascade]
+Ref:"illustration_beer"."photo_id" > "photo"."id" [delete: cascade]
+Ref:"illustration_brewery"."brewery_id" > "brewery"."id" [delete: cascade]
+Ref:"illustration_brewery"."photo_id" > "photo"."id" [delete: cascade]
+Ref:"sale"."outlet_id" > "outlet"."id" [delete: cascade]
+Ref:"sale"."beer_id" > "beer"."id" [delete: cascade]

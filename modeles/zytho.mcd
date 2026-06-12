@@ -1,0 +1,61 @@
+%% MCD Zythologue — SOURCE UNIQUE (typee). PHOTO = assoc. polymorphe.
+%% LAYOUT gere a la main (boites ':' = placement). Sur ce graphe (hub PHOTO
+%%   non-planaire), le placement manuel bat l'auto-arrange => NE PAS lancer -Arrange.
+%% Attributs types [..] => sert MCD, MLD et MPD depuis ce seul fichier :
+%%   MCD conceptuel pur  : -t delete:types  (dossier a part, ne pas ecraser la source)
+%%   MLD (markdown)      : -t markdown
+%%   MPD (DBML/SQL)      : -t dbml | -t sql
+%% Convention : 1er attribut = identifiant. Aucune FK ici (naissent au MLD).
+%% Les *_id sont des identifiants techniques (substituts) : presents ici car
+%%   structurels (MCD/MLD/MPD), mais EXCLUS du dictionnaire de donnees epure.
+%% Donnee CALCULEE non stockee (absente de ce modele, hors dico epure) :
+%%   bie_note_moyenne = AVG(avi_note) des AVIS de la biere -> vue/calcul applicatif.
+%% PHOTO reste generique (aucune FK) : liens materialises cote cible au MLD
+%%   cible 0..1 photo  -> FK pho_id dans la cible      (cas A : PERSONNE, AVIS)
+%%   cible 0..n photos -> table de correspondance      (cas B : BIERE, BRASSERIE)
+%% Contraintes NON portees par mocodo -> couche manuelle modeles/zytho_constraints.sql :
+%%   CHECK, DEFAULT, domaines, ON DELETE/UPDATE, index non-PK, et :
+%%   UNIQUE(per_email)            -- email mutable = cle candidate (PK = per_id, immuable)
+%%   UNIQUE(per_id, bie_id) AVIS  -- 1 seul avis par personne par biere
+
+Composer, 1N BIERE, 1N INGREDIENT
+Vendre, 0N POINT_DE_VENTE, 0N BIERE: ven_prix [DECIMAL(8,2)]
+:
+Categoriser, 1N BIERE, 0N CATEGORIE
+CATEGORIE: cat_id [INTEGER], cat_nom [VARCHAR(60)], cat_description [TEXT]
+:
+
+INGREDIENT: ing_id [INTEGER], ing_nom [VARCHAR(80)], ing_est_allergene [BOOLEAN]
+BIERE: bie_id [INTEGER], bie_nom [VARCHAR(120)], bie_description [TEXT], bie_degre_alcool [DECIMAL(4,2)]
+POINT_DE_VENTE: pdv_id [INTEGER], pdv_nom [VARCHAR(120)], pdv_type [VARCHAR(20)], pdv_vente_ligne [BOOLEAN], pdv_telephone [VARCHAR(20)], pdv_site_web [VARCHAR(255)]
+Localiser pdv, 01 POINT_DE_VENTE, 0N ADRESSE
+ADRESSE: adr_id [INTEGER], adr_numero [VARCHAR(10)], adr_rue [VARCHAR(255)], adr_code_postal [VARCHAR(10)], adr_ville [VARCHAR(100)], adr_pays [VARCHAR(60)]
+Localiser brasserie, 01 BRASSERIE, 0N ADRESSE
+
+Brasser, 11 BIERE, 1N BRASSERIE
+Illustrer brasserie, 0N BRASSERIE, 0N PHOTO
+Posseder, 0N BRASSERIE, 01 POINT_DE_VENTE
+Illustrer biere, 0N BIERE, 0N PHOTO
+:
+Evaluer, 11 AVIS, 0N BIERE
+
+Favori biere, 0N PERSONNE, 0N BIERE
+:
+BRASSERIE: bra_id [INTEGER], bra_nom [VARCHAR(120)], bra_description [TEXT], bra_annee_creation [SMALLINT], bra_capacite_prod [INTEGER], bra_type_prod [VARCHAR(20)], bra_telephone [VARCHAR(20)], bra_site_web [VARCHAR(255)]
+:
+PHOTO: pho_id [INTEGER], pho_url [VARCHAR(255)], pho_legende [VARCHAR(255)], pho_date [TIMESTAMP]
+:
+
+Favori brasserie, 0N PERSONNE, 0N BRASSERIE
+PERSONNE: per_id [INTEGER], per_email [VARCHAR(255)], per_nom [VARCHAR(80)], per_prenom [VARCHAR(80)], per_mdp [VARCHAR(255)], per_role [VARCHAR(10)], per_date_inscr [TIMESTAMP]
+Illustrer personne, 01 PERSONNE, 0N PHOTO
+:
+:
+:
+
+:
+:
+Illustrer avis, 01 AVIS, 0N PHOTO
+:
+AVIS: avi_id [INTEGER], avi_note [SMALLINT], avi_commentaire [TEXT], avi_date [TIMESTAMP], avi_signale [BOOLEAN], avi_reponse [TEXT]
+Rediger, 0N PERSONNE, 11 AVIS

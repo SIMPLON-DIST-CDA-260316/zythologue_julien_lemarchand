@@ -1,0 +1,24 @@
+parent: 'markdown'
+note: 'Renomme les associations N:N en nom de table sémantique EN (MLD texte). Le MCD garde les verbes.'
+transform_relation_name:
+  - order: 200
+    search: '^Categoriser$'
+    replace: 'categorization'
+  - order: 300
+    search: '^Composer$'
+    replace: 'composition'
+  - order: 400
+    search: '^Vendre$'
+    replace: 'sale'
+  - order: 500
+    search: '^Favori[ _]biere$'
+    replace: 'favorite_beer'
+  - order: 600
+    search: '^Favori[ _]brasserie$'
+    replace: 'favorite_brewery'
+  - order: 700
+    search: '^Illustrer[ _]biere$'
+    replace: 'illustration_beer'
+  - order: 800
+    search: '^Illustrer[ _]brasserie$'
+    replace: 'illustration_brewery'

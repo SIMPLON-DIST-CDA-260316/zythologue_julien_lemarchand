@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MERISE — Exploration arborescente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e7; --paper-2:#efe8d9; --card:#fffdf8; --ink:#221d16; --ink-soft:#4a4236;
+  --muted:#8a7f6c; --line:#ddd2bd; --line-soft:#e8ded0;
+  --accent:#a8432e; --accent-soft:#c9826f; --blue:#2c5160; --blue-soft:#5d8593;
+  --code-bg:#f0ead9; --code-ink:#5a3a2f; --shadow:0 1px 2px rgba(40,30,15,.06),0 8px 24px rgba(40,30,15,.05);
+  --note:#2c5160; --warn:#a8432e; --frbg:#f3ecdb; --frborder:#cdb98e;
+}
+[data-theme="dark"]{
+  --paper:#15130e; --paper-2:#1b1813; --card:#211d16; --ink:#ece3d3; --ink-soft:#c3b8a3;
+  --muted:#8d8170; --line:#352f25; --line-soft:#2a261d;
+  --accent:#e07a5f; --accent-soft:#b1543e; --blue:#7fb0bf; --blue-soft:#4f7785;
+  --code-bg:#1b1813; --code-ink:#d7a98e; --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.35);
+  --note:#7fb0bf; --warn:#e07a5f; --frbg:#231f16; --frborder:#4a4029;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:16.5px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;transition:background .35s,color .35s;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ---- layout ---- */
+.shell{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+.sidebar{
+  position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);
+  background:var(--paper-2);padding:0;
+}
+.brand{padding:22px 22px 14px;border-bottom:1px solid var(--line);background:var(--paper-2);position:sticky;top:0;z-index:5}
+.brand h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:25px;margin:0;letter-spacing:-.01em;line-height:1.05}
+.brand .sub{color:var(--muted);font-size:12.5px;margin-top:5px;letter-spacing:.04em;text-transform:uppercase}
+.search-wrap{padding:14px 16px 6px;position:relative}
+.search-wrap input{
+  width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);
+  color:var(--ink);font-family:inherit;font-size:14px;outline:none;transition:border .2s,box-shadow .2s;
+}
+.search-wrap input:focus{border-color:var(--accent-soft);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.search-results{list-style:none;margin:6px 0 0;padding:0;max-height:340px;overflow:auto}
+.search-results li{padding:0}
+.search-results a{display:block;padding:8px 10px;border-radius:7px;color:var(--ink-soft);font-size:13.5px}
+.search-results a:hover{background:var(--paper);text-decoration:none}
+.search-results .crumb{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.search-results mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:inherit;border-radius:2px}
+.no-res{padding:10px;color:var(--muted);font-size:13px}
+
+nav.tree{padding:8px 10px 60px}
+nav.tree ul{list-style:none;margin:0;padding:0}
+nav.tree li{margin:0}
+nav.tree .row{display:flex;align-items:center;gap:4px;border-radius:7px;padding:1px 4px}
+nav.tree .row:hover{background:var(--paper)}
+nav.tree .tog{
+  border:none;background:none;cursor:pointer;color:var(--muted);width:18px;height:24px;
+  font-size:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;transition:transform .18s;
+}
+nav.tree .tog.open{transform:rotate(90deg)}
+nav.tree .tog.leaf{visibility:hidden}
+nav.tree a.item{
+  display:block;flex:1;padding:5px 8px;border-radius:6px;color:var(--ink-soft);font-size:13.8px;line-height:1.3;
+}
+nav.tree a.item .n{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px;margin-right:6px}
+nav.tree a.item:hover{text-decoration:none;color:var(--ink)}
+nav.tree a.item.active{background:var(--accent);color:#fff;font-weight:600}
+nav.tree a.item.active .n{color:rgba(255,255,255,.7)}
+nav.tree .children{margin-left:14px;border-left:1px solid var(--line);padding-left:4px;display:none}
+nav.tree .children.open{display:block}
+nav.tree li.lvl1>.row>a.item{font-weight:600;color:var(--ink);font-size:14.5px;font-family:"Fraunces",serif}
+
+/* ---- topbar ---- */
+.main{min-width:0;display:flex;flex-direction:column}
+.scrim{display:none}
+.topbar{
+  position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:14px;
+  padding:12px 34px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(8px);
+}
+.crumbs{flex:1;min-width:0;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.crumbs a{color:var(--muted)}
+.crumbs a:hover{color:var(--accent)}
+.crumbs .sep{opacity:.5}
+.crumbs .cur{color:var(--ink);font-weight:600}
+.icon-btn{
+  border:1px solid var(--line);background:var(--card);color:var(--ink-soft);cursor:pointer;
+  width:38px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s;
+}
+.icon-btn:hover{border-color:var(--accent-soft);color:var(--accent)}
+.menu-btn{display:none}
+
+/* ---- article ---- */
+.article{max-width:820px;margin:0 auto;padding:38px 34px 90px;width:100%}
+.kicker{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:10px}
+.article h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:38px;line-height:1.08;letter-spacing:-.02em;margin:0 0 18px}
+.article h2{font-family:"Fraunces",serif;font-weight:600;font-size:25px;margin:38px 0 12px;letter-spacing:-.01em;padding-top:10px;border-top:1px solid var(--line-soft)}
+.article h3{font-family:"Fraunces",serif;font-weight:600;font-size:19px;margin:26px 0 8px}
+.article p{margin:0 0 15px}
+.article ul,.article ol{margin:0 0 16px;padding-left:22px}
+.article li{margin:4px 0}
+.lead{font-size:19px;line-height:1.55;color:var(--ink-soft);font-family:"Fraunces",serif;font-style:italic;margin-bottom:24px}
+code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:var(--code-bg);color:var(--code-ink);padding:1.5px 6px;border-radius:5px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:16px 18px;overflow:auto;margin:0 0 18px}
+pre code{background:none;padding:0;color:var(--ink);font-size:13.3px;line-height:1.6}
+.tk{color:var(--accent)} .tc{color:var(--muted);font-style:italic}
+
+table{width:100%;border-collapse:collapse;margin:0 0 20px;font-size:14.3px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink);border-bottom:2px solid var(--line);font-size:12.5px;letter-spacing:.03em;text-transform:uppercase}
+td code{font-size:.92em}
+tbody tr:hover{background:var(--paper-2)}
+
+.callout{border-radius:11px;padding:15px 18px;margin:0 0 20px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.callout .tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;display:block}
+.callout p:last-child{margin-bottom:0}
+.callout.note{border-left:3px solid var(--note)} .callout.note .tag{color:var(--note)}
+.callout.warn{border-left:3px solid var(--warn)} .callout.warn .tag{color:var(--warn)}
+.callout.fr{background:var(--frbg);border:1px solid var(--frborder);border-left:3px solid var(--accent)}
+.callout.fr .tag{color:var(--accent)}
+
+/* figures SVG (thématisées clair/sombre) */
+figure.fig{margin:6px 0 24px;padding:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+figure.fig svg{width:100%;height:auto;display:block;overflow:visible;font-family:"Hanken Grotesk",sans-serif}
+figure.fig figcaption{margin-top:12px;font-size:13px;color:var(--muted);text-align:center;font-style:italic}
+.s-txt{fill:var(--ink);font-size:13px}
+.s-mut{fill:var(--muted);font-size:12px}
+.s-bold{font-weight:700}
+.s-mono{font-family:"JetBrains Mono",monospace}
+.s-box{fill:var(--paper);stroke:var(--ink-soft);stroke-width:2}
+.s-boxh{fill:var(--ink-soft)}
+.s-boxht{fill:var(--paper);font-weight:700;font-size:13px}
+.s-assoc{fill:var(--card);stroke:var(--accent);stroke-width:2}
+.s-assoct{fill:var(--accent);font-weight:600;font-size:12.5px}
+.s-line{stroke:var(--ink-soft);stroke-width:1.6;fill:none}
+.s-line-2{stroke:var(--line);stroke-width:1.4;fill:none}
+.s-card{fill:var(--blue);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px}
+.s-accent{fill:var(--accent)}
+.s-accent-s{stroke:var(--accent);fill:none;stroke-width:2}
+.s-blue{fill:var(--blue)}
+.s-blue-s{stroke:var(--blue);fill:none;stroke-width:2}
+.s-fill-card{fill:var(--card)}
+.s-fill-paper2{fill:var(--paper-2)}
+.s-dash{stroke-dasharray:5 4}
+
+/* diagram primitives */
+.diagram{display:flex;flex-wrap:wrap;gap:0;align-items:center;justify-content:center;margin:6px 0 22px;
+  padding:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.ent{border:2px solid var(--ink-soft);border-radius:4px;min-width:150px;background:var(--paper);overflow:hidden}
+.ent .h{background:var(--ink-soft);color:var(--paper);padding:6px 12px;font-weight:700;font-size:13.5px;letter-spacing:.04em;text-align:center}
+.ent .b{padding:8px 12px;font-size:12.8px;font-family:"JetBrains Mono",monospace;line-height:1.7}
+.ent .b .id{text-decoration:underline;font-weight:600}
+.rel{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 4px}
+.rel .line{height:2px;width:46px;background:var(--ink-soft)}
+.rel .oval{border:2px solid var(--accent);background:var(--card);border-radius:40px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--accent);text-align:center}
+.card-min{font-size:11.5px;color:var(--blue);font-family:"JetBrains Mono",monospace;font-weight:600}
+
+.pager{display:flex;justify-content:space-between;gap:14px;margin-top:46px;border-top:1px solid var(--line);padding-top:20px}
+.pager a{flex:1;border:1px solid var(--line);border-radius:11px;padding:13px 16px;color:var(--ink-soft);transition:.2s;background:var(--card)}
+.pager a:hover{border-color:var(--accent-soft);text-decoration:none;color:var(--ink)}
+.pager .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pager .ttl{font-weight:600;font-size:14.5px;margin-top:2px;color:var(--accent)}
+.pager .next{text-align:right}
+.pager .empty{visibility:hidden}
+
+.tag-pill{display:inline-block;background:var(--paper-2);border:1px solid var(--line);color:var(--ink-soft);
+  font-size:11.5px;padding:2px 9px;border-radius:20px;margin:0 5px 5px 0;font-family:"JetBrains Mono",monospace}
+
+/* grille */
+.grille{width:100%;border-collapse:separate;border-spacing:6px;margin-bottom:22px}
+.grille th{background:none;border:none;text-align:center;color:var(--accent);text-transform:none;font-size:13px;letter-spacing:0}
+.grille td{border:1px solid var(--line);border-radius:9px;background:var(--card);text-align:center;padding:14px 10px;vertical-align:middle}
+.grille td .lv{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.grille td .mod{font-family:"Fraunces",serif;font-weight:600;font-size:18px;margin-top:3px}
+.grille td.axis{background:var(--paper-2);font-weight:600;writing-mode:initial}
+.grille td.empty{background:var(--paper-2);opacity:.4}
+
+@media(max-width:920px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;width:300px;z-index:30;transform:translateX(-100%);transition:transform .28s}
+  .sidebar.open{transform:none}
+  .menu-btn{display:flex}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20}
+  .scrim.show{display:block}
+  .article{padding:26px 20px 80px}
+  .article h1{font-size:30px}
+  .topbar{padding:11px 18px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h1>MERISE</h1>
+      <div class="sub">Exploration arborescente</div>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Rechercher une notion…  ( / )" autocomplete="off" spellcheck="false">
+      <ul class="search-results" id="searchResults"></ul>
+    </div>
+    <nav class="tree" id="tree"></nav>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+      <div class="crumbs" id="crumbs"></div>
+      <button class="icon-btn" id="themeBtn" aria-label="Thème">◐</button>
+    </div>
+    <main class="article" id="article"></main>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   DONNÉES — structure NODES (data-driven). Chaque nœud :
+   { id, parent, num, title, kw (mots-clés recherche), body (HTML) }
+   ========================================================================= */
+const NODES = [
+
+/* ---------------------------------------------------------------- ACCUEIL */
+{id:"home",parent:null,num:"",title:"Introduction",kw:"merise méthode introduction accueil systeme information conception",body:`
+<div class="kicker">Document support de formation</div>
+<h1>MERISE, de la pensée systémique au schéma relationnel</h1>
+<p class="lead">Une méthode française de conception des systèmes d'information qui sépare rigoureusement ce que le système <em>mémorise</em> (les données) de ce qu'il <em>fait</em> (les traitements), et qui raisonne par paliers successifs d'abstraction.</p>
+<p>MERISE n'est pas un langage ni un outil : c'est une <strong>démarche</strong> et un ensemble de <strong>formalismes</strong>. Née à la fin des années 1970, elle structure encore aujourd'hui l'enseignement de la conception de bases de données en France et reste un socle conceptuel précieux, y compris pour qui travaille avec UML, le SQL moderne ou le Domain-Driven Design.</p>
+
+<h2>Comment lire ce document</h2>
+<p>L'arborescence de gauche suit la logique même de la méthode. Trois grands ensembles :</p>
+<ul>
+<li><strong>Fondations</strong> — l'histoire, la philosophie, et les deux grandes grilles de lecture (le cycle d'abstraction, la grille données × traitements).</li>
+<li><strong>Les trois axes</strong> — les <em>Données</em> (statique : MCD → MLD → MPD), les <em>Traitements</em> (dynamique : MCT → MOT → MOpT) et la <em>Communication</em> (les flux).</li>
+<li><strong>Ponts modernes</strong> — ce que MERISE devient quand on le confronte à UML, au SQL/ORM d'aujourd'hui et au DDD.</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Le fil rouge</span>
+<p>Un même cas concret — <strong>la gestion des prêts d'une médiathèque</strong> — traverse tout le document. À chaque niveau d'abstraction, on reprend ce cas pour voir comment une même réalité se transforme du concept jusqu'à la table SQL. Commencez par le lire : <a href="#fil-rouge">Le cas fil rouge</a>.</p>
+</div>
+
+<h2>La promesse centrale</h2>
+<p>MERISE pose qu'on ne conçoit bien qu'en <strong>repoussant les décisions techniques le plus tard possible</strong>. On décrit d'abord le <em>quoi</em> (le sens métier, indépendant de toute machine), puis le <em>qui/où/quand</em> (l'organisation), et seulement à la fin le <em>comment</em> (la technique). Cette discipline de l'abstraction est l'apport le plus durable de la méthode — et celui qui résonne le plus avec les pratiques d'architecture contemporaines.</p>
+`},
+
+/* ------------------------------------------------------------- FIL ROUGE */
+{id:"fil-rouge",parent:null,num:"",title:"Le cas fil rouge : la médiathèque",kw:"fil rouge médiathèque exemple cas pratique règles gestion adhérent ouvrage exemplaire emprunt",body:`
+<div class="kicker">Cas pratique transverse</div>
+<h1>La médiathèque municipale</h1>
+<p class="lead">Un cas volontairement simple mais riche en relations, repris à chaque niveau d'abstraction pour rendre tangible la transformation conceptuel → logique → physique.</p>
+
+<h2>Le contexte</h2>
+<p>Une médiathèque veut informatiser la gestion de ses prêts. On recueille auprès des bibliothécaires les <strong>règles de gestion</strong> — la matière première de toute modélisation MERISE.</p>
+
+<h2>Les règles de gestion</h2>
+<table>
+<thead><tr><th>N°</th><th>Règle</th></tr></thead>
+<tbody>
+<tr><td>RG1</td><td>Un <strong>ouvrage</strong> (l'œuvre : un titre, un ISBN) peut exister en plusieurs <strong>exemplaires</strong> physiques. Chaque exemplaire appartient à un seul ouvrage.</td></tr>
+<tr><td>RG2</td><td>Un ouvrage est écrit par un ou plusieurs <strong>auteurs</strong> ; un auteur peut avoir écrit plusieurs ouvrages.</td></tr>
+<tr><td>RG3</td><td>Chaque ouvrage est rangé dans une seule <strong>catégorie</strong> (Roman, Essai, BD…). Une catégorie regroupe plusieurs ouvrages.</td></tr>
+<tr><td>RG4</td><td>Un <strong>adhérent</strong> peut emprunter plusieurs exemplaires. Un exemplaire donné n'est emprunté que par un seul adhérent à la fois, mais peut l'être par des adhérents différents au fil du temps.</td></tr>
+<tr><td>RG5</td><td>Chaque <strong>emprunt</strong> porte une date de sortie et une date de retour prévue ; la date de retour effective est renseignée au retour.</td></tr>
+<tr><td>RG6</td><td>Un adhérent ne peut détenir plus de 5 emprunts en cours ; son adhésion doit être valide.</td></tr>
+</tbody>
+</table>
+
+<div class="callout note">
+<span class="tag">Pourquoi ce cas</span>
+<p>Il contient une association <em>plusieurs-à-plusieurs</em> porteuse de données (l'emprunt), une <em>dépendance d'identification</em> (l'exemplaire vis-à-vis de l'ouvrage), une <em>CIF</em> (la catégorie), et un processus métier net (emprunter / retourner / relancer). De quoi illustrer chaque concept de la méthode sans se noyer.</p>
+</div>
+
+<h3>Premier inventaire du vocabulaire</h3>
+<p>On repère déjà les candidats-entités — <code>ADHERENT</code>, <code>OUVRAGE</code>, <code>EXEMPLAIRE</code>, <code>AUTEUR</code>, <code>CATEGORIE</code> — et un candidat-association central, <code>EMPRUNTER</code>. Le reste du document montre comment ce vocabulaire se discipline jusqu'à devenir un schéma exécutable.</p>
+`},
+
+/* ============================================================ FONDATIONS */
+{id:"fondations",parent:null,num:"1",title:"Fondations",kw:"fondations histoire philosophie principes",body:`
+<div class="kicker">Partie 1</div>
+<h1>Fondations</h1>
+<p class="lead">Avant les formalismes, l'esprit de la méthode : d'où elle vient, sur quelle vision du monde elle repose, et les deux grilles de lecture qui organisent tout le reste.</p>
+<p>On ne comprend pas MERISE en mémorisant des symboles. On la comprend en saisissant <strong>deux idées combinées</strong> : séparer les données des traitements, et raisonner par niveaux d'abstraction décroissante. Ces deux axes forment une grille — la matrice qui donne sa place à chacun des modèles.</p>
+<ul>
+<li><a href="#histoire">1.1 — Genèse et histoire</a></li>
+<li><a href="#philosophie">1.2 — Philosophie et principes</a></li>
+<li><a href="#courbe-soleil">1.3 — Le cycle d'abstraction (la « courbe du soleil »)</a></li>
+<li><a href="#trois-cycles">1.4 — Les trois cycles</a></li>
+<li><a href="#regles-gestion">1.5 — Les règles de gestion</a></li>
+<li><a href="#mcd-dictionnaire">1.6 — Le dictionnaire des données</a></li>
+<li><a href="#conventions">1.7 — Conventions de notation &amp; nommage</a></li>
+<li><a href="#grille">1.8 — La grille données × traitements</a></li>
+</ul>
+`},
+
+{id:"histoire",parent:"fondations",num:"1.1",title:"Genèse et histoire",kw:"histoire tardieu rochfeld colletti 1979 ministère industrie sema france origine",body:`
+<div class="kicker">1.1 — Fondations</div>
+<h1>Genèse et histoire</h1>
+<p class="lead">MERISE est un produit de son époque : la France de la fin des années 1970, où l'État cherche à industrialiser la production de ses grands systèmes informatiques.</p>
+
+<h2>Le contexte</h2>
+<p>À la fin des années 1970, l'informatique de gestion explose mais les projets dérapent : pas de méthode commune, des analyses dépendantes du fournisseur de matériel, des spécifications confondant problème métier et solution technique. Le <strong>ministère de l'Industrie</strong> commande une méthode nationale de conception des systèmes d'information.</p>
+
+<h2>Les artisans</h2>
+<p>Les travaux sont conduits autour de <strong>1977–1979</strong>, principalement dans la région d'Aix-en-Provence, par le <strong>CTI</strong> (Centre Technique Informatique) et le <strong>CETE Méditerranée</strong>, avec la société de conseil <strong>Sema</strong>. Trois noms dominent la formalisation et la diffusion :</p>
+<ul>
+<li><strong>Hubert Tardieu</strong> — figure de proue de la conception de la méthode ;</li>
+<li><strong>Arnold Rochfeld</strong> et <strong>René Colletti</strong> — co-auteurs des ouvrages de référence qui diffuseront MERISE dans les entreprises et les écoles.</li>
+</ul>
+<p>L'ouvrage <em>La méthode MERISE — Principes et outils</em> (Tardieu, Rochfeld, Colletti) devient le texte canonique. Une seconde génération, <strong>MERISE/2</strong>, étendra le formalisme dans les années 1990.</p>
+
+<h2>Les influences</h2>
+<table>
+<thead><tr><th>Source</th><th>Apport</th></tr></thead>
+<tbody>
+<tr><td>Approche systémique (Le Moigne, Forrester)</td><td>Voir l'entreprise comme un système : pilotage, information, opérant. D'où la primauté du <em>niveau conceptuel</em>.</td></tr>
+<tr><td>Modèle Entité-Association (Chen, 1976)</td><td>Le socle du MCD : entités, associations, attributs.</td></tr>
+<tr><td>Architecture ANSI/SPARC (1975)</td><td>Les trois schémas (externe / conceptuel / interne) inspirent l'idée de niveaux d'abstraction.</td></tr>
+<tr><td>Modèle relationnel (Codd, 1970)</td><td>La cible logique : le MLD est un schéma relationnel normalisé.</td></tr>
+</tbody>
+</table>
+
+<div class="callout note">
+<span class="tag">Le sigle</span>
+<p>« MERISE » est souvent glosé en <em>Méthode d'Étude et de Réalisation Informatique pour les Systèmes d'Entreprise</em>, mais ce développement est un acronyme reconstruit a posteriori. Le nom évoque surtout le merisier — un arbre dont le bois sert de porte-greffe, métaphore d'une méthode sur laquelle on greffe les projets.</p>
+</div>
+`},
+
+{id:"philosophie",parent:"fondations",num:"1.2",title:"Philosophie et principes",kw:"philosophie principes séparation données traitements abstraction systémique invariant",body:`
+<div class="kicker">1.2 — Fondations</div>
+<h1>Philosophie et principes</h1>
+<p class="lead">Deux principes fondateurs, qui se croisent pour former toute la méthode.</p>
+
+<h2>Principe 1 — Séparer données et traitements</h2>
+<p>MERISE distingue radicalement :</p>
+<ul>
+<li>les <strong>données</strong> — la part <em>statique</em> du système, ce qu'il mémorise (un adhérent, un emprunt) ;</li>
+<li>les <strong>traitements</strong> — la part <em>dynamique</em>, ce que le système fait en réaction à des événements (enregistrer un emprunt, relancer un retard).</li>
+</ul>
+<p>La justification est empirique : les données sont <strong>stables</strong> dans le temps (la notion d'« emprunt » survit aux réorganisations), tandis que les traitements <strong>changent</strong> au gré des procédures et des outils. En les séparant, on protège le cœur stable du système des turbulences de l'organisation.</p>
+
+<div class="callout warn">
+<span class="tag">Point de friction moderne</span>
+<p>Ce principe est exactement l'inverse de l'orienté-objet et du DDD, qui <em>encapsulent</em> données et comportement dans les mêmes objets. Cette divergence est le sujet du pont <a href="#ddd">MERISE &amp; DDD</a>.</p>
+</div>
+
+<h2>Principe 2 — Raisonner par niveaux d'abstraction</h2>
+<p>On ne décide pas tout en même temps. La méthode impose un ordre :</p>
+<ol>
+<li><strong>Conceptuel</strong> — le <em>quoi</em>. Le sens métier, indépendant de toute organisation et de toute technique. « Un adhérent emprunte des exemplaires. »</li>
+<li><strong>Organisationnel / Logique</strong> — le <em>qui, où, quand</em> (traitements) et le <em>avec quelle structure logique</em> (données). On introduit les choix d'organisation et de modèle (le relationnel).</li>
+<li><strong>Physique / Opérationnel</strong> — le <em>comment</em>. Le SGBD précis, le SQL, les programmes.</li>
+</ol>
+<p>La règle d'or : <strong>chaque niveau est validé avant de descendre</strong>. On ne contamine pas le conceptuel par des considérations de performance.</p>
+
+<h2>La notion d'invariant</h2>
+<p>Le niveau conceptuel cherche les <strong>invariants</strong> : ce qui est vrai quelle que soit l'organisation. Que la médiathèque enregistre les prêts sur un cahier ou sur une borne tactile, la réalité « un adhérent emprunte un exemplaire à une date » ne change pas. C'est cet invariant que capture le MCD.</p>
+`},
+
+{id:"courbe-soleil",parent:"fondations",num:"1.3",title:"Le cycle d'abstraction (courbe du soleil)",kw:"courbe soleil cycle abstraction descente remontée conceptuel logique physique niveaux",body:`
+<div class="kicker">1.3 — Fondations</div>
+<h1>Le cycle d'abstraction — la « courbe du soleil »</h1>
+<p class="lead">L'image pédagogique la plus célèbre de la méthode : la conception descend du concept vers la machine, la réalisation remonte.</p>
+
+<h2>La métaphore</h2>
+<p>On représente la démarche comme la course du soleil. À gauche, on <strong>descend</strong> les niveaux d'abstraction pendant la conception : du conceptuel (le plus abstrait, en haut) vers le physique (le plus concret, en bas). À droite, on <strong>remonte</strong> pendant la réalisation et la recette : on assemble le physique pour vérifier qu'on a bien répondu au besoin conceptuel.</p>
+
+<figure class="fig">
+<svg viewBox="0 0 720 350" role="img" aria-label="Courbe du soleil : descente conceptuel vers physique pendant la conception, remontée pendant la réalisation">
+  <!-- lanes -->
+  <rect class="s-fill-paper2" x="150" y="40" width="555" height="86" rx="6" opacity="0.55"/>
+  <rect class="s-fill-paper2" x="150" y="134" width="555" height="86" rx="6" opacity="0.30"/>
+  <rect class="s-fill-paper2" x="150" y="228" width="555" height="86" rx="6" opacity="0.55"/>
+  <!-- lane labels -->
+  <text class="s-txt s-bold" x="142" y="78" text-anchor="end">CONCEPTUEL</text>
+  <text class="s-mut s-mono" x="142" y="96" text-anchor="end">le QUOI</text>
+  <text class="s-txt s-bold" x="142" y="172" text-anchor="end">ORGANISATIONNEL / LOGIQUE</text>
+  <text class="s-mut s-mono" x="142" y="190" text-anchor="end">QUI · OÙ · QUAND</text>
+  <text class="s-txt s-bold" x="142" y="266" text-anchor="end">PHYSIQUE / OPÉRATIONNEL</text>
+  <text class="s-mut s-mono" x="142" y="284" text-anchor="end">le COMMENT</text>
+  <!-- the sun curve (U) -->
+  <path class="s-accent-s" style="stroke-width:3" d="M 205 80 C 215 215, 305 292, 428 292 C 551 292, 641 215, 651 80"/>
+  <!-- crossing dots -->
+  <circle class="s-accent" cx="232" cy="134" r="4"/>
+  <circle class="s-accent" cx="288" cy="228" r="4"/>
+  <circle class="s-accent" cx="568" cy="228" r="4"/>
+  <circle class="s-accent" cx="624" cy="134" r="4"/>
+  <!-- sun (start) -->
+  <g>
+    <circle class="s-accent" cx="205" cy="80" r="13"/>
+    <g class="s-accent-s" style="stroke-width:2">
+      <line x1="205" y1="55" x2="205" y2="44"/><line x1="205" y1="105" x2="205" y2="116"/>
+      <line x1="180" y1="80" x2="169" y2="80"/><line x1="230" y1="80" x2="241" y2="80"/>
+      <line x1="187" y1="62" x2="179" y2="54"/><line x1="223" y1="98" x2="231" y2="106"/>
+    </g>
+  </g>
+  <!-- end marker (check) -->
+  <circle class="s-blue" cx="651" cy="80" r="13"/>
+  <path d="M 645 80 l 4 5 l 8 -10" style="stroke:var(--paper);stroke-width:2.5;fill:none"/>
+  <!-- descent arrow -->
+  <g class="s-accent">
+    <text class="s-bold" x="250" y="175" font-size="12">CONCEPTION</text>
+    <path d="M 262 185 l 8 0 l -4 9 z"/>
+  </g>
+  <!-- ascent arrow -->
+  <g class="s-blue">
+    <text class="s-bold" x="560" y="178" font-size="12" text-anchor="end">RÉALISATION</text>
+    <path d="M 596 184 l 8 0 l -4 -9 z"/>
+  </g>
+  <!-- nadir label -->
+  <text class="s-mut" x="428" y="330" text-anchor="middle" font-size="12">passage à la technique · codage · intégration</text>
+</svg>
+<figcaption>La « courbe du soleil » : on descend les niveaux d'abstraction pendant la conception (gauche), on les remonte pendant la réalisation et la recette (droite).</figcaption>
+</figure>
+
+<h2>Pourquoi descendre lentement</h2>
+<p>Chaque palier ne traite qu'<strong>une catégorie de décisions</strong>. Le conceptuel ignore l'ordinateur ; l'organisationnel ignore le SGBD ; le physique tranche enfin la technique. On évite ainsi le piège classique : confondre un problème métier (« comment représenter un emprunt ? ») avec un problème technique (« faut-il un index sur la date ? »).</p>
+
+<div class="callout note">
+<span class="tag">À retenir</span>
+<p>La « courbe du soleil » se décline <em>en parallèle</em> sur les deux axes : on a une descente conceptuel→physique pour les <strong>données</strong> (MCD→MLD→MPD) et une autre pour les <strong>traitements</strong> (MCT→MOT→MOpT). La <a href="#grille">grille</a> les met côte à côte.</p>
+</div>
+`},
+
+{id:"trois-cycles",parent:"fondations",num:"1.4",title:"Les trois cycles",kw:"trois cycles abstraction vie décision schéma directeur étude préalable maintenance",body:`
+<div class="kicker">1.4 — Fondations</div>
+<h1>Les trois cycles</h1>
+<p class="lead">MERISE articule trois dynamiques qui se déroulent simultanément sur un projet.</p>
+
+<h2>1 — Le cycle d'abstraction</h2>
+<p>Déjà vu : conceptuel → organisationnel/logique → physique/opérationnel. Il décrit <strong>la nature des décisions</strong> prises à chaque palier. C'est l'axe vertical de la méthode.</p>
+
+<h2>2 — Le cycle de vie</h2>
+<p>Le déroulement temporel du projet, du premier cadrage à la disparition du système :</p>
+<table>
+<thead><tr><th>Étape</th><th>Objet</th></tr></thead>
+<tbody>
+<tr><td>Schéma directeur</td><td>Vision stratégique : quels domaines informatiser, dans quel ordre.</td></tr>
+<tr><td>Étude préalable</td><td>Pour un domaine : analyse de l'existant, scénarios, premiers modèles conceptuels.</td></tr>
+<tr><td>Étude détaillée</td><td>Spécifications complètes : MCD/MCT affinés, MOT, validation utilisateur.</td></tr>
+<tr><td>Étude technique</td><td>Choix physiques : MPD, architecture, optimisation.</td></tr>
+<tr><td>Réalisation</td><td>Développement, tests.</td></tr>
+<tr><td>Mise en œuvre</td><td>Déploiement, formation, reprise de données.</td></tr>
+<tr><td>Maintenance</td><td>Corrective et évolutive, jusqu'au retrait.</td></tr>
+</tbody>
+</table>
+
+<h2>3 — Le cycle de décision</h2>
+<p>À chaque étape correspondent des <strong>points de décision</strong> (souvent appelés jalons ou « go/no-go ») où la maîtrise d'ouvrage arbitre : valider un scénario, choisir une cible technique, lancer la réalisation. Ce cycle relie la technique à la gouvernance du projet.</p>
+
+<div class="callout note">
+<span class="tag">Lecture croisée</span>
+<p>Les trois cycles forment un espace à trois dimensions : <em>où en est-on dans le temps</em> (cycle de vie), <em>à quel niveau d'abstraction travaille-t-on</em> (cycle d'abstraction), <em>qui décide quoi</em> (cycle de décision). Un livrable MERISE se situe toujours quelque part dans ce volume.</p>
+</div>
+`},
+
+{id:"regles-gestion",parent:"fondations",num:"1.5",title:"Les règles de gestion",kw:"règle gestion business rule formulation typologie structure contrôle calcul action atomique métier RG quota",body:`
+<div class="kicker">1.5 — Fondations</div>
+<h1>Les règles de gestion</h1>
+<p class="lead">La matière première de toute la méthode. Avant le moindre modèle, on recueille et on formule les règles qui décrivent le fonctionnement du métier — tout le reste en dérive.</p>
+
+<h2>Ce qu'est une règle de gestion</h2>
+<p>Une <strong>règle de gestion</strong> est une assertion qui décrit ou contraint un aspect du métier, indépendamment de toute solution informatique. Elle énonce une vérité du domaine : « un adhérent ne peut détenir plus de cinq emprunts ». C'est le pont entre le langage des utilisateurs et les modèles : le MCD, le MCT et les contraintes physiques ne sont, au fond, que des règles de gestion <em>traduites</em> dans des formalismes.</p>
+
+<h2>D'où viennent-elles</h2>
+<ul>
+<li><strong>entretiens</strong> avec les acteurs métier (la maîtrise d'ouvrage) ;</li>
+<li><strong>documents existants</strong> : formulaires, écrans, états imprimés, procédures, contrats ;</li>
+<li><strong>réglementation</strong> et obligations légales ;</li>
+<li><strong>observation</strong> du fonctionnement réel.</li>
+</ul>
+
+<h2>Comment les formuler</h2>
+<p>Une règle bien formulée respecte quelques critères — les mêmes qui feront, plus tard, un bon modèle :</p>
+<table>
+<thead><tr><th>Critère</th><th>Signification</th></tr></thead>
+<tbody>
+<tr><td>Atomique</td><td>une seule idée par règle ; on découpe les règles composées.</td></tr>
+<tr><td>Non ambiguë</td><td>vérifiable, sans interprétation possible (« plus de 5 », pas « beaucoup »).</td></tr>
+<tr><td>En langage métier</td><td>aucun terme technique (ni table, ni champ, ni écran).</td></tr>
+<tr><td>Indépendante de la solution</td><td>elle dit le <em>quoi</em>, jamais le <em>comment</em> informatique.</td></tr>
+<tr><td>Traçable</td><td>numérotée (RG1, RG2…) pour être suivie jusqu'au code.</td></tr>
+<tr><td>Cohérente</td><td>sans contradiction avec les autres règles.</td></tr>
+</tbody>
+</table>
+
+<h3>Anatomie d'une règle</h3>
+<figure class="fig">
+<svg viewBox="0 0 700 232" role="img" aria-label="Décomposition d'une règle en sujet, quantificateur, objet, condition">
+  <text class="s-mut s-mono" x="10" y="20">RG6 — décomposée</text>
+  <rect class="s-blue" x="10" y="28" width="170" height="40" rx="6"/>
+  <text x="95" y="53" text-anchor="middle" style="fill:var(--paper);font-size:11px;font-weight:700">SUJET</text>
+  <rect class="s-fill-paper2" x="190" y="28" width="500" height="40" rx="6"/>
+  <text class="s-txt" x="206" y="53" font-size="14">Un adhérent</text>
+  <rect class="s-accent" x="10" y="76" width="170" height="40" rx="6"/>
+  <text x="95" y="95" text-anchor="middle" style="fill:var(--paper);font-size:10px;font-weight:700">QUANTIFICATEUR</text>
+  <text x="95" y="109" text-anchor="middle" style="fill:var(--paper);font-size:9px">la contrainte chiffrée</text>
+  <rect class="s-fill-paper2" x="190" y="76" width="500" height="40" rx="6"/>
+  <text class="s-txt" x="206" y="101" font-size="14">ne peut détenir plus de 5</text>
+  <rect class="s-blue" x="10" y="124" width="170" height="40" rx="6"/>
+  <text x="95" y="149" text-anchor="middle" style="fill:var(--paper);font-size:11px;font-weight:700">OBJET</text>
+  <rect class="s-fill-paper2" x="190" y="124" width="500" height="40" rx="6"/>
+  <text class="s-txt" x="206" y="149" font-size="14">emprunts en cours</text>
+  <rect class="s-accent" x="10" y="172" width="170" height="40" rx="6"/>
+  <text x="95" y="197" text-anchor="middle" style="fill:var(--paper);font-size:11px;font-weight:700">CONDITION</text>
+  <rect class="s-fill-paper2" x="190" y="172" width="500" height="40" rx="6"/>
+  <text class="s-txt" x="206" y="197" font-size="14">si son adhésion est valide</text>
+</svg>
+<figcaption>Décomposer une règle en sujet · quantificateur · objet · condition la rend atomique et vérifiable.</figcaption>
+</figure>
+
+<h2>Une typologie utile</h2>
+<p>Classer les règles oriente directement leur traduction dans les modèles :</p>
+<table>
+<thead><tr><th>Type</th><th>Décrit…</th><th>Se traduit dans…</th></tr></thead>
+<tbody>
+<tr><td>Règle de structure</td><td>l'existence et les liens entre données</td><td>le <a href="#mcd">MCD</a> (entités, associations, cardinalités)</td></tr>
+<tr><td>Règle de calcul</td><td>une donnée déduite d'autres (formule)</td><td>les <a href="#mct">traitements</a> ; donnée non stockée</td></tr>
+<tr><td>Règle de contrôle</td><td>une condition de validité à respecter</td><td>les traitements et/ou des contraintes <code>CHECK</code></td></tr>
+<tr><td>Règle d'action</td><td>un comportement déclenché par un événement</td><td>le <a href="#mct">MCT</a> (opérations, règles d'émission)</td></tr>
+</tbody>
+</table>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — classer nos six règles</span>
+<table>
+<thead><tr><th>Règle</th><th>Type</th><th>Destination</th></tr></thead>
+<tbody>
+<tr><td>RG1 — exemplaires d'un ouvrage</td><td>structure</td><td>MCD · cardinalité (1,n)</td></tr>
+<tr><td>RG2 — auteurs d'un ouvrage</td><td>structure</td><td>MCD · association (n,n)</td></tr>
+<tr><td>RG3 — catégorie d'un ouvrage</td><td>structure</td><td>MCD · CIF</td></tr>
+<tr><td>RG4 — un emprunteur à la fois</td><td>structure + contrôle</td><td>MCD + traitement</td></tr>
+<tr><td>RG5 — dates d'emprunt</td><td>structure</td><td>MCD · propriétés de l'association</td></tr>
+<tr><td>RG6 — quota de 5 + adhésion valide</td><td>contrôle</td><td>MCT · opération « Enregistrer l'emprunt »</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout warn">
+<span class="tag">La règle qui ne se dessine pas</span>
+<p>RG6 (le quota) est l'exemple canonique de la règle <em>de contrôle</em> : aucune cardinalité, aucune contrainte de schéma ne l'exprime. Elle vivra dans un <a href="#mct">traitement</a>. Repérer dès la formulation qu'une règle est « de structure » ou « de contrôle », c'est déjà savoir vers quel modèle elle ira — et pourquoi MERISE a besoin de ses deux axes.</p>
+</div>
+
+<h2>De la règle au modèle</h2>
+<p>L'enchaînement amont est toujours le même : on recueille les <strong>règles de gestion</strong>, on en extrait le vocabulaire dans le <a href="#mcd-dictionnaire">dictionnaire des données</a>, puis on en déduit le <a href="#mcd">MCD</a> et le <a href="#mct">MCT</a>. Les deux nœuds suivants outillent précisément ces étapes.</p>
+`},
+
+{id:"mcd-dictionnaire",parent:"fondations",num:"1.6",title:"Le dictionnaire des données",kw:"dictionnaire données data dictionary désignation type longueur nature calculée concaténée épuration synonyme polysème domaine valeurs dépendance fonctionnelle catalog ubiquitous",body:`
+<div class="kicker">1.6 — Fondations</div>
+<h1>Le dictionnaire des données</h1>
+<p class="lead">L'inventaire exhaustif et épuré de toutes les données élémentaires du système. C'est le chaînon entre les règles de gestion et le MCD — et l'ancêtre direct de ce que le DDD appellera l'<em>ubiquitous language</em>.</p>
+
+<h2>Son rôle</h2>
+<ul>
+<li><strong>recenser</strong> sans oubli toute donnée que le système devra mémoriser ou produire ;</li>
+<li><strong>fixer le vocabulaire</strong> : un nom = une donnée = une définition partagée entre métier et technique ;</li>
+<li><strong>préparer le MCD</strong> : les données épurées et leurs dépendances se regroupent ensuite en entités et associations ;</li>
+<li><strong>servir de référence</strong> tout au long du projet (types, longueurs, contraintes).</li>
+</ul>
+
+<h2>Quand le produit-on</h2>
+<p>Très en amont, juste après (ou pendant) le recueil des <a href="#regles-gestion">règles de gestion</a>, à partir des entretiens et de <em>tous</em> les supports d'information existants : formulaires, écrans, états imprimés, fichiers. On y traque chaque donnée nommée.</p>
+
+<h2>Comment l'organiser</h2>
+<p>Un tableau, une ligne par donnée élémentaire. Les colonnes usuelles :</p>
+<table>
+<thead><tr><th>Colonne</th><th>Contenu</th></tr></thead>
+<tbody>
+<tr><td>Code</td><td>nom court et mnémonique (souvent préfixé par l'entité)</td></tr>
+<tr><td>Désignation</td><td>libellé clair en langage métier</td></tr>
+<tr><td>Type</td><td>A (alpha), N (numérique), AN (alphanumérique), date, booléen</td></tr>
+<tr><td>Longueur</td><td>taille ou précision</td></tr>
+<tr><td>Nature</td><td>élémentaire · calculée · concaténée · paramètre</td></tr>
+<tr><td>Règle / domaine</td><td>formule si calculée, domaine de valeurs, contrainte</td></tr>
+<tr><td>Rattachement</td><td>(ajouté ensuite) l'entité ou l'association d'accueil</td></tr>
+</tbody>
+</table>
+
+<h2>Comment le développer : l'épuration</h2>
+<p>Le recensement brut est toujours redondant et bruité. On le « purifie » en quatre passes :</p>
+<figure class="fig">
+<svg viewBox="0 0 720 150" role="img" aria-label="Pipeline d'épuration du dictionnaire des données">
+  <rect class="s-box" x="8" y="42" width="150" height="60" rx="8"/>
+  <text class="s-txt s-bold" x="83" y="68" text-anchor="middle" font-size="13">Recensement</text>
+  <text class="s-mut" x="83" y="86" text-anchor="middle" font-size="11">brut, redondant</text>
+  <path class="s-line" d="M 162 72 H 196"/><path class="s-accent" d="M 196 67 l 9 5 l -9 5 z"/>
+  <rect class="s-assoc" x="210" y="34" width="172" height="76" rx="8"/>
+  <text class="s-assoct" x="296" y="56" text-anchor="middle" font-size="13">Épuration</text>
+  <text class="s-mut" x="296" y="74" text-anchor="middle" font-size="9.5">synonymes · polysèmes</text>
+  <text class="s-mut" x="296" y="88" text-anchor="middle" font-size="9.5">calculées · concaténées</text>
+  <path class="s-line" d="M 386 72 H 420"/><path class="s-accent" d="M 420 67 l 9 5 l -9 5 z"/>
+  <rect class="s-box" x="434" y="42" width="150" height="60" rx="8"/>
+  <text class="s-txt s-bold" x="509" y="68" text-anchor="middle" font-size="13">Données</text>
+  <text class="s-mut" x="509" y="86" text-anchor="middle" font-size="11">élémentaires</text>
+  <path class="s-line" d="M 588 72 H 622"/><path class="s-blue" d="M 622 67 l 9 5 l -9 5 z"/>
+  <rect class="s-box" x="636" y="42" width="76" height="60" rx="8" style="stroke:var(--blue)"/>
+  <text class="s-blue s-bold" x="674" y="68" text-anchor="middle" font-size="13">MCD</text>
+  <text class="s-mut" x="674" y="86" text-anchor="middle" font-size="9">via les DF</text>
+</svg>
+<figcaption>Du recensement brut au MCD : l'épuration ne conserve que des données élémentaires, uniques et atomiques.</figcaption>
+</figure>
+<ol>
+<li><strong>Synonymes</strong> — deux noms pour une même donnée (« client », « adhérent ») : on n'en garde qu'un.</li>
+<li><strong>Polysèmes</strong> — un nom pour deux données distinctes (« date » de sortie ? de retour ?) : on les dédouble.</li>
+<li><strong>Données calculées</strong> — déductibles d'autres (l'âge, le nombre d'emprunts en cours) : on les marque et on ne les stocke pas.</li>
+<li><strong>Données concaténées</strong> — agrégats non atomiques (« nom complet ») : on les décompose en éléments.</li>
+</ol>
+
+<h2>Des dépendances aux entités</h2>
+<p>Sur ce dictionnaire épuré, on établit les <strong>dépendances fonctionnelles</strong> (DF) : <code>A → B</code> signifie que connaître A détermine B. Chaque déterminant devient candidat-identifiant d'une entité, et les données qui en dépendent s'y regroupent. C'est le passage du dictionnaire au <a href="#mcd">MCD</a> — et le socle de la <a href="#mld-normalisation">normalisation</a> au niveau logique.</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — extrait du dictionnaire épuré</span>
+<table>
+<thead><tr><th>Code</th><th>Désignation</th><th>Type</th><th>Long.</th><th>Nature</th></tr></thead>
+<tbody>
+<tr><td>numAdherent</td><td>Identifiant adhérent</td><td>N</td><td>6</td><td>élémentaire (id)</td></tr>
+<tr><td>nomAdherent</td><td>Nom de l'adhérent</td><td>A</td><td>40</td><td>élémentaire</td></tr>
+<tr><td>dateAdhesion</td><td>Date d'adhésion</td><td>date</td><td>—</td><td>élémentaire</td></tr>
+<tr><td>titre</td><td>Titre de l'ouvrage</td><td>AN</td><td>200</td><td>élémentaire</td></tr>
+<tr><td>isbn</td><td>ISBN</td><td>AN</td><td>17</td><td>élémentaire (unique)</td></tr>
+<tr><td>dateSortie</td><td>Date de sortie d'emprunt</td><td>date</td><td>—</td><td>élémentaire</td></tr>
+<tr><td>nbEmpruntsEnCours</td><td>Nombre d'emprunts en cours</td><td>N</td><td>2</td><td><em>calculée → exclue</em></td></tr>
+<tr><td>ageAdherent</td><td>Âge de l'adhérent</td><td>N</td><td>3</td><td><em>calculée → exclue</em></td></tr>
+</tbody>
+</table>
+<p>DF clés : <code>numAdherent → nomAdherent, dateAdhesion</code> · <code>numOuvrage → titre, isbn, codeCategorie</code> · <code>(numAdherent, numExemplaire, dateSortie) → dateRetourPrevue</code>.</p>
+</div>
+
+<div class="callout note">
+<span class="tag">Écho moderne</span>
+<p>Le dictionnaire des données est l'ancêtre de plusieurs pratiques actuelles : le <em>data catalog</em>, le glossaire métier, et l'<em>ubiquitous language</em> du DDD. Tous répondent au même besoin — un vocabulaire unique, défini et partagé. Voir <a href="#ddd">MERISE &amp; DDD</a>.</p>
+</div>
+`},
+
+{id:"conventions",parent:"fondations",num:"1.7",title:"Conventions de notation & nommage",kw:"conventions notation nommage formalisme singulier majuscules verbe souligné identifiant clé étrangère dièse rectangle ellipse cardinalité représentation graphique planche",body:`
+<div class="kicker">1.7 — Fondations</div>
+<h1>Conventions de notation &amp; nommage</h1>
+<p class="lead">MERISE n'impose pas qu'une démarche, mais une <em>grammaire</em> : un vocabulaire graphique et des règles de nommage qui rendent les schémas lisibles et univoques. Les voici réunis en planche de référence.</p>
+
+<h2>Le formalisme graphique du MCD</h2>
+<figure class="fig">
+<svg viewBox="0 0 720 290" role="img" aria-label="Planche des conventions de notation du MCD">
+  <rect class="s-box" x="60" y="92" width="160" height="84" rx="3"/>
+  <rect class="s-boxh" x="60" y="92" width="160" height="28"/>
+  <text class="s-boxht" x="140" y="111" text-anchor="middle">ADHERENT</text>
+  <text class="s-txt s-mono" x="74" y="140" font-size="12" style="text-decoration:underline">numAdherent</text>
+  <text class="s-txt s-mono" x="74" y="160" font-size="12">nom</text>
+  <path class="s-line" d="M 220 134 H 302"/>
+  <text class="s-card" x="234" y="126">0,n</text>
+  <ellipse class="s-assoc" cx="362" cy="134" rx="60" ry="30"/>
+  <text class="s-assoct" x="362" y="139" text-anchor="middle">Emprunter</text>
+  <path class="s-line" d="M 422 134 H 500"/>
+  <text class="s-card" x="468" y="126">0,n</text>
+  <rect class="s-box" x="500" y="100" width="160" height="68" rx="3"/>
+  <rect class="s-boxh" x="500" y="100" width="160" height="28"/>
+  <text class="s-boxht" x="580" y="119" text-anchor="middle">EXEMPLAIRE</text>
+  <text class="s-txt s-mono" x="514" y="148" font-size="12" style="text-decoration:underline">numExemplaire</text>
+  <path class="s-accent-s s-dash" d="M 140 92 V 64"/>
+  <text class="s-accent" x="140" y="54" text-anchor="middle" font-size="11" font-weight="700">Entité : rectangle, nom au singulier en MAJUSCULES</text>
+  <path class="s-accent-s s-dash" d="M 362 164 V 198"/>
+  <text class="s-accent" x="362" y="216" text-anchor="middle" font-size="11" font-weight="700">Association : ellipse, nom = verbe</text>
+  <path class="s-blue-s s-dash" d="M 96 144 V 244"/>
+  <text class="s-blue" x="96" y="262" text-anchor="middle" font-size="11" font-weight="700">Identifiant : souligné</text>
+  <path class="s-blue-s s-dash" d="M 244 126 V 244"/>
+  <text class="s-blue" x="430" y="262" text-anchor="middle" font-size="11" font-weight="700">Cardinalité (min,max) : côté entité</text>
+</svg>
+<figcaption>La grammaire graphique du MCD en un coup d'œil.</figcaption>
+</figure>
+
+<h2>Règles de nommage</h2>
+<table>
+<thead><tr><th>Élément</th><th>Convention</th><th>Exemple</th></tr></thead>
+<tbody>
+<tr><td>Entité</td><td>substantif au <strong>singulier</strong>, en MAJUSCULES</td><td><code>ADHERENT</code>, <code>OUVRAGE</code></td></tr>
+<tr><td>Association</td><td><strong>verbe</strong> (infinitif ou participe) ; forme la phrase entité-verbe-entité</td><td><code>Emprunter</code>, <code>Appartenir</code></td></tr>
+<tr><td>Propriété</td><td>minuscules, nom métier atomique ; préfixe possible par l'entité</td><td><code>nomAdherent</code>, <code>dateSortie</code></td></tr>
+<tr><td>Identifiant</td><td><u>souligné</u> ; souvent préfixe <code>num</code> ou <code>code</code></td><td><code><u>numAdherent</u></code></td></tr>
+<tr><td>Cardinalité</td><td>couple <code>(min,max)</code> sur la patte, <strong>côté entité</strong></td><td><code>(0,n)</code>, <code>(1,1)</code></td></tr>
+</tbody>
+</table>
+
+<h2>La notation textuelle du MLD</h2>
+<p>Au niveau logique, on quitte le dessin pour une écriture compacte :</p>
+<pre><code>RELATION (<u>cléPrimaire</u>, attribut1, attribut2, #cléEtrangere)</code></pre>
+<ul>
+<li>nom de relation en MAJUSCULES, attributs entre parenthèses ;</li>
+<li>clé primaire <u>soulignée</u> (parfois en gras) ;</li>
+<li>clé étrangère préfixée d'un <code>#</code> (parfois notée en italique selon les ouvrages) ;</li>
+<li>une clé peut être à la fois primaire et étrangère (tables d'association).</li>
+</ul>
+
+<div class="callout warn">
+<span class="tag">Dialectes</span>
+<p>Ces conventions sont celles de MERISE « classique » (Tardieu-Rochfeld-Colletti). Les outils et ouvrages varient : sens de lecture des cardinalités, symbole de la CIF, « patte d'oie » (Crow's Foot) plutôt qu'ellipses dans les modeleurs anglo-saxons. Le fond reste identique — voir <a href="#er-chen">MERISE vs Entité-Association (Chen)</a> pour la correspondance des notations.</p>
+</div>
+
+<div class="callout note">
+<span class="tag">Pourquoi s'y tenir</span>
+<p>La rigueur de nommage n'est pas cosmétique : « entité au singulier » force à penser une occurrence-type ; « association = verbe » teste la validité sémantique du lien (si aucun verbe ne vient, le lien est douteux) ; l'identifiant souligné et le <code>#</code> rendent le passage au relationnel mécanique. La convention <em>fait partie</em> du raisonnement.</p>
+</div>
+`},
+
+{id:"grille",parent:"fondations",num:"1.8",title:"La grille données × traitements",kw:"grille matrice données traitements communication mcd mld mpd mct mot mopt mcc modèles tableau",body:`
+<div class="kicker">1.8 — Fondations</div>
+<h1>La grille données × traitements</h1>
+<p class="lead">La carte maîtresse de MERISE : croiser les trois niveaux d'abstraction avec les axes Données, Traitements et Communication donne sa place exacte à chaque modèle.</p>
+
+<table class="grille">
+<thead><tr><th></th><th>Données (statique)</th><th>Traitements (dynamique)</th><th>Communication (flux)</th></tr></thead>
+<tbody>
+<tr>
+<td class="axis">Conceptuel</td>
+<td><div class="lv">le quoi</div><div class="mod">MCD</div></td>
+<td><div class="lv">le quoi</div><div class="mod">MCT</div></td>
+<td><div class="lv">le quoi</div><div class="mod">MCC</div></td>
+</tr>
+<tr>
+<td class="axis">Organisationnel / Logique</td>
+<td><div class="lv">structure logique</div><div class="mod">MLD</div></td>
+<td><div class="lv">qui · où · quand</div><div class="mod">MOT</div></td>
+<td class="empty">—</td>
+</tr>
+<tr>
+<td class="axis">Physique / Opérationnel</td>
+<td><div class="lv">le comment</div><div class="mod">MPD</div></td>
+<td><div class="lv">le comment</div><div class="mod">MOpT</div></td>
+<td class="empty">—</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Décodage des sigles</h2>
+<ul>
+<li><strong>MCD</strong> — Modèle Conceptuel des Données · <strong>MLD</strong> — Modèle Logique des Données · <strong>MPD</strong> — Modèle Physique des Données.</li>
+<li><strong>MCT</strong> — Modèle Conceptuel des Traitements · <strong>MOT</strong> — Modèle Organisationnel des Traitements · <strong>MOpT</strong> — Modèle Opérationnel (ou physique) des Traitements.</li>
+<li><strong>MCC</strong> — Modèle Conceptuel de la Communication (le diagramme des flux), souvent le tout premier modèle produit.</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Comment s'en servir</span>
+<p>Cette grille est un <em>tableau de bord</em> de la conception : à tout moment on sait quel modèle on est en train de produire et lesquels restent à faire. Le travail descend case par case, en validant la cohérence horizontale (données ↔ traitements d'un même niveau) à chaque palier.</p>
+</div>
+<p>La suite du document parcourt cette grille colonne par colonne : d'abord <a href="#donnees">les Données</a>, puis <a href="#traitements">les Traitements</a>, enfin <a href="#communication">la Communication</a>.</p>
+`},
+
+/* ============================================================== DONNÉES */
+{id:"donnees",parent:null,num:"2",title:"Axe des Données",kw:"données statique mcd mld mpd modèle conceptuel logique physique",body:`
+<div class="kicker">Partie 2 — Données (statique)</div>
+<h1>L'axe des Données</h1>
+<p class="lead">La colonne la plus célèbre de MERISE : trois modèles qui transforment une réalité métier en tables exécutables.</p>
+<p>C'est par les données que la plupart des formations entrent dans MERISE, car c'est là que la valeur pédagogique est la plus dense : on y apprend à modéliser le réel, puis on suit mécaniquement les règles qui mènent du concept à la base relationnelle.</p>
+<table>
+<thead><tr><th>Modèle</th><th>Niveau</th><th>Répond à</th></tr></thead>
+<tbody>
+<tr><td><a href="#mcd">MCD</a></td><td>Conceptuel</td><td>De quelles informations parle le métier, et comment sont-elles reliées ?</td></tr>
+<tr><td><a href="#mld">MLD</a></td><td>Logique</td><td>Comment structurer ces informations dans le modèle relationnel ?</td></tr>
+<tr><td><a href="#mpd">MPD</a></td><td>Physique</td><td>Comment l'écrire dans tel SGBD, avec quels types et index ?</td></tr>
+</tbody>
+</table>
+`},
+
+/* ---- MCD ---- */
+{id:"mcd",parent:"donnees",num:"2.1",title:"Modèle Conceptuel des Données (MCD)",kw:"mcd modèle conceptuel données entité association entité-association chen formalisme",body:`
+<div class="kicker">2.1 — Données</div>
+<h1>Modèle Conceptuel des Données (MCD)</h1>
+<p class="lead">Le cœur historique de MERISE : une représentation graphique, indépendante de toute technique, de ce dont le système doit se souvenir.</p>
+
+<h2>Ce qu'est un MCD</h2>
+<p>Le MCD est un <strong>modèle entité-association</strong> : on décrit le monde avec des <em>entités</em> (les choses dont on parle), leurs <em>propriétés</em> (ce qu'on en sait), et des <em>associations</em> (les liens entre elles), qualifiées par des <em>cardinalités</em>. Aucune notion de table, de clé étrangère ou de fichier : ce vocabulaire-là appartient au niveau logique.</p>
+
+<div class="diagram">
+  <div class="ent"><div class="h">ADHERENT</div><div class="b"><span class="id">numAdherent</span><br>nom<br>prenom<br>dateAdhesion</div></div>
+  <div class="rel"><span class="card-min">0,n</span><div class="line"></div><div class="oval">Emprunter</div><div class="line"></div><span class="card-min">0,n</span></div>
+  <div class="ent"><div class="h">EXEMPLAIRE</div><div class="b"><span class="id">numExemplaire</span><br>etat</div></div>
+</div>
+<p style="text-align:center;color:var(--muted);font-size:13px;margin-top:-10px">Extrait du MCD de la médiathèque : deux entités reliées par une association porteuse de dates.</p>
+
+<h2>Les briques du MCD</h2>
+<p>Chaque brique fait l'objet d'une page dédiée :</p>
+<ul>
+<li><a href="#mcd-entite">2.1.1 — Entités</a></li>
+<li><a href="#mcd-propriete">2.1.2 — Propriétés</a></li>
+<li><a href="#mcd-identifiant">2.1.3 — Identifiants</a></li>
+<li><a href="#mcd-association">2.1.4 — Associations</a></li>
+<li><a href="#mcd-cardinalites">2.1.5 — Cardinalités</a></li>
+<li><a href="#mcd-dimensions">2.1.6 — Dimension des associations</a></li>
+<li><a href="#mcd-cif">2.1.7 — La CIF</a></li>
+<li><a href="#mcd-faible">2.1.8 — Dépendance d'identification</a></li>
+<li><a href="#mcd-heritage">2.1.9 — Héritage (spécialisation)</a></li>
+<li><a href="#mcd-contraintes">2.1.10 — Contraintes inter-associations</a></li>
+</ul>
+
+<div class="callout warn">
+<span class="tag">Deux dialectes</span>
+<p>Attention aux variantes de formalisme : MERISE place les cardinalités <em>côté entité</em>, sous la forme d'un couple <code>(min,max)</code>. Le formalisme de Chen, lui, n'écrit qu'un cardinal (1 ou N) et le place différemment. Les deux décrivent la même chose mais ne se lisent pas pareil — voir <a href="#er-chen">MERISE vs Entité-Association (Chen)</a>.</p>
+</div>
+
+<h2>Le MCD complet de la médiathèque</h2>
+<p>Toutes les briques réunies sur le cas fil rouge. Chaque sous-page qui suit zoome sur un élément de ce schéma.</p>
+<figure class="fig">
+<svg viewBox="0 0 760 540" role="img" aria-label="MCD complet de la médiathèque : CATEGORIE, OUVRAGE, AUTEUR, EXEMPLAIRE, ADHERENT">
+  <path class="s-line" d="M 180 78 H 305"/>
+  <path class="s-line" d="M 455 80 H 580"/>
+  <path class="s-line" d="M 380 138 V 244"/>
+  <path class="s-line" d="M 380 314 V 430"/>
+  <ellipse class="s-assoc" cx="242" cy="78" rx="46" ry="24"/>
+  <text class="s-assoct" x="242" y="83" text-anchor="middle" font-size="12">Appartenir</text>
+  <ellipse class="s-assoc" cx="518" cy="79" rx="42" ry="24"/>
+  <text class="s-assoct" x="518" y="84" text-anchor="middle" font-size="12">Écrire</text>
+  <ellipse class="s-assoc" cx="380" cy="191" rx="66" ry="27"/>
+  <text class="s-assoct" x="380" y="189" text-anchor="middle" font-size="12">Posséder</text>
+  <text class="s-mut" x="380" y="204" text-anchor="middle" font-size="8.5">dépendance d'identif.</text>
+  <ellipse class="s-assoc" cx="380" cy="372" rx="58" ry="28"/>
+  <text class="s-assoct" x="380" y="370" text-anchor="middle" font-size="12">Emprunter</text>
+  <text class="s-mut" x="380" y="385" text-anchor="middle" font-size="8.5">(porteuse de dates)</text>
+  <text class="s-card" x="186" y="70">0,n</text>
+  <text class="s-card" x="290" y="72">1,1</text>
+  <text class="s-card" x="460" y="72">1,n</text>
+  <text class="s-card" x="556" y="72">1,n</text>
+  <text class="s-card" x="388" y="152">1,n</text>
+  <text class="s-card" x="388" y="238">1,1</text>
+  <text class="s-card" x="388" y="332">0,n</text>
+  <text class="s-card" x="388" y="424">0,n</text>
+  <path class="s-line-2 s-dash" d="M 438 372 H 470"/>
+  <text class="s-txt s-mono" x="476" y="362" font-size="10">dateSortie</text>
+  <text class="s-txt s-mono" x="476" y="376" font-size="10">dateRetourPrevue</text>
+  <text class="s-txt s-mono" x="476" y="390" font-size="10">dateRetourEffective</text>
+  <rect class="s-box" x="30" y="44" width="150" height="72" rx="3"/>
+  <rect class="s-boxh" x="30" y="44" width="150" height="28"/>
+  <text class="s-boxht" x="105" y="63" text-anchor="middle">CATEGORIE</text>
+  <text class="s-txt s-mono" x="44" y="92" font-size="11" style="text-decoration:underline">codeCategorie</text>
+  <text class="s-txt s-mono" x="44" y="109" font-size="11">libelle</text>
+  <rect class="s-box" x="305" y="34" width="150" height="104" rx="3"/>
+  <rect class="s-boxh" x="305" y="34" width="150" height="28"/>
+  <text class="s-boxht" x="380" y="53" text-anchor="middle">OUVRAGE</text>
+  <text class="s-txt s-mono" x="319" y="82" font-size="11" style="text-decoration:underline">numOuvrage</text>
+  <text class="s-txt s-mono" x="319" y="100" font-size="11">titre</text>
+  <text class="s-txt s-mono" x="319" y="118" font-size="11">isbn</text>
+  <text class="s-txt s-mono" x="319" y="136" font-size="11">anneeParution</text>
+  <rect class="s-box" x="580" y="44" width="150" height="72" rx="3"/>
+  <rect class="s-boxh" x="580" y="44" width="150" height="28"/>
+  <text class="s-boxht" x="655" y="63" text-anchor="middle">AUTEUR</text>
+  <text class="s-txt s-mono" x="594" y="92" font-size="11" style="text-decoration:underline">numAuteur</text>
+  <text class="s-txt s-mono" x="594" y="109" font-size="11">nomAuteur</text>
+  <rect class="s-box" x="305" y="244" width="150" height="70" rx="3"/>
+  <rect class="s-boxh" x="305" y="244" width="150" height="28"/>
+  <text class="s-boxht" x="380" y="263" text-anchor="middle">EXEMPLAIRE</text>
+  <text class="s-txt s-mono" x="319" y="292" font-size="11" style="text-decoration:underline">numExemplaire</text>
+  <text class="s-txt s-mono" x="319" y="309" font-size="11">etat</text>
+  <rect class="s-box" x="305" y="430" width="150" height="88" rx="3"/>
+  <rect class="s-boxh" x="305" y="430" width="150" height="28"/>
+  <text class="s-boxht" x="380" y="449" text-anchor="middle">ADHERENT</text>
+  <text class="s-txt s-mono" x="319" y="478" font-size="11" style="text-decoration:underline">numAdherent</text>
+  <text class="s-txt s-mono" x="319" y="496" font-size="11">nom</text>
+  <text class="s-txt s-mono" x="319" y="514" font-size="11">dateAdhesion</text>
+</svg>
+<figcaption>MCD complet : cinq entités, quatre associations. « Emprunter » porte les trois dates ; « Posséder » est une dépendance d'identification (EXEMPLAIRE n'existe pas sans son OUVRAGE).</figcaption>
+</figure>
+`},
+
+{id:"mcd-entite",parent:"mcd",num:"2.1.1",title:"Entités",kw:"entité objet occurrence individu type rectangle réalité",body:`
+<div class="kicker">2.1.1 — MCD</div>
+<h1>Entités</h1>
+<p class="lead">Une entité représente une catégorie de choses du monde réel dont le système doit conserver une trace.</p>
+
+<h2>Définition</h2>
+<p>Une <strong>entité</strong> (ou <em>type-entité</em>, parfois « objet ») est un ensemble d'objets de même nature, perçus comme ayant une existence propre : <code>ADHERENT</code>, <code>OUVRAGE</code>, <code>EXEMPLAIRE</code>. On la dessine par un rectangle portant son nom (par convention au singulier, en majuscules).</p>
+<p>Une <strong>occurrence</strong> (ou individu) est un élément particulier de l'entité : « l'adhérente Camille Roux, n°4012 » est une occurrence de <code>ADHERENT</code>.</p>
+
+<h2>Le test d'existence</h2>
+<p>Une bonne entité possède une existence <em>autonome</em> dans le discours métier. Avant de créer une entité, on se demande : « peut-elle exister indépendamment, et a-t-elle plusieurs occurrences qu'on veut distinguer ? »</p>
+<ul>
+<li><code>AUTEUR</code> ✔ — existe en soi, on en distingue plusieurs.</li>
+<li><code>adresse</code> ✘ — c'est plutôt une <em>propriété</em> de l'adhérent, sauf si le métier veut la gérer comme une chose à part entière (livraisons multiples…).</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p>De nos règles de gestion émergent cinq entités candidates : <code>ADHERENT</code>, <code>OUVRAGE</code>, <code>EXEMPLAIRE</code>, <code>AUTEUR</code>, <code>CATEGORIE</code>. Noter la distinction subtile entre <code>OUVRAGE</code> (l'œuvre abstraite, un ISBN) et <code>EXEMPLAIRE</code> (l'objet physique posé sur l'étagère) : c'est elle qui rend le modèle juste — on n'emprunte pas un ISBN, on emprunte un livre physique.</p>
+</div>
+`},
+
+{id:"mcd-propriete",parent:"mcd",num:"2.1.2",title:"Propriétés",kw:"propriété attribut donnée élémentaire atomique caractéristique",body:`
+<div class="kicker">2.1.2 — MCD</div>
+<h1>Propriétés</h1>
+<p class="lead">Les propriétés sont les informations élémentaires attachées à une entité (ou à une association).</p>
+
+<h2>Définition</h2>
+<p>Une <strong>propriété</strong> (ou attribut) est une donnée <em>élémentaire</em> et <em>atomique</em> que l'on souhaite mémoriser : <code>nom</code>, <code>dateAdhesion</code>, <code>titre</code>. Elle prend une valeur pour chaque occurrence.</p>
+
+<h2>Règles de bonne propriété</h2>
+<ul>
+<li><strong>Atomique</strong> : pas de propriété composée. On évite <code>adresseComplete</code> ; on décompose en <code>rue</code>, <code>codePostal</code>, <code>ville</code> si le métier doit les manipuler séparément.</li>
+<li><strong>Non répétitive</strong> : pas de <code>telephone1</code>, <code>telephone2</code>, <code>telephone3</code> — signal qu'il faut une entité <code>TELEPHONE</code> à part.</li>
+<li><strong>Non calculée</strong> : l'âge se déduit de la date de naissance, on ne le stocke pas. (On le calculera dans un traitement.)</li>
+<li><strong>Mono-valuée</strong> et rattachée à une seule entité — c'est l'enjeu des dépendances fonctionnelles, voir <a href="#mcd-dictionnaire">le dictionnaire des données</a>.</li>
+</ul>
+
+<h2>Propriété portée par une association</h2>
+<p>Certaines propriétés n'appartiennent ni à l'une ni à l'autre entité, mais au <em>lien</em> entre elles. La <code>dateSortie</code> d'un emprunt ne caractérise ni l'adhérent ni l'exemplaire seuls : elle qualifie leur <strong>rencontre</strong>. Elle se porte donc sur l'association <code>Emprunter</code>. Reconnaître ces propriétés-de-lien est l'un des réflexes essentiels de la modélisation.</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p><code>OUVRAGE</code> porte <code>titre</code>, <code>isbn</code>, <code>anneeParution</code>. L'association <code>Emprunter</code> porte <code>dateSortie</code>, <code>dateRetourPrevue</code>, <code>dateRetourEffective</code>. Ce dernier point sera décisif au passage vers le MLD.</p>
+</div>
+`},
+
+{id:"mcd-identifiant",parent:"mcd",num:"2.1.3",title:"Identifiants",kw:"identifiant clé candidate unique souligné discriminant identité",body:`
+<div class="kicker">2.1.3 — MCD</div>
+<h1>Identifiants</h1>
+<p class="lead">L'identifiant est la propriété (ou le groupe de propriétés) qui distingue sans ambiguïté chaque occurrence d'une entité.</p>
+
+<h2>Définition</h2>
+<p>Un <strong>identifiant</strong> garantit l'unicité : deux occurrences différentes ne peuvent partager la même valeur d'identifiant. On le <u>souligne</u> dans le rectangle, en tête de liste. <code><u>numAdherent</u></code> identifie un adhérent.</p>
+<p>Toute entité <em>doit</em> posséder un identifiant. S'il n'en émerge pas naturellement, on en crée un artificiel (un numéro séquentiel) — c'est extrêmement fréquent et parfaitement légitime.</p>
+
+<h2>Identifiant naturel vs artificiel</h2>
+<table>
+<thead><tr><th>Type</th><th>Exemple</th><th>Risque</th></tr></thead>
+<tbody>
+<tr><td>Naturel</td><td>l'ISBN d'un ouvrage</td><td>Peut changer, être absent (vieux livres), ou être réattribué.</td></tr>
+<tr><td>Artificiel (substitut)</td><td><code>numOuvrage</code> auto-incrémenté</td><td>Sans signification métier, mais stable et toujours disponible.</td></tr>
+</tbody>
+</table>
+<p>La pratique moderne privilégie presque toujours un identifiant artificiel stable, l'ISBN devenant alors une propriété ordinaire (éventuellement contrainte « unique »).</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p>On retient des identifiants artificiels : <code>numAdherent</code>, <code>numOuvrage</code>, <code>codeCategorie</code>, <code>numAuteur</code>. Le cas de <code>EXEMPLAIRE</code> est particulier — son identité <em>dépend</em> de l'ouvrage : voir <a href="#mcd-faible">la dépendance d'identification</a>.</p>
+</div>
+`},
+
+{id:"mcd-association",parent:"mcd",num:"2.1.4",title:"Associations",kw:"association relation lien verbe ovale ellipse rôle porteuse",body:`
+<div class="kicker">2.1.4 — MCD</div>
+<h1>Associations</h1>
+<p class="lead">Une association matérialise un lien sémantique entre deux entités (ou plus).</p>
+
+<h2>Définition</h2>
+<p>Une <strong>association</strong> (ou relation) relie des entités et porte un nom, le plus souvent un <em>verbe</em> : <code>Emprunter</code>, <code>Ecrire</code>, <code>Appartenir</code>. On la dessine par une ellipse reliée par des pattes aux entités concernées.</p>
+<p>Le couple entité-verbe-entité forme une phrase : « un <strong>adhérent</strong> <em>emprunte</em> un <strong>exemplaire</strong> ». Si la phrase n'a pas de sens métier, l'association est suspecte.</p>
+
+<h2>Association porteuse de propriétés</h2>
+<p>Une association peut porter ses propres propriétés (les propriétés-de-lien vues précédemment). C'est le signe d'une association qui décrit un <em>fait</em> daté ou quantifié, pas une simple appartenance.</p>
+
+<h2>Le test nom vs verbe</h2>
+<p>Un repère utile, qui annonce le pont vers le DDD : si le lien se nomme naturellement par un <strong>verbe</strong> et porte des données, c'est souvent un <em>fait</em> métier qui mériterait peut-être une existence propre. <code>Emprunter</code> + dates ≈ la notion d'« Emprunt », qui deviendra une table à part entière au niveau logique.</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — les associations</span>
+<p><code>Emprunter</code> (Adhérent ↔ Exemplaire, porteuse de dates), <code>Ecrire</code> (Auteur ↔ Ouvrage), <code>Appartenir</code> (Ouvrage ↔ Catégorie), <code>Posséder</code> (Exemplaire ↔ Ouvrage). Chacune va recevoir des cardinalités qui décideront de son sort au niveau logique.</p>
+</div>
+`},
+
+{id:"mcd-cardinalites",parent:"mcd",num:"2.1.5",title:"Cardinalités",kw:"cardinalité minimale maximale 0 1 n participation obligatoire optionnelle min max couple",body:`
+<div class="kicker">2.1.5 — MCD</div>
+<h1>Cardinalités</h1>
+<p class="lead">Le couple (min, max) sur chaque patte d'une association : la notion la plus dense — et la plus source d'erreurs — du MCD.</p>
+
+<h2>Lecture</h2>
+<p>Sur la patte qui relie une entité E à une association A, le couple <code>(min, max)</code> répond à : <em>« une occurrence de E participe à A au minimum… et au maximum… de fois ? »</em></p>
+<ul>
+<li><strong>min</strong> ∈ {0, 1} — la participation est-elle facultative (0) ou obligatoire (1) ?</li>
+<li><strong>max</strong> ∈ {1, n} — une occurrence participe-t-elle au plus une fois (1) ou plusieurs (n) ?</li>
+</ul>
+
+<table>
+<thead><tr><th>Couple</th><th>Signification</th><th>Exemple médiathèque</th></tr></thead>
+<tbody>
+<tr><td><code>(0,n)</code></td><td>facultatif, plusieurs</td><td>un adhérent peut n'avoir aucun emprunt, ou plusieurs</td></tr>
+<tr><td><code>(1,n)</code></td><td>obligatoire, plusieurs</td><td>un ouvrage est écrit par au moins un auteur</td></tr>
+<tr><td><code>(0,1)</code></td><td>facultatif, au plus un</td><td>un exemplaire est, à un instant t, lié à au plus un emprunt en cours</td></tr>
+<tr><td><code>(1,1)</code></td><td>obligatoire, exactement un</td><td>un exemplaire appartient à exactement un ouvrage</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<span class="tag">Le piège du côté de lecture</span>
+<p>En MERISE, le couple se lit <strong>du côté de l'entité regardée</strong>. C'est l'inverse d'UML, où la multiplicité se note à l'<em>autre</em> bout du lien. Beaucoup d'erreurs viennent de là quand on jongle entre les deux notations — voir <a href="#uml">MERISE vs UML</a>.</p>
+</div>
+
+<figure class="fig">
+<svg viewBox="0 0 720 250" role="img" aria-label="Comment lire un couple de cardinalités (min,max)">
+  <rect class="s-box" x="34" y="44" width="150" height="52" rx="3"/>
+  <text class="s-txt s-bold" x="109" y="75" text-anchor="middle" font-size="13">ADHERENT</text>
+  <path class="s-line" d="M 184 70 H 300"/>
+  <text class="s-card" x="206" y="62">(0,n)</text>
+  <ellipse class="s-assoc" cx="360" cy="70" rx="58" ry="26"/>
+  <text class="s-assoct" x="360" y="75" text-anchor="middle" font-size="12">Emprunter</text>
+  <path class="s-line" d="M 420 70 H 536"/>
+  <text class="s-card" x="470" y="62">(0,n)</text>
+  <rect class="s-box" x="536" y="44" width="150" height="52" rx="3"/>
+  <text class="s-txt s-bold" x="611" y="75" text-anchor="middle" font-size="13">EXEMPLAIRE</text>
+  <text class="s-mut" x="360" y="120" text-anchor="middle" font-size="12">Lecture côté ADHERENT : « un adhérent participe à 0 à n emprunts »</text>
+  <line class="s-line-2" x1="34" y1="146" x2="686" y2="146"/>
+  <rect class="s-accent" x="34" y="166" width="86" height="30" rx="6"/>
+  <text x="77" y="186" text-anchor="middle" style="fill:var(--paper);font-size:12px;font-weight:700">min = 0</text>
+  <text class="s-txt" x="132" y="186" font-size="13"><tspan class="s-bold">participation</tspan> — 0 = facultative · 1 = obligatoire</text>
+  <rect class="s-blue" x="34" y="206" width="86" height="30" rx="6"/>
+  <text x="77" y="226" text-anchor="middle" style="fill:var(--paper);font-size:12px;font-weight:700">max = n</text>
+  <text class="s-txt" x="132" y="226" font-size="13"><tspan class="s-bold">multiplicité</tspan> — 1 = au plus un · n = plusieurs</text>
+</svg>
+<figcaption>Un couple <code>(min,max)</code> se lit du côté de l'entité regardée : le <em>min</em> dit si la participation est obligatoire, le <em>max</em> combien de fois au plus.</figcaption>
+</figure>
+
+<h2>Le max décide tout</h2>
+<p>Le <strong>maximum</strong> de chaque côté détermine la nature de l'association et donc sa transformation logique :</p>
+<ul>
+<li>max = <code>1</code> d'un côté et <code>n</code> de l'autre → relation <em>un-à-plusieurs</em> (c'est une <a href="#mcd-cif">CIF</a>) → clé étrangère ;</li>
+<li>max = <code>n</code> des deux côtés → relation <em>plusieurs-à-plusieurs</em> → table d'association.</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p><code>Posséder</code> : côté Exemplaire <code>(1,1)</code>, côté Ouvrage <code>(1,n)</code> → un-à-plusieurs. <code>Ecrire</code> : <code>(1,n)</code> des deux côtés → plusieurs-à-plusieurs. <code>Emprunter</code> : <code>(0,n)</code> des deux côtés → plusieurs-à-plusieurs porteuse de données.</p>
+</div>
+`},
+
+{id:"mcd-dimensions",parent:"mcd",num:"2.1.6",title:"Dimension des associations",kw:"dimension arité binaire ternaire n-aire réflexive récursive degré patte",body:`
+<div class="kicker">2.1.6 — MCD</div>
+<h1>Dimension (arité) des associations</h1>
+<p class="lead">Le nombre de pattes d'une association — le plus souvent deux, parfois davantage, parfois une entité reliée à elle-même.</p>
+
+<h2>Binaire</h2>
+<p>Le cas standard : deux entités. <code>Adherent — Emprunter — Exemplaire</code>.</p>
+
+<h2>Ternaire et n-aire</h2>
+<p>Trois entités (ou plus) participent <em>simultanément et indissociablement</em> à un même fait. Exemple typique : un <code>ENSEIGNANT</code> enseigne une <code>MATIERE</code> dans une <code>SALLE</code> — si la combinaison des trois est nécessaire pour donner un sens, l'association est ternaire.</p>
+<div class="callout warn">
+<span class="tag">Prudence</span>
+<p>Les associations ternaires sont souvent un piège : beaucoup se décomposent en plusieurs binaires. On ne garde une ternaire que si <em>aucun</em> sous-ensemble de pattes ne suffit à exprimer la règle. Au niveau logique, une n-aire devient une table dont la clé combine les identifiants de toutes les entités participantes.</p>
+</div>
+
+<h2>Réflexive (récursive)</h2>
+<p>Une entité reliée à elle-même, via deux <em>rôles</em> distincts. Exemple : <code>EMPLOYE — encadre — EMPLOYE</code> (chef / subordonné). On nomme les rôles pour lever l'ambiguïté.</p>
+<div class="diagram">
+  <div class="ent"><div class="h">EMPLOYE</div><div class="b"><span class="id">matricule</span><br>nom</div></div>
+  <div class="rel"><span class="card-min">0,n</span><div class="line"></div><div class="oval">Encadre</div><div class="line"></div><span class="card-min">0,1</span></div>
+  <div style="font-size:12px;color:var(--muted);max-width:120px">rôles : <em>chef</em> (0,n) / <em>subordonné</em> (0,1)</div>
+</div>
+`},
+
+{id:"mcd-cif",parent:"mcd",num:"2.1.7",title:"La CIF",kw:"cif contrainte intégrité fonctionnelle dépendance fonctionnelle determine un-à-plusieurs",body:`
+<div class="kicker">2.1.7 — MCD</div>
+<h1>La CIF — Contrainte d'Intégrité Fonctionnelle</h1>
+<p class="lead">Une association un-à-plusieurs exprime, en réalité, une dépendance fonctionnelle : connaître l'un détermine l'autre de façon unique.</p>
+
+<h2>Définition</h2>
+<p>Une <strong>CIF</strong> existe lorsqu'une occurrence d'une entité en <em>détermine au plus une</em> d'une autre. C'est exactement le cas d'une association dont une patte porte un maximum à <code>1</code>. « À un emprunt en cours correspond <em>un seul</em> exemplaire » : il y a CIF de l'emprunt vers l'exemplaire.</p>
+<p>Dit autrement : la CIF est la traduction MERISE d'une <strong>dépendance fonctionnelle</strong> entre entités. Elle ne porte jamais de propriétés (sinon, ce serait un fait à part entière, pas une simple contrainte).</p>
+
+<h2>Pourquoi c'est central</h2>
+<p>La CIF est le pivot du passage au relationnel : <strong>toute CIF devient une clé étrangère</strong>, jamais une table. Repérer les CIF, c'est anticiper les colonnes <code>#</code> du futur schéma.</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p><code>Appartenir</code> (Ouvrage → Catégorie) : un ouvrage appartient à exactement une catégorie → CIF. Au niveau logique, la table <code>OUVRAGE</code> recevra une clé étrangère <code>#codeCategorie</code>. De même <code>Posséder</code> est une CIF de l'exemplaire vers l'ouvrage.</p>
+</div>
+
+<div class="callout note">
+<span class="tag">Vocabulaire</span>
+<p>Certaines variantes de MERISE notent explicitement la CIF par une flèche ou un symbole dédié plutôt que par une association classique. Le concept reste le même : une dépendance fonctionnelle entre entités.</p>
+</div>
+`},
+
+{id:"mcd-faible",parent:"mcd",num:"2.1.8",title:"Dépendance d'identification",kw:"entité faible dépendance identification relative identifiant relatif composé exemplaire",body:`
+<div class="kicker">2.1.8 — MCD</div>
+<h1>Dépendance d'identification (entité faible)</h1>
+<p class="lead">Certaines entités ne peuvent être identifiées qu'à travers une autre : leur identité est <em>relative</em>.</p>
+
+<h2>Le principe</h2>
+<p>Une entité a une <strong>identification relative</strong> quand son identifiant ne suffit pas seul et n'a de sens qu'au sein d'une entité « propriétaire ». Cas d'école : une <code>LIGNE_COMMANDE</code> numérotée 1, 2, 3 <em>à l'intérieur de</em> chaque commande — le numéro de ligne seul ne dit rien.</p>
+<p>On marque la patte de l'association porteuse de cette dépendance (souvent d'un trait particulier selon le formalisme), et l'identifiant de l'entité faible devient <em>composé</em> : son discriminant local + l'identifiant du propriétaire.</p>
+
+<h2>Faut-il un identifiant relatif dans la médiathèque ?</h2>
+<p>On <em>pourrait</em> identifier un exemplaire par « ouvrage + numéro local d'exemplaire » (exemplaire n°3 de tel ouvrage). C'est une identification relative parfaitement valable :</p>
+<div class="diagram">
+  <div class="ent"><div class="h">OUVRAGE</div><div class="b"><span class="id">numOuvrage</span><br>titre</div></div>
+  <div class="rel"><span class="card-min">1,n</span><div class="line"></div><div class="oval">Posséder</div><div class="line"></div><span class="card-min">1,1</span></div>
+  <div class="ent"><div class="h">EXEMPLAIRE</div><div class="b"><span class="id">noLocal</span> (relatif)<br>etat</div></div>
+</div>
+<p>En pratique, on tranche souvent pour un identifiant artificiel global (<code>numExemplaire</code>) qui simplifie le modèle logique. Les deux choix sont défendables ; ce qui compte est de comprendre <em>pourquoi</em> l'exemplaire dépend de l'ouvrage.</p>
+
+<div class="callout note">
+<span class="tag">Écho moderne</span>
+<p>Cette dépendance d'identification préfigure exactement la notion d'<strong>entité interne à un agrégat</strong> en DDD : un objet dont l'identité n'a de sens qu'à l'intérieur de sa racine d'agrégat. Voir <a href="#ddd">MERISE &amp; DDD</a>.</p>
+</div>
+`},
+
+{id:"mcd-heritage",parent:"mcd",num:"2.1.9",title:"Héritage (spécialisation)",kw:"héritage généralisation spécialisation sous-type sur-type is-a merise2 surtype",body:`
+<div class="kicker">2.1.9 — MCD</div>
+<h1>Héritage — généralisation / spécialisation</h1>
+<p class="lead">Apport de MERISE/2 : modéliser qu'une entité est un cas particulier d'une autre (« est-un »).</p>
+
+<h2>Le concept</h2>
+<p>On peut relier un <strong>sur-type</strong> à des <strong>sous-types</strong> qui héritent de ses propriétés tout en ajoutant les leurs. <code>DOCUMENT</code> (générique) se spécialise en <code>LIVRE</code>, <code>CD</code>, <code>DVD</code> : tous ont un titre et une cote, mais le livre a un nombre de pages, le CD une durée.</p>
+
+<h2>Les contraintes de couverture</h2>
+<table>
+<thead><tr><th>Contrainte</th><th>Sens</th></tr></thead>
+<tbody>
+<tr><td>Totale</td><td>toute occurrence du sur-type appartient à au moins un sous-type</td></tr>
+<tr><td>Partielle</td><td>certaines occurrences ne sont dans aucun sous-type</td></tr>
+<tr><td>Exclusive (disjointe)</td><td>une occurrence est dans au plus un sous-type</td></tr>
+<tr><td>Non exclusive</td><td>une occurrence peut relever de plusieurs sous-types</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<span class="tag">Pas natif</span>
+<p>MERISE 1 ne connaissait pas l'héritage : on le simulait par des associations <code>(0,1)</code> vers des entités « extension ». UML, lui, l'intègre nativement et plus richement — c'est l'une des différences les plus visibles entre les deux. Au passage au relationnel, l'héritage offre trois stratégies (table unique, table par sous-type, table par classe concrète) détaillées dans le <a href="#mld-regles">passage MCD → MLD</a>.</p>
+</div>
+`},
+
+{id:"mcd-contraintes",parent:"mcd",num:"2.1.10",title:"Contraintes inter-associations",kw:"contraintes inter-associations partition exclusion inclusion totalité simultanéité CIM symboles",body:`
+<div class="kicker">2.1.10 — MCD</div>
+<h1>Contraintes inter-associations</h1>
+<p class="lead">Quand plusieurs associations sont liées par une règle métier qui ne tient pas dans les seules cardinalités.</p>
+
+<h2>Le besoin</h2>
+<p>Les cardinalités décrivent chaque association isolément. Mais le métier impose parfois des règles <em>entre</em> associations : « un adhérent ne peut pas à la fois réserver et emprunter le même exemplaire ». Ces règles se notent par des symboles entre les pattes concernées.</p>
+
+<table>
+<thead><tr><th>Contrainte</th><th>Symbole usuel</th><th>Sens</th></tr></thead>
+<tbody>
+<tr><td>Exclusion</td><td>X</td><td>les deux liens ne peuvent coexister pour une même occurrence</td></tr>
+<tr><td>Totalité</td><td>T</td><td>au moins un des liens doit exister</td></tr>
+<tr><td>Partition</td><td>+ (ou XT)</td><td>exactement un des liens (exclusion + totalité)</td></tr>
+<tr><td>Inclusion</td><td>I (⊂)</td><td>l'existence d'un lien impose l'autre</td></tr>
+<tr><td>Égalité / simultanéité</td><td>=</td><td>les liens existent toujours ensemble ou pas du tout</td></tr>
+</tbody>
+</table>
+
+<div class="callout note">
+<span class="tag">Limite</span>
+<p>Ces contraintes graphiques ne couvrent jamais toutes les règles de gestion. Les règles complexes (« quota de 5 emprunts ») ne se dessinent pas : elles seront portées par les <a href="#mct">traitements</a> et/ou par des contraintes <code>CHECK</code> et des déclencheurs au niveau <a href="#mpd">physique</a>. C'est précisément pour cela que MERISE modélise aussi les traitements.</p>
+</div>
+`},
+
+/* ---- MLD ---- */
+{id:"mld",parent:"donnees",num:"2.2",title:"Modèle Logique des Données (MLD)",kw:"mld modèle logique données relationnel tables relation schéma",body:`
+<div class="kicker">2.2 — Données</div>
+<h1>Modèle Logique des Données (MLD)</h1>
+<p class="lead">Le MCD traduit dans un modèle de données précis — presque toujours le modèle relationnel. C'est ici qu'apparaissent les tables, les clés primaires et les clés étrangères.</p>
+<p>Le MLD reste indépendant d'un SGBD particulier : il décrit <em>des relations</em> (tables) au sens de Codd, pas encore du SQL Oracle ou PostgreSQL. Sa force : on y passe par des <strong>règles quasi mécaniques</strong> depuis le MCD.</p>
+<ul>
+<li><a href="#mld-relationnel">2.2.1 — Le modèle relationnel</a></li>
+<li><a href="#mld-regles">2.2.2 — Règles de passage MCD → MLD</a></li>
+<li><a href="#mld-normalisation">2.2.3 — Normalisation (formes normales)</a></li>
+</ul>
+`},
+
+{id:"mld-relationnel",parent:"mld",num:"2.2.1",title:"Le modèle relationnel",kw:"relationnel relation table tuple attribut domaine clé primaire étrangère codd notation",body:`
+<div class="kicker">2.2.1 — MLD</div>
+<h1>Le modèle relationnel</h1>
+<p class="lead">La cible logique de MERISE : les données organisées en relations (tables) reliées par des clés.</p>
+
+<h2>Vocabulaire</h2>
+<table>
+<thead><tr><th>Terme relationnel</th><th>Terme courant</th></tr></thead>
+<tbody>
+<tr><td>Relation</td><td>Table</td></tr>
+<tr><td>Tuple</td><td>Ligne / enregistrement</td></tr>
+<tr><td>Attribut</td><td>Colonne</td></tr>
+<tr><td>Clé primaire</td><td>Identifiant unique de la ligne</td></tr>
+<tr><td>Clé étrangère</td><td>Référence vers la clé primaire d'une autre relation</td></tr>
+</tbody>
+</table>
+
+<h2>Notation MERISE du MLD</h2>
+<p>On écrit chaque relation sous forme textuelle : son nom suivi de ses attributs entre parenthèses, la <u>clé primaire soulignée</u> et les <code>#</code> clés étrangères préfixées d'un dièse.</p>
+<pre><code>ADHERENT (<span class="tk">numAdherent</span>, nom, prenom, dateAdhesion)
+OUVRAGE  (<span class="tk">numOuvrage</span>, titre, isbn, anneeParution, #codeCategorie)</code></pre>
+<p class="tc">(numAdherent et numOuvrage soulignés = clés primaires ; #codeCategorie = clé étrangère vers CATEGORIE.)</p>
+
+<div class="callout note">
+<span class="tag">Pourquoi le relationnel</span>
+<p>MERISE est née en même temps que le triomphe des SGBD relationnels. Le modèle de Codd offre une cible mathématiquement saine (l'algèbre relationnelle) et la normalisation comme garde-fou contre les redondances. C'est pourquoi le MLD <em>est</em> presque toujours relationnel — même si rien n'interdit, en théorie, un MLD réseau ou hiérarchique.</p>
+</div>
+`},
+
+{id:"mld-regles",parent:"mld",num:"2.2.2",title:"Règles de passage MCD → MLD",kw:"règles passage transformation mcd mld clé étrangère table association héritage entité",body:`
+<div class="kicker">2.2.2 — MLD</div>
+<h1>Règles de passage MCD → MLD</h1>
+<p class="lead">Le moment où MERISE devient mécanique : un petit jeu de règles transforme tout MCD en schéma relationnel.</p>
+
+<h2>Règle 1 — Les entités</h2>
+<p>Chaque entité devient une <strong>relation</strong>. Son identifiant devient la <strong>clé primaire</strong>, ses propriétés deviennent des attributs.</p>
+
+<h2>Règle 2 — Les CIF (associations un-à-plusieurs)</h2>
+<p>Une association dont une patte est à max <code>1</code> ne crée <em>pas</em> de table. On ajoute une <strong>clé étrangère</strong> dans la relation située du côté <code>(x,1)</code>, pointant vers l'identifiant de l'autre. Les éventuelles propriétés de l'association migrent avec elle.</p>
+<pre><code><span class="tc">-- Posséder (Exemplaire 1,1 — Ouvrage 1,n) : CIF</span>
+EXEMPLAIRE (<span class="tk">numExemplaire</span>, etat, #numOuvrage)</code></pre>
+
+<h2>Règle 3 — Les associations plusieurs-à-plusieurs</h2>
+<p>Une association à max <code>n</code> des deux côtés devient une <strong>relation</strong> à part entière. Sa clé primaire est la <em>concaténation</em> des identifiants des entités reliées (chacun étant aussi clé étrangère). Les propriétés portées deviennent des attributs.</p>
+<pre><code><span class="tc">-- Ecrire (Auteur n,n — Ouvrage n,n)</span>
+ECRIRE (<span class="tk">#numAuteur</span>, <span class="tk">#numOuvrage</span>)
+
+<span class="tc">-- Emprunter (Adherent 0,n — Exemplaire 0,n), porteuse de dates</span>
+EMPRUNT (<span class="tk">#numAdherent</span>, <span class="tk">#numExemplaire</span>, <span class="tk">dateSortie</span>, dateRetourPrevue, dateRetourEffective)</code></pre>
+<p class="tc">La date de sortie entre dans la clé : un même adhérent peut réemprunter le même exemplaire à une autre date.</p>
+
+<h2>Règle 4 — Les associations un-à-un</h2>
+<p>Max <code>1</code> des deux côtés : on fusionne les deux entités, ou on place une clé étrangère (avec contrainte d'unicité) du côté à participation obligatoire.</p>
+
+<h2>Règle 5 — Les n-aires</h2>
+<p>Comme la règle 3, étendue : une table dont la clé combine les identifiants de <em>toutes</em> les entités participantes.</p>
+
+<h2>Règle 6 — L'héritage (3 stratégies)</h2>
+<table>
+<thead><tr><th>Stratégie</th><th>Principe</th><th>Compromis</th></tr></thead>
+<tbody>
+<tr><td>Table unique</td><td>une table pour le sur-type, colonnes de tous les sous-types + discriminant</td><td>simple, mais colonnes souvent nulles</td></tr>
+<tr><td>Une table par sous-type</td><td>chaque sous-type a sa table, liée au sur-type par clé partagée</td><td>propre, mais jointures fréquentes</td></tr>
+<tr><td>Une table par classe concrète</td><td>chaque sous-type duplique les colonnes du sur-type</td><td>pas de jointure, mais redondance du schéma</td></tr>
+</tbody>
+</table>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — le MLD complet</span>
+<pre><code>ADHERENT  (<span class="tk">numAdherent</span>, nom, prenom, dateAdhesion)
+CATEGORIE (<span class="tk">codeCategorie</span>, libelle)
+OUVRAGE   (<span class="tk">numOuvrage</span>, titre, isbn, anneeParution, #codeCategorie)
+EXEMPLAIRE(<span class="tk">numExemplaire</span>, etat, #numOuvrage)
+AUTEUR    (<span class="tk">numAuteur</span>, nomAuteur, prenomAuteur)
+ECRIRE    (<span class="tk">#numAuteur</span>, <span class="tk">#numOuvrage</span>)
+EMPRUNT   (<span class="tk">#numAdherent</span>, <span class="tk">#numExemplaire</span>, <span class="tk">dateSortie</span>,
+           dateRetourPrevue, dateRetourEffective)</code></pre>
+</div>
+`},
+
+{id:"mld-normalisation",parent:"mld",num:"2.2.3",title:"Normalisation (formes normales)",kw:"normalisation formes normales 1nf 2nf 3nf bcnf dépendance redondance anomalie codd",body:`
+<div class="kicker">2.2.3 — MLD</div>
+<h1>Normalisation — les formes normales</h1>
+<p class="lead">Le garde-fou contre la redondance : une série de critères qui garantissent qu'une donnée n'est stockée qu'une fois, au bon endroit.</p>
+
+<h2>Pourquoi normaliser</h2>
+<p>La redondance crée des <strong>anomalies</strong> : de mise à jour (changer une info à dix endroits), d'insertion (impossible d'ajouter X sans Y), de suppression (perdre Z en effaçant W). Les formes normales éliminent ces risques en s'appuyant sur les <a href="#mcd-dictionnaire">dépendances fonctionnelles</a>.</p>
+
+<h2>Les paliers</h2>
+<table>
+<thead><tr><th>Forme</th><th>Exige que…</th></tr></thead>
+<tbody>
+<tr><td><strong>1NF</strong></td><td>tous les attributs sont atomiques ; aucun groupe répétitif.</td></tr>
+<tr><td><strong>2NF</strong></td><td>1NF + aucun attribut non-clé ne dépend d'une <em>partie</em> seulement d'une clé composée.</td></tr>
+<tr><td><strong>3NF</strong></td><td>2NF + aucun attribut non-clé ne dépend d'un autre attribut non-clé (pas de dépendance transitive).</td></tr>
+<tr><td><strong>BCNF</strong></td><td>3NF renforcée : tout déterminant est une clé candidate.</td></tr>
+</tbody>
+</table>
+
+<h2>Exemple de violation de 3NF</h2>
+<pre><code><span class="tc">-- Mauvais : libelle dépend de codeCategorie, pas de numOuvrage</span>
+OUVRAGE (<span class="tk">numOuvrage</span>, titre, codeCategorie, libelleCategorie)
+         <span class="tc">                       └────── dépendance transitive ──────┘</span>
+
+<span class="tc">-- Bon : on isole CATEGORIE</span>
+OUVRAGE   (<span class="tk">numOuvrage</span>, titre, #codeCategorie)
+CATEGORIE (<span class="tk">codeCategorie</span>, libelle)</code></pre>
+
+<div class="callout note">
+<span class="tag">Bonne nouvelle</span>
+<p>Un MCD correctement construit (entités bien découpées, propriétés atomiques, identifiants justes) produit <strong>presque automatiquement</strong> un MLD en 3NF. La normalisation sert surtout de <em>vérification</em> a posteriori, ou de correctif quand on part d'un schéma existant. La dénormalisation volontaire, elle, relève du <a href="#mpd-optim">niveau physique</a>.</p>
+</div>
+`},
+
+/* ---- MPD ---- */
+{id:"mpd",parent:"donnees",num:"2.3",title:"Modèle Physique des Données (MPD)",kw:"mpd modèle physique données sql ddl sgbd types index implémentation",body:`
+<div class="kicker">2.3 — Données</div>
+<h1>Modèle Physique des Données (MPD)</h1>
+<p class="lead">Le dernier palier : le MLD coulé dans un SGBD précis, avec ses types, ses contraintes et ses optimisations.</p>
+<p>Ici tombent enfin les décisions techniques qu'on a soigneusement repoussées : quel SGBD, quels types de colonnes, quels index, faut-il dénormaliser pour la performance. Le MPD est <em>spécifique</em> à une cible (PostgreSQL, Oracle, MySQL…).</p>
+<ul>
+<li><a href="#mpd-sql">2.3.1 — Du MLD au DDL SQL</a></li>
+<li><a href="#mpd-optim">2.3.2 — Index, dénormalisation, optimisation</a></li>
+</ul>
+`},
+
+{id:"mpd-sql",parent:"mpd",num:"2.3.1",title:"Du MLD au DDL SQL",kw:"sql ddl create table contrainte clé primaire étrangère foreign key not null check type",body:`
+<div class="kicker">2.3.1 — MPD</div>
+<h1>Du MLD au DDL SQL</h1>
+<p class="lead">La traduction quasi directe du modèle logique en instructions <code>CREATE TABLE</code>.</p>
+
+<h2>Correspondances</h2>
+<ul>
+<li>relation → <code>CREATE TABLE</code> ;</li>
+<li>clé primaire → <code>PRIMARY KEY</code> ;</li>
+<li>clé étrangère <code>#</code> → <code>FOREIGN KEY … REFERENCES …</code> ;</li>
+<li>identifiant artificiel → colonne auto-incrémentée (<code>GENERATED … AS IDENTITY</code>, <code>SERIAL</code>, <code>AUTO_INCREMENT</code> selon le SGBD) ;</li>
+<li>propriétés → colonnes typées, avec <code>NOT NULL</code> quand la cardinalité minimale était à 1.</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — DDL PostgreSQL</span>
+<pre><code><span class="tk">CREATE TABLE</span> categorie (
+  code_categorie   <span class="tk">SERIAL PRIMARY KEY</span>,
+  libelle          <span class="tk">VARCHAR</span>(60) <span class="tk">NOT NULL</span>
+);
+
+<span class="tk">CREATE TABLE</span> ouvrage (
+  num_ouvrage      <span class="tk">SERIAL PRIMARY KEY</span>,
+  titre            <span class="tk">VARCHAR</span>(200) <span class="tk">NOT NULL</span>,
+  isbn             <span class="tk">VARCHAR</span>(17) <span class="tk">UNIQUE</span>,
+  annee_parution   <span class="tk">SMALLINT</span>,
+  code_categorie   <span class="tk">INT NOT NULL REFERENCES</span> categorie
+);
+
+<span class="tk">CREATE TABLE</span> exemplaire (
+  num_exemplaire   <span class="tk">SERIAL PRIMARY KEY</span>,
+  etat             <span class="tk">VARCHAR</span>(20) <span class="tk">DEFAULT</span> 'bon',
+  num_ouvrage      <span class="tk">INT NOT NULL REFERENCES</span> ouvrage
+);
+
+<span class="tk">CREATE TABLE</span> emprunt (
+  num_adherent       <span class="tk">INT REFERENCES</span> adherent,
+  num_exemplaire     <span class="tk">INT REFERENCES</span> exemplaire,
+  date_sortie        <span class="tk">DATE NOT NULL</span>,
+  date_retour_prevue <span class="tk">DATE NOT NULL</span>,
+  date_retour_effective <span class="tk">DATE</span>,
+  <span class="tk">PRIMARY KEY</span> (num_adherent, num_exemplaire, date_sortie)
+);</code></pre>
+</div>
+
+<div class="callout note">
+<span class="tag">Les règles qui ne se dessinaient pas</span>
+<p>Le quota de 5 emprunts (RG6) n'a aucune place dans le schéma de tables. Il se code soit dans un <a href="#mct">traitement</a> applicatif, soit par une contrainte avancée (déclencheur / trigger). C'est l'illustration parfaite de la frontière entre données et traitements.</p>
+</div>
+`},
+
+{id:"mpd-optim",parent:"mpd",num:"2.3.2",title:"Index, dénormalisation, optimisation",kw:"index dénormalisation optimisation performance partitionnement vue matérialisée physique",body:`
+<div class="kicker">2.3.2 — MPD</div>
+<h1>Index, dénormalisation, optimisation</h1>
+<p class="lead">Les arbitrages de performance — les seuls endroits où l'on accepte, en connaissance de cause, de s'écarter de la pureté logique.</p>
+
+<h2>Index</h2>
+<p>On crée des index sur les colonnes fréquemment filtrées ou jointes — typiquement les clés étrangères et les colonnes de recherche. Un index sur <code>emprunt(date_retour_effective)</code> accélère la requête « emprunts non rendus en retard ». Le coût : l'espace disque et le ralentissement des écritures.</p>
+
+<h2>Dénormalisation</h2>
+<p>On peut <strong>volontairement</strong> réintroduire une redondance pour éviter des jointures coûteuses : stocker un <code>nb_exemplaires_disponibles</code> sur l'ouvrage plutôt que de le recompter à chaque affichage. C'est un choix <em>physique</em>, jamais conceptuel — et il faut alors maintenir la cohérence par des traitements ou des déclencheurs.</p>
+
+<div class="callout warn">
+<span class="tag">Discipline MERISE</span>
+<p>La dénormalisation se décide <strong>au niveau physique uniquement</strong>, et toujours après mesure. Dénormaliser « par anticipation » dans le MCD ou le MLD, c'est trahir la séparation des niveaux : on mélange un problème de performance (physique) avec un problème de sens (conceptuel).</p>
+</div>
+
+<h2>Autres leviers physiques</h2>
+<ul>
+<li>partitionnement des grandes tables (par année d'emprunt, par exemple) ;</li>
+<li>vues matérialisées pour les statistiques ;</li>
+<li>choix fins de types et de tailles (impact stockage et cache).</li>
+</ul>
+`},
+
+/* =========================================================== TRAITEMENTS */
+{id:"traitements",parent:null,num:"3",title:"Axe des Traitements",kw:"traitements dynamique mct mot mopt processus comportement",body:`
+<div class="kicker">Partie 3 — Traitements (dynamique)</div>
+<h1>L'axe des Traitements</h1>
+<p class="lead">La face souvent négligée de MERISE — et pourtant la moitié de la méthode : modéliser ce que le système <em>fait</em> en réaction aux événements.</p>
+<p>Là où l'axe Données décrit la mémoire, l'axe Traitements décrit le comportement. Il suit la même descente d'abstraction : le <em>quoi</em> (MCT), puis le <em>qui/où/quand</em> (MOT), enfin le <em>comment</em> (MOpT).</p>
+<table>
+<thead><tr><th>Modèle</th><th>Niveau</th><th>Répond à</th></tr></thead>
+<tbody>
+<tr><td><a href="#mct">MCT</a></td><td>Conceptuel</td><td>Quelles règles métier, déclenchées par quels événements ?</td></tr>
+<tr><td><a href="#mot">MOT</a></td><td>Organisationnel</td><td>Qui exécute, à quel poste, manuellement ou non, quand ?</td></tr>
+<tr><td><a href="#mopt">MOpT</a></td><td>Opérationnel</td><td>Quels programmes, transactions, écrans ?</td></tr>
+</tbody>
+</table>
+`},
+
+/* ---- MCT ---- */
+{id:"mct",parent:"traitements",num:"3.1",title:"Modèle Conceptuel des Traitements (MCT)",kw:"mct modèle conceptuel traitements événement opération synchronisation règle émission résultat",body:`
+<div class="kicker">3.1 — Traitements</div>
+<h1>Modèle Conceptuel des Traitements (MCT)</h1>
+<p class="lead">Décrire les règles métier comme un enchaînement d'événements et d'opérations, sans rien dire de qui les exécute ni comment.</p>
+
+<h2>Le principe</h2>
+<p>Le MCT ne s'intéresse qu'à la <strong>logique métier pure</strong> : quels stimuli (événements) déclenchent quelles réactions (opérations), et quels nouveaux événements en résultent. Pas d'écran, pas d'acteur, pas d'horaire — tout cela est repoussé au <a href="#mot">MOT</a>.</p>
+
+<div class="diagram" style="flex-direction:column;gap:0;align-items:center">
+  <div class="tag-pill">Événement : « Demande d'emprunt »</div>
+  <div style="font-size:18px;color:var(--muted)">↓</div>
+  <div class="ent" style="min-width:220px"><div class="h">OPÉRATION — Enregistrer l'emprunt</div><div class="b" style="font-family:inherit;text-align:left">vérifier validité adhésion<br>vérifier quota &lt; 5<br>vérifier disponibilité exemplaire</div></div>
+  <div style="font-size:13px;color:var(--muted);margin-top:8px">règles d'émission ↓</div>
+  <div style="display:flex;gap:14px;margin-top:4px"><span class="tag-pill">Emprunt accepté</span><span class="tag-pill">Emprunt refusé</span></div>
+</div>
+
+<h2>Les concepts</h2>
+<ul>
+<li><a href="#mct-evenement">3.1.1 — Événements</a></li>
+<li><a href="#mct-operation">3.1.2 — Opérations</a></li>
+<li><a href="#mct-synchro">3.1.3 — Synchronisation</a></li>
+<li><a href="#mct-emission">3.1.4 — Règles d'émission &amp; résultats</a></li>
+</ul>
+`},
+
+{id:"mct-evenement",parent:"mct",num:"3.1.1",title:"Événements",kw:"événement externe interne temporel déclencheur stimulus message flux",body:`
+<div class="kicker">3.1.1 — MCT</div>
+<h1>Événements</h1>
+<p class="lead">Un événement est un fait qui sollicite le système et déclenche, peut-être, une réaction.</p>
+
+<h2>Typologie</h2>
+<table>
+<thead><tr><th>Type</th><th>Origine</th><th>Exemple</th></tr></thead>
+<tbody>
+<tr><td>Externe</td><td>vient de l'extérieur du domaine</td><td>un adhérent présente un livre à emprunter</td></tr>
+<tr><td>Interne (résultat)</td><td>produit par une opération précédente</td><td>« emprunt accepté » déclenche l'édition du ticket</td></tr>
+<tr><td>Temporel</td><td>l'écoulement du temps</td><td>chaque nuit, détecter les retards</td></tr>
+</tbody>
+</table>
+<p>Un événement transporte souvent des <strong>données</strong> (les informations de la demande d'emprunt) — c'est le lien avec l'axe Données et avec le modèle de <a href="#mcc">communication</a>.</p>
+
+<div class="callout fr">
+<span class="tag">Fil rouge</span>
+<p>Événements de la médiathèque : « demande d'emprunt » (externe), « demande de retour » (externe), « fin de journée » (temporel, pour la détection des retards), « emprunt accepté/refusé » (internes, résultats d'opération).</p>
+</div>
+`},
+
+{id:"mct-operation",parent:"mct",num:"3.1.2",title:"Opérations",kw:"opération action règle gestion ininterrompue traitement unité",body:`
+<div class="kicker">3.1.2 — MCT</div>
+<h1>Opérations</h1>
+<p class="lead">Une opération est un ensemble d'actions exécutées d'un seul tenant, déclenché par un (ou des) événement(s).</p>
+
+<h2>Caractéristiques</h2>
+<ul>
+<li><strong>Ininterrompue</strong> : une fois déclenchée, l'opération va à son terme sans attendre de nouvel événement externe. Si elle doit attendre, c'est qu'il faut la scinder en deux opérations.</li>
+<li><strong>Porteuse des règles de gestion</strong> : c'est ici que vivent les vérifications (« quota &lt; 5 ») que le schéma de données ne pouvait pas exprimer.</li>
+<li><strong>Productrice de résultats</strong> : elle émet un ou plusieurs événements-résultats selon des <a href="#mct-emission">règles d'émission</a>.</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — opération « Enregistrer l'emprunt »</span>
+<p>Déclenchée par « demande d'emprunt ». Actions : vérifier que l'adhésion est valide, que l'adhérent a moins de 5 emprunts en cours, que l'exemplaire est disponible ; si tout est bon, créer l'emprunt et marquer l'exemplaire sorti. Résultats possibles : « emprunt accepté » ou « emprunt refusé ».</p>
+</div>
+`},
+
+{id:"mct-synchro",parent:"mct",num:"3.1.3",title:"Synchronisation",kw:"synchronisation condition et ou booléenne attente plusieurs événements déclenchement",body:`
+<div class="kicker">3.1.3 — MCT</div>
+<h1>Synchronisation</h1>
+<p class="lead">La condition logique qui décide quand une opération attendant plusieurs événements peut effectivement démarrer.</p>
+
+<h2>Le principe</h2>
+<p>Quand une opération dépend de <em>plusieurs</em> événements, on note une <strong>synchronisation</strong> : une expression booléenne (<code>ET</code>, <code>OU</code>) sur la présence des événements attendus. L'opération ne se déclenche que si la condition est vraie.</p>
+<p>Exemple hors médiathèque, classique : valider une commande nécessite « commande saisie » <code>ET</code> « paiement reçu ». Tant que les deux ne sont pas là, l'opération « expédier » reste en attente.</p>
+
+<div class="callout note">
+<span class="tag">À quoi ça sert</span>
+<p>La synchronisation rend explicites les <em>points de rendez-vous</em> du processus : les moments où plusieurs fils d'événements doivent converger. C'est l'équivalent conceptuel d'un « join » dans un diagramme d'activité UML.</p>
+</div>
+`},
+
+{id:"mct-emission",parent:"mct",num:"3.1.4",title:"Règles d'émission & résultats",kw:"règle émission résultat condition sortie événement produit branche alternative",body:`
+<div class="kicker">3.1.4 — MCT</div>
+<h1>Règles d'émission &amp; résultats</h1>
+<p class="lead">À la sortie d'une opération, des conditions déterminent quels événements-résultats sont effectivement émis.</p>
+
+<h2>Le principe</h2>
+<p>Une opération peut produire plusieurs <strong>résultats</strong> selon ce qui s'est passé. Une <strong>règle d'émission</strong> est la condition attachée à chaque résultat. C'est l'équivalent conceptuel d'un branchement.</p>
+<pre><code><span class="tc">Opération « Enregistrer l'emprunt »</span>
+  <span class="tk">SI</span> adhésion valide <span class="tk">ET</span> quota &lt; 5 <span class="tk">ET</span> exemplaire dispo
+     <span class="tk">ALORS</span> émettre « Emprunt accepté »
+  <span class="tk">SINON</span>
+     émettre « Emprunt refusé » (avec motif)</code></pre>
+<p>Un résultat <em>interne</em> peut redevenir l'événement déclencheur d'une autre opération (ex. « Emprunt accepté » → opération « Éditer le ticket »), tissant ainsi l'enchaînement complet du MCT.</p>
+
+<div class="callout note">
+<span class="tag">Bilan du MCT</span>
+<p>Avec ces quatre briques — événements, opérations, synchronisations, règles d'émission — on décrit la totalité de la logique métier <em>sans</em> jamais parler d'organisation. Le <a href="#mot">MOT</a> va maintenant l'incarner dans le réel de l'entreprise.</p>
+</div>
+`},
+
+/* ---- MOT ---- */
+{id:"mot",parent:"traitements",num:"3.2",title:"Modèle Organisationnel des Traitements (MOT)",kw:"mot modèle organisationnel traitements tâche poste acteur manuel automatique interactif procédure temps",body:`
+<div class="kicker">3.2 — Traitements</div>
+<h1>Modèle Organisationnel des Traitements (MOT)</h1>
+<p class="lead">On habille la logique métier d'une organisation : qui fait quoi, à quel poste, manuellement ou par la machine, et quand.</p>
+
+<h2>Les nouvelles questions</h2>
+<p>Le MCT répondait au <em>quoi</em>. Le MOT ajoute le <strong>qui, où, quand et comment (au sens organisationnel)</strong>. Une opération conceptuelle se découpe alors en <strong>tâches</strong>, réparties entre acteurs et automatisme.</p>
+
+<h2>Les attributs d'une tâche</h2>
+<table>
+<thead><tr><th>Dimension</th><th>Valeurs typiques</th></tr></thead>
+<tbody>
+<tr><td>Poste de travail / acteur</td><td>Accueil, Bibliothécaire, Système</td></tr>
+<tr><td>Nature</td><td>manuelle · automatisée · interactive (conversationnelle)</td></tr>
+<tr><td>Temporalité</td><td>temps réel · différé (batch)</td></tr>
+</tbody>
+</table>
+
+<h2>Le tableau de répartition</h2>
+<div class="callout fr">
+<span class="tag">Fil rouge — opération « Enregistrer l'emprunt » organisée</span>
+<table>
+<thead><tr><th>Tâche</th><th>Poste</th><th>Nature</th><th>Temps</th></tr></thead>
+<tbody>
+<tr><td>Scanner la carte et l'exemplaire</td><td>Accueil</td><td>interactive</td><td>temps réel</td></tr>
+<tr><td>Contrôler validité, quota, disponibilité</td><td>Système</td><td>automatisée</td><td>temps réel</td></tr>
+<tr><td>Enregistrer l'emprunt / afficher le refus</td><td>Système</td><td>automatisée</td><td>temps réel</td></tr>
+<tr><td>Remettre le document &amp; le ticket</td><td>Bibliothécaire</td><td>manuelle</td><td>temps réel</td></tr>
+<tr><td>Détecter les retards</td><td>Système</td><td>automatisée</td><td>différé (nuit)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout note">
+<span class="tag">Décision clé</span>
+<p>C'est au MOT que se tranche la frontière <strong>homme / machine</strong> : ce qui sera automatisé deviendra logiciel (le futur MOpT), ce qui reste manuel devient procédure humaine. Une même logique conceptuelle peut donner des MOT très différents selon le degré d'automatisation choisi.</p>
+</div>
+`},
+
+/* ---- MOpT ---- */
+{id:"mopt",parent:"traitements",num:"3.3",title:"Modèle Opérationnel des Traitements (MOpT)",kw:"mopt mpt modèle opérationnel physique traitements programme transaction écran procédure fonctionnelle",body:`
+<div class="kicker">3.3 — Traitements</div>
+<h1>Modèle Opérationnel des Traitements (MOpT)</h1>
+<p class="lead">Le dernier palier des traitements : les tâches automatisées deviennent des unités logicielles concrètes.</p>
+
+<h2>Le contenu</h2>
+<p>Le MOpT (parfois noté MPT, modèle physique des traitements) décrit l'<strong>implémentation</strong> : programmes, transactions, procédures stockées, enchaînement des écrans, appels de services. C'est le pendant « traitements » du <a href="#mpd">MPD</a> côté données.</p>
+
+<h2>Ce qu'on y décide</h2>
+<ul>
+<li>le découpage en modules / fonctions / endpoints ;</li>
+<li>les transactions et leur portée (cohérence, rollback) ;</li>
+<li>l'enchaînement des interfaces utilisateur (le « dialogue ») ;</li>
+<li>la répartition entre client, serveur, batch.</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Lecture moderne</span>
+<p>Dans une application contemporaine, le MOpT correspond grosso modo à la couche service / cas d'usage : par exemple une route <code>POST /emprunts</code> qui orchestre les vérifications du MCT, écrit dans les tables du MPD, et renvoie accepté/refusé. MERISE distinguait nettement ce niveau ; les frameworks d'aujourd'hui le mêlent souvent au reste — d'où l'intérêt de garder en tête la séparation des niveaux.</p>
+</div>
+`},
+
+/* =========================================================== COMMUNICATION */
+{id:"communication",parent:null,num:"4",title:"Axe de la Communication (flux)",kw:"communication mcc flux diagramme contexte acteur échange message domaine",body:`
+<div class="kicker">Partie 4 — Communication</div>
+<h1>L'axe de la Communication</h1>
+<p class="lead">La troisième colonne, souvent le tout premier modèle dessiné : qui échange quoi avec qui, autour du domaine étudié.</p>
+<ul>
+<li><a href="#mcc">4.1 — Le MCC (diagramme des flux)</a></li>
+</ul>
+`},
+
+{id:"mcc",parent:"communication",num:"4.1",title:"Le MCC (diagramme des flux)",kw:"mcc modèle conceptuel communication flux diagramme contexte acteur interne externe domaine périmètre",body:`
+<div class="kicker">4.1 — Communication</div>
+<h1>Le MCC — Modèle Conceptuel de la Communication</h1>
+<p class="lead">Une vue d'ensemble : les acteurs et les flux d'information qui circulent entre eux, avant même de modéliser données et traitements en détail.</p>
+
+<h2>Le principe</h2>
+<p>Le MCC (ou diagramme des flux, ou diagramme de contexte) recense les <strong>acteurs</strong> — internes au domaine ou externes — et les <strong>flux</strong> (messages, documents, informations) qu'ils s'échangent. Il fixe le <em>périmètre</em> de l'étude : ce qui est dans le domaine, ce qui est en dehors.</p>
+
+<div class="diagram" style="gap:18px">
+  <div class="ent" style="min-width:110px"><div class="h">ADHÉRENT</div><div class="b" style="font-family:inherit">acteur externe</div></div>
+  <div class="rel"><span class="card-min">demande d'emprunt →</span><div class="line" style="width:80px"></div><span class="card-min">← ticket / refus</span></div>
+  <div class="ent" style="min-width:130px"><div class="h">MÉDIATHÈQUE</div><div class="b" style="font-family:inherit">domaine étudié</div></div>
+</div>
+<p style="text-align:center;color:var(--muted);font-size:13px;margin-top:-8px">Flux entre un acteur externe et le domaine.</p>
+
+<h2>Pourquoi commencer par là</h2>
+<ul>
+<li>il <strong>cadre le périmètre</strong> et évite de modéliser des choses hors sujet ;</li>
+<li>chaque flux entrant est un futur <a href="#mct-evenement">événement</a> du MCT ;</li>
+<li>chaque flux porte des données qui alimenteront le <a href="#mcd">MCD</a>.</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Le pont entre les axes</span>
+<p>Le MCC est le liant : ses flux deviennent les événements des traitements et les données du modèle de données. C'est souvent par lui que démarre concrètement une étude MERISE, avant de plonger dans le MCD et le MCT.</p>
+</div>
+`},
+
+/* ============================================================== DÉMARCHE */
+{id:"demarche",parent:null,num:"5",title:"Articulation & démarche",kw:"démarche articulation cohérence validation cycle vie merise2 projet",body:`
+<div class="kicker">Partie 5</div>
+<h1>Articulation &amp; démarche</h1>
+<p class="lead">Comment les modèles se valident les uns les autres, comment le projet se déroule, et ce qu'a apporté MERISE/2.</p>
+<ul>
+<li><a href="#validation">5.1 — Cohérence données ↔ traitements</a></li>
+<li><a href="#cycle-vie">5.2 — Le déroulement d'un projet</a></li>
+<li><a href="#merise2">5.3 — MERISE/2</a></li>
+</ul>
+`},
+
+{id:"validation",parent:"demarche",num:"5.1",title:"Cohérence données ↔ traitements",kw:"cohérence validation croisée données traitements vérification quantification accès complétude",body:`
+<div class="kicker">5.1 — Démarche</div>
+<h1>Cohérence données ↔ traitements</h1>
+<p class="lead">Les deux axes ne vivent pas séparément : ils doivent se valider mutuellement à chaque niveau.</p>
+
+<h2>Le contrôle de complétude</h2>
+<p>La question fondamentale : <em>« toute donnée du MCD est-elle créée, lue, modifiée ou supprimée par au moins un traitement, et tout traitement trouve-t-il les données dont il a besoin ? »</em></p>
+<ul>
+<li>une entité que <strong>aucun</strong> traitement ne manipule est suspecte (donnée morte) ;</li>
+<li>un traitement qui réclame une donnée <strong>absente</strong> du MCD révèle un trou dans le modèle de données.</li>
+</ul>
+
+<div class="callout fr">
+<span class="tag">Fil rouge — contrôle croisé</span>
+<p>L'opération « Enregistrer l'emprunt » lit <code>ADHERENT</code> (validité), compte les <code>EMPRUNT</code> en cours (quota), lit <code>EXEMPLAIRE</code> (disponibilité) et crée un <code>EMPRUNT</code>. Toutes ces entités existent au MCD : le modèle de données est <em>suffisant</em> pour ce traitement. Inversement, l'entité <code>AUTEUR</code> n'est lue par aucun traitement de prêt — ce qui est normal, elle sert à la recherche au catalogue, un autre processus.</p>
+</div>
+
+<div class="callout note">
+<span class="tag">Outil classique</span>
+<p>On formalise ce contrôle par une <strong>matrice CRUD</strong> (entités en lignes, traitements en colonnes, marquant Create/Read/Update/Delete). Une ligne vide ou une colonne incohérente saute aux yeux.</p>
+</div>
+`},
+
+{id:"cycle-vie",parent:"demarche",num:"5.2",title:"Le déroulement d'un projet",kw:"cycle vie projet schéma directeur étude préalable détaillée réalisation maintenance livrables",body:`
+<div class="kicker">5.2 — Démarche</div>
+<h1>Le déroulement d'un projet MERISE</h1>
+<p class="lead">Quels modèles produit-on, et dans quel ordre, du cadrage stratégique à la maintenance.</p>
+
+<h2>Enchaînement type</h2>
+<table>
+<thead><tr><th>Étape</th><th>Livrables MERISE</th></tr></thead>
+<tbody>
+<tr><td>Schéma directeur</td><td>découpage en domaines, priorités</td></tr>
+<tr><td>Étude préalable</td><td>MCC, premiers MCD/MCT, scénarios d'organisation</td></tr>
+<tr><td>Étude détaillée</td><td>MCD/MCT validés, MOT, maquettes, contrôle de cohérence</td></tr>
+<tr><td>Étude technique</td><td>MLD → MPD, MOpT, architecture</td></tr>
+<tr><td>Réalisation</td><td>code, tests, jeux d'essai</td></tr>
+<tr><td>Mise en œuvre</td><td>reprise de données, formation, bascule</td></tr>
+<tr><td>Maintenance</td><td>évolutions, retour aux modèles concernés</td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<span class="tag">Lecture critique</span>
+<p>Ce déroulement est foncièrement <strong>séquentiel</strong> (proche du cycle en V) : conçu pour de grands systèmes de gestion stables, il s'accommode mal de l'itératif agile. C'est l'une des raisons du recul de MERISE comme <em>démarche projet</em>, alors même que ses <em>formalismes</em> (surtout le MCD) restent très utilisés. Voir <a href="#aujourdhui">La place de MERISE aujourd'hui</a>.</p>
+</div>
+`},
+
+{id:"merise2",parent:"demarche",num:"5.3",title:"MERISE/2",kw:"merise2 merise/2 deuxième génération héritage contraintes objet extension années 90",body:`
+<div class="kicker">5.3 — Démarche</div>
+<h1>MERISE/2</h1>
+<p class="lead">Une seconde génération, dans les années 1990, qui enrichit le formalisme face à la montée de l'objet.</p>
+
+<h2>Les apports</h2>
+<ul>
+<li><strong>Héritage</strong> (généralisation / spécialisation) intégré au MCD — voir <a href="#mcd-heritage">la page dédiée</a> ;</li>
+<li>un appareillage plus riche de <strong>contraintes</strong> inter-entités et inter-associations ;</li>
+<li>une attention accrue aux <strong>cycles de vie des objets</strong> (états et transitions), rapprochant MERISE des idées objet ;</li>
+<li>un meilleur outillage CASE (génération de code et de schémas).</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Contexte</span>
+<p>MERISE/2 répond à la concurrence des méthodes objet (OMT, Booch) qui convergeront vers UML en 1997. Dans les faits, beaucoup d'organisations passeront directement de MERISE 1 à UML, sans transiter par MERISE/2 — ce qui explique que le MCD « classique » reste la version la plus enseignée.</p>
+</div>
+`},
+
+/* ============================================================ PONTS MODERNES */
+{id:"ponts",parent:null,num:"6",title:"Ponts vers les pratiques modernes",kw:"ponts modernes uml sql orm ddd comparaison actualité héritage",body:`
+<div class="kicker">Partie 6 — Ponts modernes</div>
+<h1>Ponts vers les pratiques modernes</h1>
+<p class="lead">Ce que MERISE devient quand on le confronte aux outils et méthodes d'aujourd'hui — et ce qu'il en reste de vivant.</p>
+<ul>
+<li><a href="#uml">6.1 — MERISE vs UML</a></li>
+<li><a href="#er-chen">6.2 — MERISE vs Entité-Association (Chen)</a></li>
+<li><a href="#sql-orm">6.3 — Du MLD au SQL et à l'ORM</a></li>
+<li><a href="#ddd">6.4 — MERISE &amp; Domain-Driven Design</a></li>
+<li><a href="#aujourdhui">6.5 — La place de MERISE aujourd'hui</a></li>
+</ul>
+`},
+
+{id:"uml",parent:"ponts",num:"6.1",title:"MERISE vs UML",kw:"uml diagramme classes multiplicité cardinalité activité séquence état objet comparaison méthode notation",body:`
+<div class="kicker">6.1 — Ponts modernes</div>
+<h1>MERISE vs UML</h1>
+<p class="lead">Deux visions du monde : MERISE sépare données et traitements ; UML les réunit dans des objets. Comprendre la traduction évite bien des confusions.</p>
+
+<h2>Correspondance des modèles</h2>
+<table>
+<thead><tr><th>MERISE</th><th>UML (équivalent approché)</th></tr></thead>
+<tbody>
+<tr><td>MCD</td><td>Diagramme de classes (sans les méthodes)</td></tr>
+<tr><td>MCT / MOT</td><td>Diagrammes d'activité, de séquence, d'états</td></tr>
+<tr><td>MCC (flux)</td><td>Diagramme de cas d'utilisation / de contexte</td></tr>
+<tr><td>Cycle de vie d'un objet</td><td>Diagramme d'états-transitions</td></tr>
+</tbody>
+</table>
+
+<h2>Le piège des cardinalités</h2>
+<div class="callout warn">
+<span class="tag">Sens de lecture inversé</span>
+<p>En MERISE, le couple <code>(min,max)</code> est placé <strong>du côté de l'entité décrite</strong> et la décrit. En UML, la multiplicité est placée à <strong>l'autre extrémité</strong> de l'association. Conséquence : un « un-à-plusieurs » a ses chiffres aux endroits opposés selon la notation. Erreur classique quand on convertit un schéma de l'une vers l'autre.</p>
+</div>
+
+<h2>La différence de fond</h2>
+<p>UML est <strong>orienté objet</strong> : une classe encapsule des attributs <em>et</em> des opérations. MERISE pose l'inverse — les données d'un côté, les traitements de l'autre. Le MCD est donc plus proche d'un <em>schéma de persistance</em> que d'un véritable modèle de domaine comportemental. UML offre aussi nativement l'héritage, l'agrégation et la composition, que MERISE 1 ne connaît pas.</p>
+`},
+
+{id:"er-chen",parent:"ponts",num:"6.2",title:"MERISE vs Entité-Association (Chen)",kw:"chen entité association entity relationship er barker crow foot notation cardinalité diamant",body:`
+<div class="kicker">6.2 — Ponts modernes</div>
+<h1>MERISE vs Entité-Association (Chen, Barker…)</h1>
+<p class="lead">MERISE est une variante du modèle entité-association de Chen ; les notations anglo-saxonnes ont évolué différemment.</p>
+
+<h2>Trois familles de notation</h2>
+<table>
+<thead><tr><th>Notation</th><th>Cardinalités</th><th>Particularité</th></tr></thead>
+<tbody>
+<tr><td>MERISE</td><td>couple <code>(min,max)</code> côté entité</td><td>associations en ellipses ; min explicite</td></tr>
+<tr><td>Chen (1976)</td><td>un cardinal (1 / N) côté opposé</td><td>relations en losanges (diamants)</td></tr>
+<tr><td>Crow's Foot / Barker</td><td>symboles « patte d'oie »</td><td>dominante dans les outils anglo-saxons et SQL</td></tr>
+</tbody>
+</table>
+
+<h2>Ce que MERISE apporte de plus</h2>
+<p>Le <strong>minimum</strong> de la cardinalité MERISE encode la participation obligatoire/facultative — une information que la notation de Chen exprime moins directement. En contrepartie, la « patte d'oie » est plus compacte et s'est imposée dans les outils de modélisation de bases de données du marché.</p>
+
+<div class="callout note">
+<span class="tag">En pratique</span>
+<p>Les concepts sont équivalents : entités, associations, attributs, cardinalités. Savoir lire les trois notations permet de naviguer entre un cours français (MERISE), un manuel universitaire (Chen) et un outil comme un modeleur SQL (Crow's Foot) sans se tromper sur le sens des chiffres.</p>
+</div>
+`},
+
+{id:"sql-orm",parent:"ponts",num:"6.3",title:"Du MLD au SQL et à l'ORM",kw:"sql orm prisma sqlalchemy jpa entity mapping migration schéma persistence drizzle typescript",body:`
+<div class="kicker">6.3 — Ponts modernes</div>
+<h1>Du MLD au SQL et à l'ORM</h1>
+<p class="lead">Le MLD relationnel se prolonge directement dans les outils de persistance contemporains.</p>
+
+<h2>Une chaîne continue</h2>
+<p>MCD → MLD → MPD → schéma SQL → <strong>entités d'ORM</strong>. Un ORM (Prisma, SQLAlchemy, JPA/Hibernate, Drizzle…) projette les tables du MLD en objets/classes du langage. Les relations un-à-plusieurs deviennent des références ; les plusieurs-à-plusieurs, des collections via table de jointure — exactement les règles de passage du MLD.</p>
+
+<pre><code><span class="tc">// Schéma Prisma dérivé du MLD de la médiathèque</span>
+<span class="tk">model</span> Ouvrage {
+  numOuvrage   Int        <span class="tk">@id @default</span>(autoincrement())
+  titre        String
+  categorie    Categorie  <span class="tk">@relation</span>(fields: [codeCategorie], references: [codeCategorie])
+  codeCategorie Int
+  exemplaires  Exemplaire[]
+}</code></pre>
+
+<div class="callout note">
+<span class="tag">L'écart à connaître</span>
+<p>Un ORM tend à présenter les relations « à l'envers » d'un MCD pur (orienté navigation objet), et brouille la frontière données/traitements en mettant de la logique dans les modèles. La <strong>discipline MERISE</strong> reste utile en amont : concevoir d'abord un MCD/MLD propre, puis le mapper, donne presque toujours un schéma plus sain que de laisser l'ORM dicter la structure. La normalisation, elle, ne se délègue pas à l'outil.</p>
+</div>
+`},
+
+{id:"ddd",parent:"ponts",num:"6.4",title:"MERISE & Domain-Driven Design",kw:"ddd domain driven design agrégat entité value object bounded context ubiquitous language anemic invariant racine",body:`
+<div class="kicker">6.4 — Ponts modernes</div>
+<h1>MERISE &amp; Domain-Driven Design</h1>
+<p class="lead">Deux manières opposées de modéliser le domaine — et c'est précisément en les opposant qu'on comprend le mieux chacune.</p>
+
+<h2>La divergence fondatrice</h2>
+<p>MERISE <strong>sépare</strong> données et traitements. Le DDD fait l'inverse : il <strong>encapsule</strong> données et comportement dans les mêmes objets du domaine, porteurs de leurs invariants. Un MCD « pur » mène naturellement à ce que le DDD appelle un <em>modèle anémique</em> — des structures de données sans comportement, la logique vivant ailleurs (dans les traitements MERISE).</p>
+
+<h2>Correspondances de concepts</h2>
+<table>
+<thead><tr><th>MERISE</th><th>DDD</th><th>Nuance</th></tr></thead>
+<tbody>
+<tr><td>Entité (avec identifiant)</td><td>Entity</td><td>même idée d'identité durable</td></tr>
+<tr><td>Propriété / objet sans identité propre</td><td>Value Object</td><td>le DDD en fait un concept de premier plan</td></tr>
+<tr><td><a href="#mcd-faible">Dépendance d'identification</a></td><td>Entité interne à un agrégat</td><td>identité relative à une racine</td></tr>
+<tr><td>CIF / contraintes</td><td>Invariants d'agrégat</td><td>DDD : la racine garantit la cohérence</td></tr>
+<tr><td>Dictionnaire des données</td><td>Ubiquitous Language</td><td>vocabulaire partagé métier/technique</td></tr>
+<tr><td>Le MCD unique de l'entreprise</td><td>Bounded Context (pluriel)</td><td><strong>différence majeure</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout warn">
+<span class="tag">Le point qui compte le plus</span>
+<p>MERISE vise un <strong>schéma conceptuel unique</strong> et cohérent pour tout le domaine de l'entreprise. Le DDD soutient l'inverse : plusieurs <strong>bounded contexts</strong>, chacun avec son propre modèle, le même mot pouvant désigner des choses différentes selon le contexte (un « adhérent » au prêt n'est pas le même objet qu'au module de cotisations). C'est l'opposition entre <em>modèle d'entreprise intégré</em> et <em>modèles bornés fédérés</em> — au cœur des débats d'architecture actuels (monolithe modulaire, microservices).</p>
+</div>
+
+<div class="callout note">
+<span class="tag">Ce qui reste précieux</span>
+<p>Le réflexe MERISE — distinguer une donnée stable d'un traitement volatil, repérer les dépendances fonctionnelles, normaliser — garde toute sa valeur pour concevoir la <em>persistance</em> derrière un modèle DDD. Les deux approches ne s'excluent pas : on peut concevoir un domaine riche en DDD <em>et</em> projeter sa persistance sur un schéma relationnel sain pensé à la MERISE.</p>
+</div>
+`},
+
+{id:"aujourdhui",parent:"ponts",num:"6.5",title:"La place de MERISE aujourd'hui",kw:"aujourd'hui actualité pertinence héritage enseignement france bts iut nosql agile pédagogie",body:`
+<div class="kicker">6.5 — Ponts modernes</div>
+<h1>La place de MERISE aujourd'hui</h1>
+<p class="lead">Méthode datée comme démarche projet, mais formalisme étonnamment vivace — surtout pour qui conçoit des bases relationnelles.</p>
+
+<h2>Ce qui a vieilli</h2>
+<ul>
+<li>la <strong>démarche séquentielle</strong> (proche du cycle en V) cadre mal avec l'agilité et l'itératif ;</li>
+<li>l'<strong>orientation objet</strong> et UML ont absorbé une partie de son terrain à l'international ;</li>
+<li>les modèles <strong>NoSQL</strong> et l'architecture <strong>orientée événements</strong> s'accommodent mal d'un schéma relationnel normalisé unique.</li>
+</ul>
+
+<h2>Ce qui reste vivant</h2>
+<ul>
+<li>le <strong>MCD</strong> demeure l'un des meilleurs outils pédagogiques pour apprendre à modéliser, et un excellent support de dialogue métier ;</li>
+<li>les <strong>règles de passage</strong> MCD → relationnel → SQL sont toujours exactes et utilisées quotidiennement ;</li>
+<li>la <strong>normalisation</strong> est un acquis intemporel de la conception de bases ;</li>
+<li>en France, MERISE structure encore l'enseignement (BTS SIO, BUT informatique, titres professionnels comme le CDA).</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Conclusion</span>
+<p>On gagne à voir MERISE non comme une méthode à appliquer telle quelle, mais comme une <strong>école de la rigueur conceptuelle</strong> : séparer le sens de la technique, repousser les décisions d'implémentation, valider chaque niveau. Ces réflexes survivent à la méthode et nourrissent directement les pratiques d'architecture modernes — du MLD relationnel jusqu'aux frontières des bounded contexts.</p>
+</div>
+`},
+
+/* ============================================================== ANNEXES */
+{id:"annexes",parent:null,num:"7",title:"Annexes",kw:"annexes glossaire sources bibliographie références",body:`
+<div class="kicker">Partie 7</div>
+<h1>Annexes</h1>
+<ul>
+<li><a href="#glossaire">7.1 — Glossaire</a></li>
+<li><a href="#sources">7.2 — Sources &amp; bibliographie</a></li>
+</ul>
+`},
+
+{id:"glossaire",parent:"annexes",num:"7.1",title:"Glossaire",kw:"glossaire définitions sigles mcd mld mpd mct mot cif lexique",body:`
+<div class="kicker">7.1 — Annexes</div>
+<h1>Glossaire</h1>
+<table>
+<thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+<tbody>
+<tr><td>Association</td><td>Lien sémantique entre entités, nommé par un verbe, qualifié de cardinalités.</td></tr>
+<tr><td>Cardinalité</td><td>Couple (min, max) indiquant combien de fois une occurrence d'entité participe à une association.</td></tr>
+<tr><td>CIF</td><td>Contrainte d'Intégrité Fonctionnelle : dépendance un-à-plusieurs ; devient une clé étrangère.</td></tr>
+<tr><td>Entité</td><td>Catégorie de choses du réel ayant une existence propre et un identifiant.</td></tr>
+<tr><td>Identifiant</td><td>Propriété(s) distinguant de façon unique chaque occurrence ; devient clé primaire.</td></tr>
+<tr><td>MCC</td><td>Modèle Conceptuel de la Communication : acteurs et flux d'information.</td></tr>
+<tr><td>MCD / MLD / MPD</td><td>Modèles des données : Conceptuel / Logique / Physique.</td></tr>
+<tr><td>MCT / MOT / MOpT</td><td>Modèles des traitements : Conceptuel / Organisationnel / Opérationnel.</td></tr>
+<tr><td>Occurrence</td><td>Élément particulier d'une entité (une ligne réelle).</td></tr>
+<tr><td>Propriété</td><td>Donnée élémentaire et atomique attachée à une entité ou une association.</td></tr>
+<tr><td>Normalisation</td><td>Mise en formes normales (1NF→BCNF) pour éliminer les redondances.</td></tr>
+<tr><td>Synchronisation</td><td>Condition booléenne déclenchant une opération attendant plusieurs événements.</td></tr>
+</tbody>
+</table>
+`},
+
+{id:"sources",parent:"annexes",num:"7.2",title:"Sources & bibliographie",kw:"sources bibliographie références tardieu rochfeld colletti chen codd livres",body:`
+<div class="kicker">7.2 — Annexes</div>
+<h1>Sources &amp; bibliographie</h1>
+
+<h2>Textes fondateurs</h2>
+<ul>
+<li>H. Tardieu, A. Rochfeld, R. Colletti — <em>La méthode MERISE. Tome 1 : Principes et outils</em> (Les Éditions d'Organisation). L'ouvrage canonique.</li>
+<li>H. Tardieu, A. Rochfeld, R. Colletti et al. — <em>La méthode MERISE. Tome 2 : Démarche et pratiques</em>.</li>
+<li>D. Nanci, B. Espinasse — <em>Ingénierie des systèmes d'information : MERISE deuxième génration (MERISE/2)</em>. Référence pour les extensions des années 1990.</li>
+</ul>
+
+<h2>Socle théorique</h2>
+<ul>
+<li>P. P. Chen — <em>The Entity-Relationship Model: Toward a Unified View of Data</em> (1976). L'origine du modèle entité-association.</li>
+<li>E. F. Codd — <em>A Relational Model of Data for Large Shared Data Banks</em> (1970). Le modèle relationnel et les bases de la normalisation.</li>
+<li>J.-L. Le Moigne — <em>La théorie du système général</em>. La pensée systémique sous-jacente.</li>
+</ul>
+
+<h2>Pour les ponts modernes</h2>
+<ul>
+<li>E. Evans — <em>Domain-Driven Design</em> (2003). Agrégats, value objects, bounded contexts, ubiquitous language.</li>
+<li>OMG — <em>Unified Modeling Language (UML) Specification</em>. Pour la comparaison des notations.</li>
+</ul>
+
+<div class="callout note">
+<span class="tag">Note méthodologique</span>
+<p>Ce document est un support de formation synthétique. Les définitions reflètent l'usage courant de MERISE tel qu'enseigné en France ; les formalismes graphiques connaissent des variantes selon les ouvrages et les outils. En cas de doute sur une notation précise, se référer au tome 1 de Tardieu-Rochfeld-Colletti, qui fait autorité.</p>
+</div>
+`}
+
+];
+
+/* =========================================================================
+   MOTEUR — arbre, routing par hash, fil d'Ariane, recherche, thème
+   ========================================================================= */
+const byId = Object.fromEntries(NODES.map(n => [n.id, n]));
+const childrenOf = id => NODES.filter(n => n.parent === id);
+const ROOTS = childrenOf(null);
+
+/* ---- rendu de l'arbre ---- */
+function buildTree(){
+  const tree = document.getElementById('tree');
+  function ul(nodes, lvl){
+    const u = document.createElement('ul');
+    nodes.forEach(n => {
+      const li = document.createElement('li');
+      li.className = 'lvl'+lvl;
+      const row = document.createElement('div'); row.className='row';
+      const kids = childrenOf(n.id);
+      const tog = document.createElement('button');
+      tog.className = 'tog'+(kids.length? '' : ' leaf');
+      tog.textContent = '▶';
+      const a = document.createElement('a');
+      a.className='item'; a.href='#'+n.id; a.dataset.id=n.id;
+      a.innerHTML = (n.num? '<span class="n">'+n.num+'</span>':'') + n.title;
+      row.appendChild(tog); row.appendChild(a);
+      li.appendChild(row);
+      if(kids.length){
+        const c = document.createElement('div'); c.className='children';
+        c.appendChild(ul(kids, lvl+1));
+        li.appendChild(c);
+        tog.addEventListener('click', e=>{
+          e.preventDefault();
+          c.classList.toggle('open');
+          tog.classList.toggle('open');
+        });
+      }
+      u.appendChild(li);
+    });
+    return u;
+  }
+  tree.appendChild(ul(ROOTS, 1));
+}
+
+/* ---- chaîne des ancêtres ---- */
+function ancestry(id){
+  const chain=[]; let cur=byId[id];
+  while(cur){ chain.unshift(cur); cur = cur.parent? byId[cur.parent] : null; }
+  return chain;
+}
+
+/* ---- rendu d'un nœud ---- */
+function renderNode(id){
+  const node = byId[id] || byId['home'];
+  const art = document.getElementById('article');
+  art.innerHTML = node.body;
+
+  /* fil d'Ariane */
+  const cr = document.getElementById('crumbs');
+  cr.innerHTML='';
+  const chain = ancestry(node.id);
+  const homeA=document.createElement('a'); homeA.href='#home'; homeA.textContent='MERISE';
+  cr.appendChild(homeA);
+  chain.forEach((n,i)=>{
+    if(n.id==='home') return;
+    const sep=document.createElement('span'); sep.className='sep'; sep.textContent='›'; cr.appendChild(sep);
+    if(i===chain.length-1){ const s=document.createElement('span'); s.className='cur'; s.textContent=n.title; cr.appendChild(s);}
+    else { const a=document.createElement('a'); a.href='#'+n.id; a.textContent=n.title; cr.appendChild(a);}
+  });
+
+  /* surlignage + ouverture des ancêtres dans l'arbre */
+  document.querySelectorAll('nav.tree a.item').forEach(a=>a.classList.remove('active'));
+  const active = document.querySelector('nav.tree a.item[data-id="'+node.id+'"]');
+  if(active){
+    active.classList.add('active');
+    let li = active.closest('li');
+    while(li){
+      const childrenBox = li.querySelector(':scope > .children');
+      const tog = li.querySelector(':scope > .row > .tog');
+      const parentBox = li.parentElement.closest('.children');
+      if(parentBox){ parentBox.classList.add('open');
+        const ptog = parentBox.parentElement.querySelector(':scope > .row > .tog');
+        if(ptog) ptog.classList.add('open');
+      }
+      li = li.parentElement.closest('li');
+    }
+    active.scrollIntoView({block:'nearest'});
+  }
+
+  /* pager prev/next (parcours linéaire en profondeur) */
+  buildPager(node.id);
+
+  /* fermer le menu mobile */
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('scrim').classList.remove('show');
+  window.scrollTo(0,0);
+  document.querySelector('.main').scrollTop=0;
+}
+
+/* ---- ordre linéaire (DFS) pour prev/next ---- */
+function linearOrder(){
+  const order=[];
+  (function walk(nodes){ nodes.forEach(n=>{ order.push(n.id); walk(childrenOf(n.id)); }); })(ROOTS);
+  return order;
+}
+const LINEAR = linearOrder();
+function buildPager(id){
+  const i = LINEAR.indexOf(id);
+  const prev = i>0? byId[LINEAR[i-1]] : null;
+  const next = i<LINEAR.length-1? byId[LINEAR[i+1]] : null;
+  const pager = document.createElement('div'); pager.className='pager';
+  pager.innerHTML =
+    (prev? '<a href="#'+prev.id+'"><div class="lbl">‹ Précédent</div><div class="ttl">'+prev.title+'</div></a>' : '<a class="empty"></a>') +
+    (next? '<a class="next" href="#'+next.id+'"><div class="lbl">Suivant ›</div><div class="ttl">'+next.title+'</div></a>' : '<a class="empty"></a>');
+  document.getElementById('article').appendChild(pager);
+}
+
+/* ---- recherche ---- */
+function stripHtml(h){ const d=document.createElement('div'); d.innerHTML=h; return d.textContent||''; }
+const SEARCHDATA = NODES.map(n=>({id:n.id,title:n.title,num:n.num,crumb:ancestry(n.id).map(a=>a.title).filter(t=>t!=='Introduction').join(' › '),text:(n.title+' '+(n.kw||'')+' '+stripHtml(n.body)).toLowerCase()}));
+function runSearch(q){
+  const box=document.getElementById('searchResults');
+  q=q.trim().toLowerCase();
+  if(!q){ box.innerHTML=''; return; }
+  const terms=q.split(/\s+/);
+  const hits=SEARCHDATA.filter(d=>terms.every(t=>d.text.includes(t))).slice(0,12);
+  if(!hits.length){ box.innerHTML='<li class="no-res">Aucun résultat</li>'; return; }
+  box.innerHTML = hits.map(h=>{
+    let title=h.title;
+    terms.forEach(t=>{ if(t.length>1){ const re=new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'); title=title.replace(re,'<mark>$1</mark>'); }});
+    return '<li><a href="#'+h.id+'">'+title+(h.crumb? '<span class="crumb">'+h.crumb+'</span>':'')+'</a></li>';
+  }).join('');
+}
+
+/* ---- thème ---- */
+function initTheme(){
+  const sys = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.setAttribute('data-theme', sys? 'dark':'light');
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', cur==='dark'?'light':'dark');
+}
+
+/* ---- routing : interception des clics (pas de navigation réelle, ni dans
+   l'iframe sandboxée de claude.ai, ni en file://) + synchro URL best-effort ---- */
+function navigate(id){
+  if(!byId[id]) id='home';
+  renderNode(id);
+  try{ history.pushState({id:id}, '', '#'+id); }catch(e){ /* file:// strict : on ignore */ }
+}
+function route(){
+  const id=(location.hash||'#home').slice(1);
+  renderNode(byId[id]? id : 'home');
+}
+document.addEventListener('click', e=>{
+  const a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if(a){ e.preventDefault(); navigate(a.getAttribute('href').slice(1)); }
+});
+window.addEventListener('popstate', route);
+document.addEventListener('DOMContentLoaded', ()=>{
+  initTheme();
+  buildTree();
+  route();
+  document.getElementById('themeBtn').addEventListener('click', toggleTheme);
+  const search=document.getElementById('search');
+  search.addEventListener('input', e=>runSearch(e.target.value));
+  document.getElementById('menuBtn').addEventListener('click', ()=>{
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('scrim').classList.toggle('show');
+  });
+  document.getElementById('scrim').addEventListener('click', ()=>{
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('scrim').classList.remove('show');
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='/' && document.activeElement!==search){ e.preventDefault(); search.focus(); }
+    if(e.key==='Escape'){ search.value=''; runSearch(''); search.blur(); }
+  });
+});
+</script>
+</body>
+</html>
