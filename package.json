@@ -1,0 +1,24 @@
+{
+  "name": "zythologue",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
+  "scripts": {
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:down:volumes": "docker compose down -v",
+    "docker:start": "docker compose start",
+    "docker:stop": "docker compose stop",
+    "docker:restart": "docker compose restart",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose ps",
+    "docker:config": "docker compose config",
+    "db:schema": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /sql/01_create_schema.sql\"",
+    "db:seed": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /sql/02_seed.sql\"",
+    "db:reset": "pnpm db:schema && pnpm db:seed",
+    "db:init": "docker compose up -d --wait && pnpm db:reset",
+    "db:psql": "docker compose exec postgres sh -c \"psql -U $POSTGRES_USER -d $POSTGRES_DB\"",
+    "gen:mcd": "pwsh -NoProfile -File scripts/generate-diagrams.ps1",
+    "gen:mcd:bash": "bash scripts/generate-diagrams.sh"
+  }
+}

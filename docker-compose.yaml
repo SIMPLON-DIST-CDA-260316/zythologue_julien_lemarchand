@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: zythologue-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-zythologue}
+      POSTGRES_USER: ${POSTGRES_USER:-zythologue}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zythologue}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres18_cluster:/var/lib/postgresql
+      - ./sql:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zythologue} -d ${POSTGRES_DB:-zythologue}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres18_cluster:

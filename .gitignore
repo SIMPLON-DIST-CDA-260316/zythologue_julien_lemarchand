@@ -1,0 +1,10 @@
+# Environnement local
+.env
+
+# Sorties générées (Mocodo)
+docs/generated/
+docs/diagrams/*.excalidraw
+
+# Outillage / éditeur
+.vscode/
+skills-lock.json
