@@ -101,3 +101,9 @@ Valeurs par défaut (modifiables dans `.env`) :
 
 > `01_create_schema.sql` commence par un `DROP` des tables : il est **rejouable** sans erreur.
 
+## Correction par pair
+
+Revue écrite dans le cadre de l'exercice de correction croisée :
+
+- [Correction par pair](docs/pair-review/correction-pair.md) — revue du projet d'un autre candidat ([consignes](docs/pair-review/instruction.md)).
+
