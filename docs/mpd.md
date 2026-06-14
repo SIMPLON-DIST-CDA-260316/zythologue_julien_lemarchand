@@ -1,17 +1,16 @@
 # MPD (Modèle Physique de Données)
 
 > *Convention MPD :*
->
 > * cible PostgreSQL.
 > * identifiants en anglais (tables, colonnes, contraintes).
 > * PK = `id`
 > * FK = `<table>_id`
->
 
-* Implémentation de référence : [`sql/01_create_schema.sql`](../sql/01_create_schema.sql).*
-* [*lien publique vers le schemaa dbDiagram.io*](https://dbdiagram.io/d/6a297a709340ecc0656b6baf)
+
   
-  <!-- importer l'image du diagramme mdp ici -->
+[![Modèle Logique de Données](./diagrams/MPD.svg)](./diagrams/MPD.svg)
+[*lien publique vers le schema dbDiagram.io*](https://dbdiagram.io/d/6a297a709340ecc0656b6baf)
+> Implémentation de référence : [`sql/01_create_schema.sql`](../sql/01_create_schema.sql).*
 
 ## Domaines (types ENUM)
 
