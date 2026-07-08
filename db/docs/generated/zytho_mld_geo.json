@@ -1,0 +1,42 @@
+{
+  "width": 952,
+  "height": 791,
+  "cx": [
+    [ "COMPOSITION", 102 ],
+    [ "SALE", 298 ],
+    [ "CATEGORIZATION", 698 ],
+    [ "CATEGORY", 866 ],
+    [ "INGREDIENT", 102 ],
+    [ "BEER", 298 ],
+    [ "OUTLET", 504 ],
+    [ "ADDRESS", 866 ],
+    [ "ILLUSTRATION_BREWERY", 298 ],
+    [ "ILLUSTRATION_BEER", 698 ],
+    [ "FAVORITE_BEER", 102 ],
+    [ "BREWERY", 504 ],
+    [ "PHOTO", 866 ],
+    [ "FAVORITE_BREWERY", 102 ],
+    [ "ACCOUNT", 298 ],
+    [ "REVIEW", 866 ]
+  ],
+  "cy": [
+    [ "COMPOSITION", 53 ],
+    [ "SALE", 53 ],
+    [ "CATEGORIZATION", 53 ],
+    [ "CATEGORY", 53 ],
+    [ "INGREDIENT", 193 ],
+    [ "BEER", 193 ],
+    [ "OUTLET", 193 ],
+    [ "ADDRESS", 193 ],
+    [ "ILLUSTRATION_BREWERY", 315 ],
+    [ "ILLUSTRATION_BEER", 315 ],
+    [ "FAVORITE_BEER", 438 ],
+    [ "BREWERY", 438 ],
+    [ "PHOTO", 438 ],
+    [ "FAVORITE_BREWERY", 561 ],
+    [ "ACCOUNT", 561 ],
+    [ "REVIEW", 684 ]
+  ],
+  "shift": [],
+  "ratio": []
+}

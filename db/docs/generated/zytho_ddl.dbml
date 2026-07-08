@@ -1,0 +1,161 @@
+Table "ADRESSE" {
+  "adr_id"          INTEGER [pk, NOT NULL]
+  "adr_numero"      VARCHAR(10)
+  "adr_rue"         VARCHAR(255)
+  "adr_code_postal" VARCHAR(10)
+  "adr_ville"       VARCHAR(100)
+  "adr_pays"        VARCHAR(60)
+}
+
+Table "AVIS" {
+  "avi_id"          INTEGER [pk, NOT NULL]
+  "avi_note"        SMALLINT
+  "avi_commentaire" TEXT
+  "avi_date"        TIMESTAMP
+  "avi_signale"     BOOLEAN
+  "avi_reponse"     TEXT
+  "bie_id"          INTEGER [NOT NULL]
+  "pho_id"          INTEGER [NULL]
+  "per_id"          INTEGER [NOT NULL]
+}
+
+Table "BIERE" {
+  "bie_id"           INTEGER [pk, NOT NULL]
+  "bie_nom"          VARCHAR(120)
+  "bie_description"  TEXT
+  "bie_degre_alcool" DECIMAL(4,2)
+  "bra_id"           INTEGER [NOT NULL]
+}
+
+Table "BRASSERIE" {
+  "bra_id"             INTEGER [pk, NOT NULL]
+  "bra_nom"            VARCHAR(120)
+  "bra_description"    TEXT
+  "bra_annee_creation" SMALLINT
+  "bra_capacite_prod"  INTEGER
+  "bra_type_prod"      VARCHAR(20)
+  "bra_telephone"      VARCHAR(20)
+  "bra_site_web"       VARCHAR(255)
+  "adr_id"             INTEGER [NULL]
+}
+
+Table "CATEGORIE" {
+  "cat_id"          INTEGER [pk, NOT NULL]
+  "cat_nom"         VARCHAR(60)
+  "cat_description" TEXT
+}
+
+Table "categorization" {
+  "bie_id" INTEGER [NOT NULL]
+  "cat_id" INTEGER [NOT NULL]
+  Indexes {
+    ("bie_id", "cat_id") [pk]
+  }
+}
+
+Table "composition" {
+  "bie_id" INTEGER [NOT NULL]
+  "ing_id" INTEGER [NOT NULL]
+  Indexes {
+    ("bie_id", "ing_id") [pk]
+  }
+}
+
+Table "favorite_beer" {
+  "per_id" INTEGER [NOT NULL]
+  "bie_id" INTEGER [NOT NULL]
+  Indexes {
+    ("per_id", "bie_id") [pk]
+  }
+}
+
+Table "favorite_brewery" {
+  "per_id" INTEGER [NOT NULL]
+  "bra_id" INTEGER [NOT NULL]
+  Indexes {
+    ("per_id", "bra_id") [pk]
+  }
+}
+
+Table "illustration_beer" {
+  "bie_id" INTEGER [NOT NULL]
+  "pho_id" INTEGER [NOT NULL]
+  Indexes {
+    ("bie_id", "pho_id") [pk]
+  }
+}
+
+Table "illustration_brewery" {
+  "bra_id" INTEGER [NOT NULL]
+  "pho_id" INTEGER [NOT NULL]
+  Indexes {
+    ("bra_id", "pho_id") [pk]
+  }
+}
+
+Table "INGREDIENT" {
+  "ing_id"            INTEGER [pk, NOT NULL]
+  "ing_nom"           VARCHAR(80)
+  "ing_est_allergene" BOOLEAN
+}
+
+Table "PERSONNE" {
+  "per_id"         INTEGER [pk, NOT NULL]
+  "per_email"      VARCHAR(255)
+  "per_nom"        VARCHAR(80)
+  "per_prenom"     VARCHAR(80)
+  "per_mdp"        VARCHAR(255)
+  "per_role"       VARCHAR(10)
+  "per_date_inscr" TIMESTAMP
+  "pho_id"         INTEGER [NULL]
+}
+
+Table "PHOTO" {
+  "pho_id"      INTEGER [pk, NOT NULL]
+  "pho_url"     VARCHAR(255)
+  "pho_legende" VARCHAR(255)
+  "pho_date"    TIMESTAMP
+}
+
+Table "POINT_DE_VENTE" {
+  "pdv_id"          INTEGER [pk, NOT NULL]
+  "pdv_nom"         VARCHAR(120)
+  "pdv_type"        VARCHAR(20)
+  "pdv_vente_ligne" BOOLEAN
+  "pdv_telephone"   VARCHAR(20)
+  "pdv_site_web"    VARCHAR(255)
+  "adr_id"          INTEGER [NULL]
+  "bra_id"          INTEGER [NULL]
+}
+
+Table "sale" {
+  "pdv_id"   INTEGER [NOT NULL]
+  "bie_id"   INTEGER [NOT NULL]
+  "ven_prix" DECIMAL(8,2)
+  Indexes {
+    ("pdv_id", "bie_id") [pk]
+  }
+}
+
+Ref:"AVIS"."bie_id" > "BIERE"."bie_id"
+Ref:"AVIS"."pho_id" > "PHOTO"."pho_id"
+Ref:"AVIS"."per_id" > "PERSONNE"."per_id"
+Ref:"BIERE"."bra_id" > "BRASSERIE"."bra_id"
+Ref:"BRASSERIE"."adr_id" > "ADRESSE"."adr_id"
+Ref:"categorization"."bie_id" > "BIERE"."bie_id"
+Ref:"categorization"."cat_id" > "CATEGORIE"."cat_id"
+Ref:"composition"."bie_id" > "BIERE"."bie_id"
+Ref:"composition"."ing_id" > "INGREDIENT"."ing_id"
+Ref:"favorite_beer"."per_id" > "PERSONNE"."per_id"
+Ref:"favorite_beer"."bie_id" > "BIERE"."bie_id"
+Ref:"favorite_brewery"."per_id" > "PERSONNE"."per_id"
+Ref:"favorite_brewery"."bra_id" > "BRASSERIE"."bra_id"
+Ref:"illustration_beer"."bie_id" > "BIERE"."bie_id"
+Ref:"illustration_beer"."pho_id" > "PHOTO"."pho_id"
+Ref:"illustration_brewery"."bra_id" > "BRASSERIE"."bra_id"
+Ref:"illustration_brewery"."pho_id" > "PHOTO"."pho_id"
+Ref:"PERSONNE"."pho_id" > "PHOTO"."pho_id"
+Ref:"POINT_DE_VENTE"."adr_id" > "ADRESSE"."adr_id"
+Ref:"POINT_DE_VENTE"."bra_id" > "BRASSERIE"."bra_id"
+Ref:"sale"."pdv_id" > "POINT_DE_VENTE"."pdv_id"
+Ref:"sale"."bie_id" > "BIERE"."bie_id"
