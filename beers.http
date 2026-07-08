@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:3000
+@id = 1
+
+### READ ALL — liste des bières
+GET {{baseUrl}}/beers
+
+### READ ONE — une bière par id
+GET {{baseUrl}}/beers/{{id}}
+
+### CREATE — nouvelle bière
+POST {{baseUrl}}/beers
+
+### UPDATE — modifier une bière par id
+PUT {{baseUrl}}/beers/{{id}}
+
+### DELETE — supprimer une bière par id
+DELETE {{baseUrl}}/beers/{{id}}
