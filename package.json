@@ -2,8 +2,10 @@
   "name": "zythologue",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
   "scripts": {
+    "dev": "nodemon --exec \"node --env-file=.env server.js\"",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:down:volumes": "docker compose down -v",
@@ -20,5 +22,12 @@
     "db:psql": "docker compose exec postgres sh -c \"psql -U $POSTGRES_USER -d $POSTGRES_DB\"",
     "gen:mcd": "pwsh -NoProfile -File scripts/generate-diagrams.ps1",
     "gen:mcd:bash": "bash scripts/generate-diagrams.sh"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

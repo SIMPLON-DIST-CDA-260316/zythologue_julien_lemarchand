@@ -8,3 +8,5 @@ docs/diagrams/*.excalidraw
 # Outillage / éditeur
 .vscode/
 skills-lock.json
+
+node_modules/
