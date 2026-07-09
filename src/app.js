@@ -10,7 +10,7 @@ const swaggerDocument = swaggerJsdoc({
     openapi: "3.1.0",
     info: { title: "Zythologue API", version: "1.0.0" },
   },
-  apis: ["./src/routes/*"],
+  apis: ["./src/routes/*", "./src/controllers/*"],
 });
 
 export default () =>
