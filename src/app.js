@@ -1,5 +1,16 @@
 import express from "express";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 import pool from "./config/database.js";
+
+// == Swagger (smoke test — spec minimale, aucune route documentée) ===
+const swaggerDocument = swaggerJsdoc({
+  definition: {
+    openapi: "3.1.0",
+    info: { title: "Zythologue API", version: "1.0.0" },
+  },
+  apis: [], // aucun fichier scanné pour l'instant
+});
 
 // == Utils ========================================
 const logged = (msg) => {
@@ -18,6 +29,7 @@ export default () => {
   return (
     express()
       .use(express.json())
+      .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
       .get("/", rootHandler)
       // - CREATE ONE
       .post("/beers", TestHandler)
