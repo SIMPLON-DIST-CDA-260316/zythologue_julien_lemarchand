@@ -1,4 +1,5 @@
 import express from "express";
+import logger from "morgan";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import pool from "./config/database.js";
@@ -12,15 +13,9 @@ const swaggerDocument = swaggerJsdoc({
   apis: [], // aucun fichier scanné pour l'instant
 });
 
-// == Utils ========================================
-const logged = (msg) => {
-  console.log(msg);
-  return msg;
-};
-
 // == Controller Handlers =====================================
 const TestHandler = (req, res) =>
-  res.send(logged(`hello world from ${req.method} : ${req.path}`));
+  res.send(`hello world from ${req.method} : ${req.path}`);
 // ---------------------------------------------------
 const rootHandler = (req, res) => res.send("hello world");
 
@@ -29,6 +24,7 @@ export default () => {
   return (
     express()
       .use(express.json())
+      .use(logger("dev"))
       .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
       .get("/", rootHandler)
       // - CREATE ONE
@@ -46,7 +42,7 @@ export default () => {
           if (rows.length === 0) {
             return res.status(404).json({ error: "Beer not found" });
           }
-          res.send(logged(rows));
+          res.json(rows);
         } catch (error) {
           console.error(error);
           res.status(500).json({ error });
