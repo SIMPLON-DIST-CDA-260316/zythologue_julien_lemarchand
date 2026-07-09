@@ -1,5 +1,5 @@
 import { Router } from "express";
-import controller from "../controllers/beer.controller.js";
+import controller from "./beers.controller.js";
 
 const router = Router();
 
