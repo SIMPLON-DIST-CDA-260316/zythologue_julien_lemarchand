@@ -11,12 +11,15 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres18_cluster:/var/lib/postgresql
-      - ./sql:/sql:ro
+      - ./db/sql:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zythologue} -d ${POSTGRES_DB:-zythologue}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-zythologue} -d ${POSTGRES_DB:-zythologue}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
-
 volumes:
   postgres18_cluster:

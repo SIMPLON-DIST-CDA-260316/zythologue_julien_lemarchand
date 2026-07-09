@@ -1,4 +1,5 @@
 import express from "express";
+import pool from "./config/database.js";
 
 // == Utils ========================================
 const logged = (msg) => {
@@ -24,10 +25,20 @@ export default () => {
       .get("/beers", TestHandler)
       // CRUD BEERS
       // - READ ONE (by PK)
-      .get("/beers/:id", (req, res) => {
-        const { id = null } = req.params;
-        const output = `fetch beer with id ${id}`;
-        res.send(logged(output));
+      .get("/beers/:id", async (req, res) => {
+        try {
+          const { rows } = await pool.query(
+            "SELECT * FROM beer WHERE id = $1;",
+            [req.params.id],
+          );
+          if (rows.length === 0) {
+            return res.status(404).json({ error: "Beer not found" });
+          }
+          res.send(logged(rows));
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error });
+        }
       })
       // - UPDATE ONE (by pk)
       .put("/beers/:id", TestHandler)
