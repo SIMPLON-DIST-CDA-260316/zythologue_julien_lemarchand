@@ -3,7 +3,7 @@ import logger from "morgan";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import beerRoutes from "./routes/beer.routes.js";
-
+import NotFoundHandler from "./middlewares/notFound.js";
 // == Swagger (smoke test — spec minimale, aucune route documentée) ===
 const swaggerDocument = swaggerJsdoc({
   definition: {
@@ -13,10 +13,10 @@ const swaggerDocument = swaggerJsdoc({
   apis: ["./src/routes/*"],
 });
 
-
-export default () =>  express()
-      .use(express.json())
-      .use(logger("dev"))
-      .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-      .use("/beers", beerRoutes)
-  
+export default () =>
+  express()
+    .use(express.json())
+    .use(logger("dev"))
+    .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+    .use("/beers", beerRoutes)
+    .use(NotFoundHandler);
