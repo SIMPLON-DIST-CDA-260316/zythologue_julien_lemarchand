@@ -1,7 +1,6 @@
-import * as z from "zod";
 import service from "./beers.services.js";
 
-const IdParam = z.coerce.number().int().min(1);
+
 
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
@@ -126,17 +125,10 @@ export default {
    *               minimum: 0
    */
   readOne: async (req, res) => {
-    const {
-      success,
-      error: parseError,
-      data: id,
-    } = IdParam.safeParse(req.params.id);
-    if (!success) return res.status(400).json({ errors: parseError.issues });
-
     try {
-      const beer = await service.readOne(id);
+      const beer = await service.readOne(req.params.id);
       if (beer === null)
-        return res.status(404).json({ error: `Beer with id ${id} not found` });
+        return res.status(404).json({ error: `Beer with id ${req.params.id} not found` });
       return res.status(200).json(beer);
     } catch (error) {
       console.error(error);

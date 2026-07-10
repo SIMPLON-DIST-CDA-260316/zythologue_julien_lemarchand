@@ -1,6 +1,6 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
-
+import { IdParam } from "./beers.schema.js";
 const router = Router();
 
 /**
@@ -71,6 +71,16 @@ router.route("/").get(controller.readAll).post(controller.createOne);
  *         description: Erreur serveur
  */
 router
+  .param("id", (req, res, next, value) => {
+    const {
+      success,
+      error: parseError,
+      data: safeId,
+    } = IdParam.safeParse(value);
+    if (!success) return res.status(400).json({ errors: parseError.issues });
+    req.params.id = safeId;
+    next();
+  })
   .route("/:id")
   .get(controller.readOne)
   .put(controller.updateOne)
