@@ -10,6 +10,7 @@ export default {
    *   schemas:
    *     BeerDetails:
    *       type: object
+   *       description: Détail complet d'une bière — données propres, brasserie, composition, points de vente et statistiques d'avis.
    *       required:
    *         - id
    *         - name
