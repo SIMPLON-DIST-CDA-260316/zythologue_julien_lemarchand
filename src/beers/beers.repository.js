@@ -13,7 +13,7 @@ export default {
             'id', br.id,
             'name', br.name
           ) AS brewery,
-           
+
           -- construction d'un tableau d'ingredients
           json_agg( 
             DISTINCT jsonb_build_object(
@@ -30,14 +30,27 @@ export default {
             )
           ) AS categories,
 
-          -- construction d'un tableau de categories
+          -- construction d'un tableau de photos
           json_agg(
             DISTINCT jsonb_build_object(
               'url', p.url,
               'caption', p.caption
             )
-          ) AS photos
-        FROM beer b
+          ) AS photos,
+          
+          -- construction d'un tableau d'outlets
+          json_agg(
+            DISTINCT jsonb_build_object(
+             'id', o.id,
+             'name', o.name,
+             'type', o.type,
+             'onlineSale', o.online_sales,
+             'website', o.website
+             -- jointure à faire pour obtenir l'adresse 
+            )
+          ) AS outlets
+
+          FROM beer b
         JOIN brewery br ON br.id = b.brewery_id
 
         -- jointure sur les ingredients vie composition
@@ -51,6 +64,11 @@ export default {
         -- jointure sur photo via illustration_beer
         LEFT JOIN illustration_beer ib ON ib.beer_id = b.id
         LEFT JOIN photo p ON p.id = ib.photo_id
+
+        -- jointure sur outlet via sale
+        LEFT JOIN sale s ON s.beer_id = b.id
+        LEFT JOIN outlet o ON o.id = s.outlet_id
+
         WHERE b.id = $1
         GROUP BY b.id, br.id
         `,
