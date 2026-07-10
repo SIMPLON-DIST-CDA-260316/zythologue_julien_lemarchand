@@ -20,6 +20,9 @@ importers:
       swagger-ui-express:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.1)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       morgan:
         specifier: ^1.11.0
@@ -633,6 +636,9 @@ packages:
     resolution: {integrity: sha512-W7h5dEhywMKenDJh2iX/LABkbFnBxasD27oyXWDS/feDsxiw0dD5ncXdYXgkvAsXIY2MpW/ZKkr9IU30DBdMNQ==}
     engines: {node: '>= 6'}
 
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
 snapshots:
 
   '@apidevtools/json-schema-ref-parser@14.0.1':
@@ -1242,3 +1248,5 @@ snapshots:
   xtend@4.0.2: {}
 
   yaml@2.0.0-1: {}
+
+  zod@4.4.3: {}
