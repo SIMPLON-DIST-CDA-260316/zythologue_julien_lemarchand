@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
   "scripts": {
-    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "dev": "nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
     "start": "node --env-file-if-exists=.env server.js",
     "db:schema": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /docker-entrypoint-initdb.d/01_create_schema.sql\"",
     "db:seed": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /docker-entrypoint-initdb.d/02_seed.sql\"",
@@ -23,6 +23,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "morgan": "^1.11.0"
+    "morgan": "^1.11.0",
+    "nodemon": "^3.1.10"
   }
 }

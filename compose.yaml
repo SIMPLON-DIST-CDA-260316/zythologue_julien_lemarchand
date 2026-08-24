@@ -38,14 +38,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    # Bind mount : le fichier hôte est la source de vérité, pas la couche image.
+    # Le rechargement à chaud repose sur le polling de nodemon (cf. package.json),
+    # car inotify n'est pas propagé au conteneur sous Docker Desktop Windows.
+    volumes:
+      - ./src:/app/src
+      - ./server.js:/app/server.js
     develop:
       watch:
-        - action: sync
-          path: ./src
-          target: /app/src
-        - action: sync
-          path: ./server.js
-          target: /app/server.js
         - action: rebuild
           path: ./pnpm-lock.yaml
 volumes:
