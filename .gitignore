@@ -10,3 +10,6 @@ docs/diagrams/*.excalidraw
 skills-lock.json
 
 node_modules/
+
+# Store pnpm local (artefact bind mount)
+.pnpm-store/

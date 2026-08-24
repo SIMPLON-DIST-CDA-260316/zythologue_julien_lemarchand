@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: zythologue-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-zythologue}
+      POSTGRES_USER: ${POSTGRES_USER:-zythologue}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zythologue}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres18_cluster:/var/lib/postgresql
+      - ./db/sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-zythologue} -d ${POSTGRES_DB:-zythologue}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  api:
+    build:
+      context: .
+    container_name: zythologue-api
+    restart: unless-stopped
+    environment:
+      PORT: ${API_PORT:-3000}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-zythologue}
+      POSTGRES_USER: ${POSTGRES_USER:-zythologue}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zythologue}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: sync
+          path: ./server.js
+          target: /app/server.js
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+volumes:
+  postgres18_cluster:

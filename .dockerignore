@@ -1,0 +1,16 @@
+.claude
+.git
+.pnpm-store
+.vscode
+docs
+node_modules
+.dockerignore
+.env
+.env.example
+.gitattributes
+.gitignore
+compose.yaml
+*.http
+Dockerfile
+README.md
+skills-lock.json
