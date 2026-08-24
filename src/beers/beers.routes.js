@@ -1,6 +1,7 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
 import { IdParam } from "./beers.schema.js";
+import validateParam from "../middlewares/validateParam.js";
 const router = Router();
 
 /**
@@ -46,6 +47,8 @@ router.route("/").get(controller.readAll).post(controller.createOne);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/BeerDetails'
+ *       400:
+ *         description: L'ID fourni n'est pas un entier positif
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
@@ -56,6 +59,8 @@ router.route("/").get(controller.readAll).post(controller.createOne);
  *     responses:
  *       200:
  *         description: La bière mise à jour
+ *       400:
+ *         description: L'ID fourni n'est pas un entier positif
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
@@ -65,22 +70,15 @@ router.route("/").get(controller.readAll).post(controller.createOne);
  *     responses:
  *       204:
  *         description: La bière a été supprimée
+ *       400:
+ *         description: L'ID fourni n'est pas un entier positif
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
  *         description: Erreur serveur
  */
 router
-  .param("id", (req, res, next, value) => {
-    const {
-      success,
-      error: parseError,
-      data: safeId,
-    } = IdParam.safeParse(value);
-    if (!success) return res.status(400).json({ errors: parseError.issues });
-    req.params.id = safeId;
-    next();
-  })
+  .param("id", validateParam(IdParam))
   .route("/:id")
   .get(controller.readOne)
   .put(controller.updateOne)
