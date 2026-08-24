@@ -1,7 +1,5 @@
 import service from "./beers.services.js";
 
-
-
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
 
@@ -128,7 +126,9 @@ export default {
     try {
       const beer = await service.readOne(req.params.id);
       if (beer === null)
-        return res.status(404).json({ error: `Beer with id ${req.params.id} not found` });
+        return res
+          .status(404)
+          .json({ error: `Beer with id ${req.params.id} not found` });
       return res.status(200).json(beer);
     } catch (error) {
       console.error(error);
@@ -136,7 +136,18 @@ export default {
     }
   },
   readAll: TestHandler,
-  createOne: TestHandler,
+  createOne: async (req, res) => {
+    try {
+      const output = {
+        msg: "WIP - createOne  handler",
+      };
+
+      return res.status(201).json(output);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  },
   deleteOne: TestHandler,
   updateOne: TestHandler,
 };
