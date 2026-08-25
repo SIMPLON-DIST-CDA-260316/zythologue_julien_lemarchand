@@ -70,6 +70,10 @@ router
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
  *       500:
  *         description: Erreur serveur
  *   put:
@@ -86,6 +90,10 @@ router
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
  *       500:
  *         description: Erreur serveur
  *   delete:
@@ -101,6 +109,10 @@ router
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFoundError'
  *       500:
  *         description: Erreur serveur
  */
