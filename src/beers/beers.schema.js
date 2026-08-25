@@ -60,7 +60,7 @@ export const Beer = z.strictObject({
 
 export const BeerList = z.array(Beer);
 
-// La row plus ses relations, identique à `Beer` pour l'instant.
-// ! à étendre avec photos, categories, brewery, composition, outlets et
-// ! ratingStats dès que les schémas des ressources liées existent.
-export const BeerDetails = Beer;
+// ! `BeerDetails` — la row plus ses relations — reste décrit à la main dans le
+// ! JSDoc du contrôleur. À modéliser ici, avec photos, categories, brewery,
+// ! composition, outlets et ratingStats, dès que les ressources liées ont
+// ! leurs schémas.

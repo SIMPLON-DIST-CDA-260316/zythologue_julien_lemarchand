@@ -13,7 +13,6 @@ import {
   NewBeer,
   Beer,
   BeerList,
-  BeerDetails,
   UpdateBeer,
 } from "../beers/beers.schema.js";
 import { NotFoundError } from "../middlewares/notFound.js";
@@ -40,8 +39,10 @@ export default swaggerJsdoc({
       schemas: {
         NewBeer: toSchemaObject(NewBeer),
         Beer: toSchemaObject(Beer),
+        // `BeerDetails` vient du JSDoc du contrôleur. Ne pas le déclarer ici
+        // en plus : swagger-jsdoc fusionne les définitions homonymes au lieu
+        // d'écraser, et la spec porterait l'union des deux jeux de propriétés.
         BeerList: toSchemaObject(BeerList),
-        BeerDetails: toSchemaObject(BeerDetails),
         UpdateBeer: toSchemaObject(UpdateBeer),
         NotFoundError: toSchemaObject(NotFoundError),
         ValidationError: toSchemaObject(ValidationError),
