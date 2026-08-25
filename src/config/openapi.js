@@ -9,7 +9,12 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import * as z from "zod";
 
-import { NewBeer } from "../beers/beers.schema.js";
+import {
+  NewBeer,
+  Beer,
+  BeerList,
+  BeerDetails,
+} from "../beers/beers.schema.js";
 import { NotFoundError } from "../middlewares/notFound.js";
 import { ValidationError } from "../middlewares/validateRequest.js";
 
@@ -33,6 +38,9 @@ export default swaggerJsdoc({
     components: {
       schemas: {
         NewBeer: toSchemaObject(NewBeer),
+        Beer: toSchemaObject(Beer),
+        BeerList: toSchemaObject(BeerList),
+        BeerDetails: toSchemaObject(BeerDetails),
         NotFoundError: toSchemaObject(NotFoundError),
         ValidationError: toSchemaObject(ValidationError),
       },

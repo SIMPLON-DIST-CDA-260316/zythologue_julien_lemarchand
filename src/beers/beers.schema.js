@@ -35,16 +35,19 @@ export const NewBeer = z.strictObject({
 });
 
 // - sortie ----------------------------------------------------
-// ! il doit encore être aligné avec la sortie complexe que renvoie la route GET /beers/:id
-export const BeerDetails = z.object(BeerFields);
-
-// BeerSummary - DTO minimal qui renvoie les informations sur une bière
-export const BeerSummary = z.strictObject({
+export const Beer = z.strictObject({
   id: BeerFields.Id,
   name: BeerFields.Name,
-  description: BeerFields.Description.optional(),
-  alcohol_content: BeerFields.AlcoholContent.optional(),
+  description: BeerFields.Description,
+  alcohol_content: BeerFields.AlcoholContent,
+  created_at: BeerFields.CreatedAt,
+  updated_at: BeerFields.UpdatedAt,
   brewery_id: BeerFields.BreweryId,
 });
 
-export const BeerList = z.array(BeerSummary);
+export const BeerList = z.array(Beer);
+
+// La row plus ses relations, identique à `Beer` pour l'instant.
+// ! à étendre avec photos, categories, brewery, composition, outlets et
+// ! ratingStats dès que les schémas des ressources liées existent.
+export const BeerDetails = Beer;

@@ -15,6 +15,10 @@ const router = Router();
  *     responses:
  *       200:
  *         description: Liste de toutes les bières
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BeerList'
  *       500:
  *         description: Erreur serveur
  *   post:
@@ -28,6 +32,10 @@ const router = Router();
  *     responses:
  *       201:
  *         description: La bière a été créée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Beer'
  *       400:
  *         description: Le corps de la requête ne respecte pas le schéma
  *         content:
