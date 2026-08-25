@@ -7,13 +7,38 @@
  *
  * @module middlewares/validateRequest
  */
+import * as z from "zod";
+
+/**
+ * Forme des réponses 400 produites par `reject`, décrite ici pour rester sous
+ * les yeux de qui modifie l'une des deux. Alimente `components.schemas` de la
+ * spec OpenAPI.
+ *
+ * Les codes viennent de zod, mais les champs d'une issue varient selon le code
+ * (`expected`, `minimum`, `keys`...), d'où `looseObject`.
+ */
+export const ValidationError = z.object({
+  errors: z.array(
+    z.looseObject({
+      code: z.enum(Object.values(z.ZodIssueCode)),
+      message: z.string(),
+      path: z.array(z.union([z.string(), z.number().int()])),
+    }),
+  ),
+});
+
+/**
+ * Corps d'une réponse 400, inféré du schéma plutôt que redécrit.
+ *
+ * @typedef {z.infer<typeof ValidationError>} ValidationErrorBody
+ */
 
 /**
  * Répond 400 avec les erreurs de validation zod.
  *
- * @param {import("express").Response} res
+ * @param {import("express").Response<ValidationErrorBody>} res
  * @param {import("zod").ZodError} error
- * @returns {import("express").Response}
+ * @returns {import("express").Response<ValidationErrorBody>}
  */
 const reject = (res, error) => res.status(400).json({ errors: error.issues });
 

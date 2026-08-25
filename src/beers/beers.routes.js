@@ -20,11 +20,20 @@ const router = Router();
  *   post:
  *     summary: crée une nouvelle bière
  *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewBeer'
  *     responses:
  *       201:
  *         description: La bière a été créée
  *       400:
- *         description: Mauvaise requête
+ *         description: Le corps de la requête ne respecte pas le schéma
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       500:
  *         description: Erreur serveur
  */
@@ -55,6 +64,10 @@ router
  *               $ref: '#/components/schemas/BeerDetails'
  *       400:
  *         description: L'ID fourni n'est pas un entier positif
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
@@ -67,6 +80,10 @@ router
  *         description: La bière mise à jour
  *       400:
  *         description: L'ID fourni n'est pas un entier positif
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
@@ -78,6 +95,10 @@ router
  *         description: La bière a été supprimée
  *       400:
  *         description: L'ID fourni n'est pas un entier positif
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       404:
  *         description: La bière n'a pas été trouvée
  *       500:
