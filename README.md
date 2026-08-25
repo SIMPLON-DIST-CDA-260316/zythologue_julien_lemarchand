@@ -3,6 +3,8 @@
 API REST (Node.js / Express) pour un catalogue de bières artisanales, bâtie sur la base de données modélisée en Merise la semaine précédente.
 
 > 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL, Docker) : voir [`db/README.md`](db/README.md).
+> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](ARCHITECTURE.md).
+> 🤝 **Contribuer** (commits, nommage, vérifications) : voir [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Focus de la semaine
 
