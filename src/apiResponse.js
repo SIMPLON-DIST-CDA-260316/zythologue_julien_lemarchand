@@ -1,14 +1,11 @@
 /**
  * Enveloppe des réponses en succès — seul propriétaire de sa forme.
  *
- * Toute réponse 2xx porte sa charge utile sous `data`, les erreurs gardent
- * `error`. Sur une collection c'est nécessaire : un array racine ne pourra
- * jamais accueillir `meta` sans casser les clients. Sur une ressource unique
- * c'est par cohérence, pour une seule règle de déballage côté client.
+ * Un array racine ne pourra jamais accueillir `meta` sans casser les clients ;
+ * la ressource unique prend l'enveloppe par cohérence.
  *
- * Les fabriques alimentent la spec OpenAPI, les `send*` sont ce que les
- * handlers appellent — un handler qui construit `{ data }` à la main fait
- * diverger la doc et la réponse sans que rien n'échoue au démarrage.
+ * Les fabriques alimentent la spec OpenAPI, les `send*` sont ce qu'appellent
+ * les handlers — construire `{ data }` à la main fait diverger les deux.
  *
  * @module apiResponse
  */
