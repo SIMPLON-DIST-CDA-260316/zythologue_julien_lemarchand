@@ -15,9 +15,9 @@ import {
   BeerResponse,
   BeerListResponse,
   UpdateBeer,
-} from "../beers/beers.schema.js";
-import { NotFoundError } from "../middlewares/notFound.js";
-import { ValidationError } from "../middlewares/validateRequest.js";
+} from "#features/beers/beers.schema.js";
+import { NotFoundError } from "#middlewares/notFound.js";
+import { ValidationError } from "#middlewares/validateRequest.js";
 
 /**
  * Convertit un schéma zod en Schema Object OpenAPI 3.1, qui suit JSON Schema
@@ -50,5 +50,5 @@ export default swaggerJsdoc({
       },
     },
   },
-  apis: ["./src/beers/*"],
+  apis: ["./src/features/beers/*"],
 });

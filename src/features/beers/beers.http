@@ -27,7 +27,7 @@ Content-Type: {{contentType}}
 ### CREATE — brewery_id manquant → 400, invalid_type sur brewery_id
 POST {{baseUrl}}/beers
 Content-Type: {{contentType}}
-
+j
 {
   "name": "{{name}}",
   "description": "{{description}}",

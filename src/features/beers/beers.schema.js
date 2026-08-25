@@ -1,7 +1,7 @@
 import * as z from "zod";
 
-import { BreweryFields } from "../breweries/breweries.schema.js";
-import { ApiResponse, ApiListResponse } from "../apiResponse.js";
+import { BreweryFields } from "#features/breweries/breweries.schema.js";
+import { ApiResponse, ApiListResponse } from "#apiResponse.js";
 
 // Model -------------------------------------------------------------
 // Forme et bornes d'un champ, sans comportement ni persistance. Clés en

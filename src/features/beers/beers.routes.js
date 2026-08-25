@@ -1,7 +1,7 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
 import { IdParam, NewBeer, UpdateBeer } from "./beers.schema.js";
-import { validateBody, validateParam } from "../middlewares/validateRequest.js";
+import { validateBody, validateParam } from "#middlewares/validateRequest.js";
 const router = Router();
 
 /**

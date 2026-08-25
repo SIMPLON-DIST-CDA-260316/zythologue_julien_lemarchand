@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
+  "imports": {
+    "#features/*": "./src/features/*",
+    "#middlewares/*": "./src/middlewares/*",
+    "#config/*": "./src/config/*",
+    "#apiResponse.js": "./src/apiResponse.js"
+  },
   "scripts": {
     "dev": "nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
     "start": "node --env-file-if-exists=.env server.js",
