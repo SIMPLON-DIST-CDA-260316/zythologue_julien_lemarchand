@@ -1,10 +1,7 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
-import { IdParam, NewBeer } from "./beers.schema.js";
-import {
-  validateBody,
-  validateParam,
-} from "../middlewares/validateRequest.js";
+import { IdParam, NewBeer, UpdateBeer } from "./beers.schema.js";
+import { validateBody, validateParam } from "../middlewares/validateRequest.js";
 const router = Router();
 
 /**
@@ -84,14 +81,28 @@ router
  *               $ref: '#/components/schemas/NotFoundError'
  *       500:
  *         description: Erreur serveur
- *   put:
+ *   patch:
  *     summary: met à jour une bière par son ID
+ *     description: >
+ *       Mise à jour partielle : une clé absente laisse la colonne inchangée,
+ *       une clé à `null` l'efface. Au moins un champ est requis.
  *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateBeer'
  *     responses:
  *       200:
  *         description: La bière mise à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Beer'
  *       400:
- *         description: L'ID fourni n'est pas un entier positif
+ *         description: >
+ *           L'ID fourni n'est pas un entier positif, ou le corps ne respecte
+ *           pas le schéma
  *         content:
  *           application/json:
  *             schema:
@@ -128,7 +139,7 @@ router
   .param("id", validateParam(IdParam))
   .route("/:id")
   .get(controller.readOne)
-  .put(controller.updateOne)
+  .patch(validateBody(UpdateBeer), controller.updateOne)
   .delete(controller.deleteOne);
 
 export default router;

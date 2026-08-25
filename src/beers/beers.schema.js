@@ -34,6 +34,19 @@ export const NewBeer = z.strictObject({
   brewery_id: BeerFields.BreweryId,
 });
 
+// PATCH : une clé absente laisse la colonne intacte, une clé à `null`
+// l'efface. Le corps vide est refusé, il donnerait un UPDATE sans SET.
+export const UpdateBeer = z
+  .strictObject({
+    name: BeerFields.Name.optional(),
+    description: BeerFields.Description.optional(),
+    alcohol_content: BeerFields.AlcoholContent.optional(),
+    brewery_id: BeerFields.BreweryId.optional(),
+  })
+  .refine((body) => Object.keys(body).length > 0, {
+    message: "Au moins un champ doit être fourni",
+  });
+
 // - sortie ----------------------------------------------------
 export const Beer = z.strictObject({
   id: BeerFields.Id,
