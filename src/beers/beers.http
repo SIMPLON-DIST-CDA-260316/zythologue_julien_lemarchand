@@ -1,5 +1,14 @@
 @baseUrl = http://localhost:3000
+@contentType = application/json
 @id = 1
+
+# Payload de création, partagé par les requêtes CREATE ci-dessous.
+@name = Kwak
+@description = brune belge
+@alcoholContent = 8.4
+@breweryId = 1
+# Guillemets inclus : le body reçoit une string là où un number est attendu.
+@invalidTypeId = "1"
 
 ### READ ALL — liste des bières
 GET {{baseUrl}}/beers
@@ -7,8 +16,41 @@ GET {{baseUrl}}/beers
 ### READ ONE — une bière par id
 GET {{baseUrl}}/beers/{{id}}
 
-### CREATE — nouvelle bière
+### CREATE — sans body → 400, invalid_type sur name
 POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+### CREATE — brewery_id manquant → 400, invalid_type sur brewery_id
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}}
+}
+
+### CREATE — brewery_id en string → 400, invalid_type sur brewery_id
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}},
+  "brewery_id": {{invalidTypeId}}
+}
+
+### CREATE — nouvelle bière → 201
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}},
+  "brewery_id": {{breweryId}}
+}
 
 ### UPDATE — modifier une bière par id
 PUT {{baseUrl}}/beers/{{id}}
