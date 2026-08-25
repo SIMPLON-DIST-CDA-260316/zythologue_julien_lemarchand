@@ -1,24 +1,47 @@
 import * as z from "zod";
 
-import { Brewery } from "../breweries/breweries.schema.js";
+import { BreweryFields } from "../breweries/breweries.schema.js";
 
 // Model -------------------------------------------------------------
-export const Beer = {
+// Atomes de validation, pas une entité : forme et bornes d'un champ, sans
+// comportement ni persistance. Les DTO ci-dessous y puisent.
+export const BeerFields = {
   Id: z.number().int().min(1),
   Name: z.string().trim().min(1).max(120),
   Description: z.string().trim().min(1),
   AlcoholContent: z.number().min(0).max(99.99),
+  // TIMESTAMPTZ en base, sérialisé en ISO 8601 UTC par `res.json()`.
+  CreatedAt: z.iso.datetime(),
+  UpdatedAt: z.iso.datetime(),
+  BreweryId: BreweryFields.Id,
 };
 
 // Params ------------------------------------------------------------
 // Un segment d'URL est toujours une string, d'où la coercition.
-export const IdParam = z.coerce.number().pipe(Beer.Id);
+export const IdParam = z.coerce.number().pipe(BeerFields.Id);
 
-// DTOs -------------------------------------------------------------
-// L'optionalité appartient au contrat de l'endpoint, pas au modèle.
+// ==========================================================================
+// DTOs — L'optionalité appartient au contrat de l'endpoint, pas au modèle.
+// ==========================================================================
+// - entrée ----------------------------------------------------
 export const NewBeer = z.strictObject({
-  name: Beer.Name,
-  description: Beer.Description.optional(),
-  alcohol_content: Beer.AlcoholContent.optional(),
-  brewery_id: Brewery.Id,
+  name: BeerFields.Name,
+  description: BeerFields.Description.optional(),
+  alcohol_content: BeerFields.AlcoholContent.optional(),
+  brewery_id: BeerFields.BreweryId,
 });
+
+// - sortie ----------------------------------------------------
+// ! il doit encore être aligné avec la sortie complexe que renvoie la route GET /beers/:id
+export const BeerDetails = z.object(BeerFields);
+
+// BeerSummary - DTO minimal qui renvoie les informations sur une bière
+export const BeerSummary = z.strictObject({
+  id: BeerFields.Id,
+  name: BeerFields.Name,
+  description: BeerFields.Description.optional(),
+  alcohol_content: BeerFields.AlcoholContent.optional(),
+  brewery_id: BeerFields.BreweryId,
+});
+
+export const BeerList = z.array(BeerSummary);
