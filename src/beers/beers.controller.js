@@ -1,4 +1,5 @@
 import service from "./beers.services.js";
+import { sendOne } from "../apiResponse.js";
 
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
@@ -121,6 +122,16 @@ export default {
    *             count:
    *               type: integer
    *               minimum: 0
+   *     BeerDetailsResponse:
+   *       type: object
+   *       description: >
+   *         Enveloppe de `BeerDetails`. Décrite ici et non générée depuis zod,
+   *         le temps que les relations soient modélisées.
+   *       required: [data]
+   *       additionalProperties: false
+   *       properties:
+   *         data:
+   *           $ref: '#/components/schemas/BeerDetails'
    */
   readOne: async (req, res) => {
     try {
@@ -129,7 +140,7 @@ export default {
         return res
           .status(404)
           .json({ error: `Beer with id ${req.params.id} not found` });
-      return res.status(200).json(beer);
+      return sendOne(res, beer);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message });

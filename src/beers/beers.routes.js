@@ -66,7 +66,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/BeerDetails'
+ *               $ref: '#/components/schemas/BeerDetailsResponse'
  *       400:
  *         description: L'ID fourni n'est pas un entier positif
  *         content:
