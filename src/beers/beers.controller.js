@@ -133,9 +133,9 @@ export default {
    *         data:
    *           $ref: '#/components/schemas/BeerDetails'
    */
-  readOne: async (req, res) => {
+  findOne: async (req, res) => {
     try {
-      const beer = await service.readOne(req.params.id);
+      const beer = await service.findOne(req.params.id);
       if (beer === null)
         return res
           .status(404)
@@ -146,7 +146,7 @@ export default {
       res.status(500).json({ error: error.message });
     }
   },
-  readAll: async (req, res) => {
+  findAll: async (req, res) => {
     try {
       const beers = await service.findAll();
 

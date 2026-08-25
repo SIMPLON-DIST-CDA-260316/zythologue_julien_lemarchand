@@ -1,7 +1,7 @@
 import pool from "../config/database.js";
 
 export default {
-  readOne: async (id) => {
+  findOne: async (id) => {
     try {
       const { rows } = await pool.query(
         `SELECT 

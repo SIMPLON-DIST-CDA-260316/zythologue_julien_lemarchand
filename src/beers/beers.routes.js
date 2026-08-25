@@ -44,7 +44,7 @@ const router = Router();
  */
 router
   .route("/")
-  .get(controller.readAll)
+  .get(controller.findAll)
   .post(validateBody(NewBeer), controller.createOne);
 
 /**
@@ -138,7 +138,7 @@ router
 router
   .param("id", validateParam(IdParam))
   .route("/:id")
-  .get(controller.readOne)
+  .get(controller.findOne)
   .patch(validateBody(UpdateBeer), controller.updateOne)
   .delete(controller.deleteOne);
 
