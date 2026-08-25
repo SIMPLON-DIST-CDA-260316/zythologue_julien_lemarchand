@@ -3,13 +3,16 @@ import * as z from "zod";
 import { BreweryFields } from "../breweries/breweries.schema.js";
 
 // Model -------------------------------------------------------------
-// Atomes de validation, pas une entité : forme et bornes d'un champ, sans
-// comportement ni persistance. Les DTO ci-dessous y puisent.
+// Forme et bornes d'un champ, sans comportement ni persistance. Clés en
+// PascalCase : un spread depuis ce bloc produirait des clés de DTO invalides,
+// donc les DTO les reprennent une par une, en snake_case.
+//
+// `nullable` se déclare ici, c'est une propriété de la colonne.
 export const BeerFields = {
   Id: z.number().int().min(1),
   Name: z.string().trim().min(1).max(120),
-  Description: z.string().trim().min(1),
-  AlcoholContent: z.number().min(0).max(99.99),
+  Description: z.string().trim().min(1).nullable(),
+  AlcoholContent: z.number().min(0).max(99.99).nullable(),
   // TIMESTAMPTZ en base, sérialisé en ISO 8601 UTC par `res.json()`.
   CreatedAt: z.iso.datetime(),
   UpdatedAt: z.iso.datetime(),
