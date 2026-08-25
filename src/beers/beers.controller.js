@@ -158,11 +158,9 @@ export default {
   },
   createOne: async (req, res) => {
     try {
-      const output = {
-        msg: "WIP - createOne  handler",
-      };
+      const beer = await service.createOne(req.body);
 
-      return res.status(201).json(output);
+      return sendOne(res, beer, 201);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message });

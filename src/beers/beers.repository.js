@@ -129,9 +129,27 @@ export default {
       throw error;
     }
   },
-  createOne: async () => {
-    return {
-      msg: "wip - createOne",
-    };
+  createOne: async ({ name, description, alcohol_content, brewery_id }) => {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO beer (name, description, alcohol_content, brewery_id)
+         VALUES ($1, $2, $3, $4)
+         RETURNING
+           id,
+           name,
+           description,
+           -- sans ce cast, NUMERIC sort en string
+           alcohol_content::float AS alcohol_content,
+           created_at,
+           updated_at,
+           brewery_id`,
+        // Cle absente du body : undefined, que pg ecrit en NULL.
+        [name, description, alcohol_content, brewery_id],
+      );
+
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
   },
 };

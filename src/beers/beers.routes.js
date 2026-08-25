@@ -32,7 +32,7 @@ const router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Beer'
+ *               $ref: '#/components/schemas/BeerResponse'
  *       400:
  *         description: Le corps de la requête ne respecte pas le schéma
  *         content:

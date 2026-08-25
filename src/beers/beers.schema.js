@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 import { BreweryFields } from "../breweries/breweries.schema.js";
-import { ApiListResponse } from "../apiResponse.js";
+import { ApiResponse, ApiListResponse } from "../apiResponse.js";
 
 // Model -------------------------------------------------------------
 // Forme et bornes d'un champ, sans comportement ni persistance. Clés en
@@ -67,4 +67,5 @@ export const Beer = z.strictObject({
 // - réponses --------------------------------------------------
 // Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
 // la ressource nue, réutilisable telle quelle dans une autre enveloppe.
+export const BeerResponse = ApiResponse(Beer);
 export const BeerListResponse = ApiListResponse(Beer);
