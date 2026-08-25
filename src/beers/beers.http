@@ -14,7 +14,7 @@
 # pour les collections. Les erreurs ont deux formes distinctes : `{ errors }`
 # sur un 400, le tableau des issues zod, et `{ error }` ailleurs, une string.
 
-### READ ALL — liste des bières
+### READ ALL — liste des bières → 200, { data: [...], meta: { total } }
 GET {{baseUrl}}/beers
 
 ### READ ONE — une bière par id → 200, { data: {...} }

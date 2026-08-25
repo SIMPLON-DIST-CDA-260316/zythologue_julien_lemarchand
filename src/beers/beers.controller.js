@@ -1,5 +1,5 @@
 import service from "./beers.services.js";
-import { sendOne } from "../apiResponse.js";
+import { sendOne, sendMany } from "../apiResponse.js";
 
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
@@ -146,7 +146,16 @@ export default {
       res.status(500).json({ error: error.message });
     }
   },
-  readAll: TestHandler,
+  readAll: async (req, res) => {
+    try {
+      const beers = await service.findAll();
+
+      return sendMany(res, beers);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
+    }
+  },
   createOne: async (req, res) => {
     try {
       const output = {

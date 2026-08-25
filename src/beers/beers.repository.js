@@ -108,6 +108,27 @@ export default {
       throw error;
     }
   },
+  findAll: async () => {
+    try {
+      const { rows } = await pool.query(
+        `SELECT
+           id,
+           name,
+           description,
+           -- sans ce cast, NUMERIC sort en string
+           alcohol_content::float AS alcohol_content,
+           created_at,
+           updated_at,
+           brewery_id
+         FROM beer
+         ORDER BY id`,
+      );
+
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
   createOne: async () => {
     return {
       msg: "wip - createOne",

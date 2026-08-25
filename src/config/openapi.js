@@ -12,7 +12,7 @@ import * as z from "zod";
 import {
   NewBeer,
   Beer,
-  BeerList,
+  BeerListResponse,
   UpdateBeer,
 } from "../beers/beers.schema.js";
 import { NotFoundError } from "../middlewares/notFound.js";
@@ -41,7 +41,7 @@ export default swaggerJsdoc({
         Beer: toSchemaObject(Beer),
         // `BeerDetails` vient du JSDoc du contrôleur. Pas ici en plus :
         // swagger-jsdoc fusionne les homonymes au lieu d'écraser.
-        BeerList: toSchemaObject(BeerList),
+        BeerListResponse: toSchemaObject(BeerListResponse),
         UpdateBeer: toSchemaObject(UpdateBeer),
         NotFoundError: toSchemaObject(NotFoundError),
         ValidationError: toSchemaObject(ValidationError),

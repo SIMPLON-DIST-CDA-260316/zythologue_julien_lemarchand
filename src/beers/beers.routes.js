@@ -15,7 +15,7 @@ const router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/BeerList'
+ *               $ref: '#/components/schemas/BeerListResponse'
  *       500:
  *         description: Erreur serveur
  *   post:

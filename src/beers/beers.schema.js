@@ -1,6 +1,7 @@
 import * as z from "zod";
 
 import { BreweryFields } from "../breweries/breweries.schema.js";
+import { ApiListResponse } from "../apiResponse.js";
 
 // Model -------------------------------------------------------------
 // Forme et bornes d'un champ, sans comportement ni persistance. Clés en
@@ -58,9 +59,12 @@ export const Beer = z.strictObject({
   brewery_id: BeerFields.BreweryId,
 });
 
-export const BeerList = z.array(Beer);
-
 // ! `BeerDetails` — la row plus ses relations — reste décrit à la main dans le
 // ! JSDoc du contrôleur. À modéliser ici, avec photos, categories, brewery,
 // ! composition, outlets et ratingStats, dès que les ressources liées ont
 // ! leurs schémas.
+
+// - réponses --------------------------------------------------
+// Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
+// la ressource nue, réutilisable telle quelle dans une autre enveloppe.
+export const BeerListResponse = ApiListResponse(Beer);
