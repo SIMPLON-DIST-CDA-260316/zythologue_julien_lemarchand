@@ -58,7 +58,8 @@ export default {
             )
           ) AS outlets
 
-          FROM beer b
+          
+        FROM beer b
         JOIN brewery br ON br.id = b.brewery_id
 
         -- jointure sur les ingredients vie composition
@@ -88,5 +89,10 @@ export default {
     } catch (error) {
       throw error;
     }
+  },
+  createOne: async () => {
+    return {
+      msg: "wip - createOne",
+    };
   },
 };
