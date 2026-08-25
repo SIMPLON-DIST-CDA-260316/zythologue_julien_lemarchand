@@ -1,5 +1,5 @@
 import service from "./beers.services.js";
-import { sendOne, sendMany } from "#apiResponse.js";
+import { sendOne, sendMany } from "#http/apiResponse.js";
 
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
