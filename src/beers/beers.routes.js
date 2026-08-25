@@ -1,7 +1,10 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
-import { IdParam } from "./beers.schema.js";
-import validateParam from "../middlewares/validateParam.js";
+import { IdParam, NewBeer } from "./beers.schema.js";
+import {
+  validateBody,
+  validateParam,
+} from "../middlewares/validateRequest.js";
 const router = Router();
 
 /**
@@ -25,7 +28,10 @@ const router = Router();
  *       500:
  *         description: Erreur serveur
  */
-router.route("/").get(controller.readAll).post(controller.createOne);
+router
+  .route("/")
+  .get(controller.readAll)
+  .post(validateBody(NewBeer), controller.createOne);
 
 /**
  * @openapi
