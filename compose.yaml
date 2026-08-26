@@ -48,5 +48,11 @@ services:
       watch:
         - action: rebuild
           path: ./pnpm-lock.yaml
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 volumes:
   postgres18_cluster:
