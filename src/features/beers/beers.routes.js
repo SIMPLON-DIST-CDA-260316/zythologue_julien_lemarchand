@@ -23,7 +23,11 @@ router
    * /beers:
    *   get:
    *     tags: [Beers]
-   *     summary: récupère toutes les bières (sans filtre ni pagination à ce stade)
+   *     summary: récupère toutes les bières
+   *     description: >
+   *       Renvoie la représentation nue de chaque bière. Composition, points de
+   *       vente et statistiques d'avis ne sont servis que par `GET /beers/{id}`.
+   *       Ni filtre ni pagination à ce stade : la collection est renvoyée entière.
    *     responses:
    *       200:
    *         description: Liste de toutes les bières
@@ -41,6 +45,11 @@ router
    *   post:
    *     tags: [Beers]
    *     summary: crée une nouvelle bière
+   *     description: >
+   *       Le nom doit être libre au sein de la brasserie, la comparaison
+   *       ignorant la casse — un homonyme donne un 409. `brewery_id` doit
+   *       désigner une brasserie existante, faute de quoi la requête est
+   *       bien formée mais irrecevable : 422.
    *     requestBody:
    *       required: true
    *       content:
@@ -103,6 +112,11 @@ router
    *   get:
    *     tags: [Beers]
    *     summary: récupère une bière par son ID
+   *     description: >
+   *       Représentation détaillée, plus riche que celle de la collection :
+   *       brasserie, ingrédients, catégories, photos, points de vente et
+   *       statistiques d'avis. `rating_stats` vaut `null` tant qu'aucun avis
+   *       n'a été posté.
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *     responses:
@@ -181,6 +195,10 @@ router
    *   delete:
    *     tags: [Beers]
    *     summary: supprime une bière par son ID
+   *     description: >
+   *       Suppression en cascade : les avis, catégorisations, compositions,
+   *       favoris, illustrations et mises en vente rattachés à la bière
+   *       disparaissent avec elle. Réponse sans corps.
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *     responses:
