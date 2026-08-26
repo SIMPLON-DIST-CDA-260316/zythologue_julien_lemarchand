@@ -20,7 +20,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/BeerListResponse'
  *       500:
- *         description: Erreur serveur
+ *         $ref: '#/components/responses/InternalServerError'
  *   post:
  *     summary: crée une nouvelle bière
  *     requestBody:
@@ -43,7 +43,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  *       500:
- *         description: Erreur serveur
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router
   .route("/")
@@ -77,13 +77,9 @@ router
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
- *         description: La bière n'a pas été trouvée
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiError'
+ *         $ref: '#/components/responses/NotFound'
  *       500:
- *         description: Erreur serveur
+ *         $ref: '#/components/responses/InternalServerError'
  *   patch:
  *     summary: met à jour une bière par son ID
  *     description: >
@@ -111,13 +107,9 @@ router
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
- *         description: La bière n'a pas été trouvée
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiError'
+ *         $ref: '#/components/responses/NotFound'
  *       500:
- *         description: Erreur serveur
+ *         $ref: '#/components/responses/InternalServerError'
  *   delete:
  *     summary: supprime une bière par son ID
  *     responses:
@@ -130,13 +122,9 @@ router
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  *       404:
- *         description: La bière n'a pas été trouvée
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiError'
+ *         $ref: '#/components/responses/NotFound'
  *       500:
- *         description: Erreur serveur
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router
   .param("id", validateParam(IdParam))

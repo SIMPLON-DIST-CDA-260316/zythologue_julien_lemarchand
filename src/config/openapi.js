@@ -33,6 +33,17 @@ const toSchemaObject = (schema) => {
   return schemaObject;
 };
 
+/** Réponse JSON réutilisable — les routes la référencent par `$ref`. */
+const jsonResponse = (description, schemaName, example) => ({
+  description,
+  content: {
+    "application/json": {
+      schema: { $ref: `#/components/schemas/${schemaName}` },
+      ...(example && { example }),
+    },
+  },
+});
+
 export default swaggerJsdoc({
   definition: {
     openapi: "3.1.0",
@@ -47,6 +58,19 @@ export default swaggerJsdoc({
         UpdateBeer: toSchemaObject(UpdateBeer),
         ApiError: toSchemaObject(ApiError),
         ValidationError: toSchemaObject(ValidationError),
+      },
+      // Définies une fois, référencées par toutes les routes : le contrat
+      // d'erreur ne peut pas dériver d'une opération à l'autre.
+      responses: {
+        NotFound: jsonResponse(
+          "La ressource demandée n'existe pas",
+          "ApiError",
+        ),
+        InternalServerError: jsonResponse(
+          "Erreur inattendue. Le détail reste côté serveur, jamais exposé.",
+          "ApiError",
+          { error: "Internal server error" },
+        ),
       },
     },
   },
