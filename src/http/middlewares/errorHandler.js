@@ -1,4 +1,5 @@
 import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
+import { InvalidReferenceError } from "#errors/InvalidReferenceError.js";
 import { RouteNotFoundError } from "#http/errors/RouteNotFoundError.js";
 import { ValidationError } from "#http/errors/ValidationError.js";
 import { HTTP_STATUS, isServerErrorStatus } from "#http/httpStatus.js";
@@ -7,7 +8,8 @@ import { HTTP_STATUS, isServerErrorStatus } from "#http/httpStatus.js";
 const HTTP_STATUS_BY_ERROR = new Map()
   .set(ResourceNotFoundError, HTTP_STATUS.NOT_FOUND)
   .set(RouteNotFoundError, HTTP_STATUS.NOT_FOUND)
-  .set(ValidationError, HTTP_STATUS.BAD_REQUEST);
+  .set(ValidationError, HTTP_STATUS.BAD_REQUEST)
+  .set(InvalidReferenceError, HTTP_STATUS.UNPROCESSABLE_CONTENT);
 
 /** Terminal, à monter en dernier dans l'app. */
 export default (error, req, res, next) => {
