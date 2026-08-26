@@ -26,15 +26,16 @@ services:
       context: .
     container_name: zythologue-api
     restart: unless-stopped
+    # PORT n'est pas injecté : dans l'image le serveur écoute toujours 3000.
+    # Seul le port publié côté hôte varie, via PORT du .env.
     environment:
-      PORT: ${API_PORT:-3000}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: ${POSTGRES_DB:-zythologue}
       POSTGRES_USER: ${POSTGRES_USER:-zythologue}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zythologue}
     ports:
-      - "${API_PORT:-3000}:3000"
+      - "${PORT:-3000}:3000"
     depends_on:
       postgres:
         condition: service_healthy
