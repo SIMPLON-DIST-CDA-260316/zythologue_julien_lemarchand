@@ -36,7 +36,7 @@ export const BeerFields = {
 
 // Params ------------------------------------------------------------
 // Un segment d'URL est toujours une string, d'où la coercition.
-export const IdParam = z.coerce.number().pipe(BeerFields.Id);
+export const BeerIdParam = z.coerce.number().pipe(BeerFields.Id);
 
 // ==========================================================================
 // DTOs — L'optionalité appartient au contrat de l'endpoint, pas au modèle.

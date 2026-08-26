@@ -19,7 +19,7 @@ import { ValidationError } from "#http/errors/ValidationError.js";
  * @param {import("zod").ZodType} schema
  * @returns {import("express").RequestParamHandler}
  * @example
- * router.param("id", validateParam(IdParam));
+ * router.param("id", validateParam(BeerIdParam));
  */
 export const validateParam =
   (schema) => (req, res, next, rawValue, paramName) => {

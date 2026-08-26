@@ -16,6 +16,7 @@ import {
   BeerListResponse,
   BeerDetailsResponse,
   UpdateBeer,
+  BeerIdParam,
 } from "#features/beers/beers.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
@@ -49,6 +50,7 @@ export default swaggerJsdoc({
     info: { title: "Zythologue API", version: "1.0.0" },
     components: {
       schemas: {
+        BeerIdParam: toSchemaObject(BeerIdParam),
         NewBeer: toSchemaObject(NewBeer),
         Beer: toSchemaObject(Beer),
         BeerResponse: toSchemaObject(BeerResponse),
