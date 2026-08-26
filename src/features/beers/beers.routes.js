@@ -7,12 +7,22 @@ import {
 } from "#http/middlewares/validateRequest.js";
 const router = Router();
 
+/**
+ * @openapi
+ * tags:
+ *   - name: Beers
+ *     description: >
+ *       Catalogue des bières : la ressource, sa composition et ses points de
+ *       vente. Chaque bière appartient à une brasserie et y porte un nom unique.
+ */
+
 router
   .route("/")
   /**
    * @openapi
    * /beers:
    *   get:
+   *     tags: [Beers]
    *     summary: récupère toutes les bières (sans filtre ni pagination à ce stade)
    *     responses:
    *       200:
@@ -29,6 +39,7 @@ router
    * @openapi
    * /beers:
    *   post:
+   *     tags: [Beers]
    *     summary: crée une nouvelle bière
    *     requestBody:
    *       required: true
@@ -77,6 +88,7 @@ router
    * @openapi
    * /beers/{id}:
    *   get:
+   *     tags: [Beers]
    *     summary: récupère une bière par son ID
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
@@ -103,6 +115,7 @@ router
    * @openapi
    * /beers/{id}:
    *   patch:
+   *     tags: [Beers]
    *     summary: met à jour une bière par son ID
    *     description: >
    *       Mise à jour partielle : une clé absente laisse la colonne inchangée,
@@ -144,6 +157,7 @@ router
    * @openapi
    * /beers/{id}:
    *   delete:
+   *     tags: [Beers]
    *     summary: supprime une bière par son ID
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
