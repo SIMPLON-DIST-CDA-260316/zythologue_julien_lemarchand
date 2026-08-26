@@ -103,12 +103,21 @@ export default {
    *                 type: ["object", "null"]
    *                 description: null pour les outlets exclusivement en ligne
    *                 properties:
-   *                   city:
+   *                   number:
+   *                     type: ["string", "null"]
+   *                     maxLength: 10
+   *                   street:
    *                     type: string
+   *                     maxLength: 255
    *                   zip_code:
    *                     type: string
+   *                     maxLength: 10
+   *                   city:
+   *                     type: string
+   *                     maxLength: 100
    *                   country:
    *                     type: string
+   *                     maxLength: 60
    *         rating_stats:
    *           type: ["object", "null"]
    *           description: null si aucun avis n'a encore été posté
