@@ -14,23 +14,30 @@ import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 //
 // `nullable` se déclare ici, c'est une propriété de la colonne.
 export const BeerFields = {
-  Id: z.number().int().min(1),
+  Id: z.number().int().min(1).meta({ example: 1 }),
   Name: z
     .string()
     .trim()
     .min(1)
     .max(120)
-    .describe("unique par brasserie, la comparaison ignore la casse"),
-  Description: z.string().trim().min(1).nullable(),
+    .describe("unique par brasserie, la comparaison ignore la casse")
+    .meta({ example: "Blonde du Nord" }),
+  Description: z
+    .string()
+    .trim()
+    .min(1)
+    .nullable()
+    .meta({ example: "Blonde légère et désaltérante." }),
   AlcoholContent: z
     .number()
     .min(0)
     .max(99.99)
     .nullable()
-    .describe("teneur en alcool en % vol."),
+    .describe("teneur en alcool en % vol.")
+    .meta({ example: 5.2 }),
   // TIMESTAMPTZ en base, sérialisé en ISO 8601 UTC par `res.json()`.
-  CreatedAt: z.iso.datetime(),
-  UpdatedAt: z.iso.datetime(),
+  CreatedAt: z.iso.datetime().meta({ example: "2026-08-26T19:17:59.934Z" }),
+  UpdatedAt: z.iso.datetime().meta({ example: "2026-08-26T19:17:59.934Z" }),
   BreweryId: BreweryFields.Id,
 };
 
