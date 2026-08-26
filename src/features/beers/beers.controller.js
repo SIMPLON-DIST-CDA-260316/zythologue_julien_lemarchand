@@ -18,7 +18,7 @@ export default {
    *         - photos
    *         - categories
    *         - brewery
-   *         - composition
+   *         - ingredients
    *         - outlets
    *       properties:
    *         id:
@@ -67,7 +67,7 @@ export default {
    *             name:
    *               type: string
    *               maxLength: 120
-   *         composition:
+   *         ingredients:
    *           type: array
    *           items:
    *             type: object
