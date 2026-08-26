@@ -27,6 +27,20 @@ export const ApiListResponse = (schema) =>
 /** Échec : `{ error }`. Émis par `errorHandler`, seul producteur de cette forme. */
 export const ApiError = z.strictObject({ error: z.string() });
 
+/** Échec de validation : `ApiError`, plus le détail par champ. */
+export const ApiValidationError = ApiError.extend({
+  details: z.array(
+    z.strictObject({
+      path: z
+        .string()
+        .describe(
+          "chemin pointé du champ fautif — vide quand l'erreur porte sur le corps entier",
+        ),
+      message: z.string(),
+    }),
+  ),
+});
+
 /** Émet une ressource unique — `status` à `CREATED` sur une création. */
 export const sendOne = (res, data, status = HTTP_STATUS.OK) =>
   res.status(status).json({ data });

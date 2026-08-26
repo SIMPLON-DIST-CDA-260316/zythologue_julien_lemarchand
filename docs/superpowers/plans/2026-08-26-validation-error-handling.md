@@ -5,8 +5,8 @@ spec: docs/superpowers/specs/2026-08-26-validation-error-handling-design.md
 branch: main
 worktree: false
 tasks_total: 4
-tasks_done: 0
-current_task: —
+tasks_done: 1
+current_task: 2
 last_commit: —
 last_updated: 2026-08-26
 ---
@@ -86,7 +86,7 @@ Une erreur et le schéma de son corps sont la même idée : un seul commit, deux
   - `export class ValidationError extends Error` — constructeur `new ValidationError(issues)` où `issues` est un `Array<{ path: Array<string|number>, message: string }>`, c'est-à-dire `zodError.issues`. Instance : `name === "ValidationError"`, `message === "Validation failed"`, `details` de type `Array<{ path: string, message: string }>`. Les tâches 2 et 3 en dépendent.
   - `export const ApiValidationError` — schéma zod de forme `{ error: string, details: Array<{ path: string, message: string }> }`, clés inconnues refusées. La tâche 2 en dépend.
 
-- [ ] **Step 1: créer la classe**
+- [x] **Step 1: créer la classe**
 
 Créer `src/http/errors/ValidationError.js` avec exactement ce contenu :
 
@@ -119,7 +119,7 @@ Trois points à ne pas « améliorer » :
 - pas de paramètre supplémentaire (préfixe de chemin, nom de champ). Il y a trois situations où le `path` d'une issue est vide, un préfixe n'en couvrirait qu'une.
 - le message reste `"Validation failed"`, en anglais comme `Cannot GET /x` et `Beer with id 3 not found`.
 
-- [ ] **Step 2: vérifier la mise en forme des issues**
+- [x] **Step 2: vérifier la mise en forme des issues**
 
 Depuis la racine du dépôt, en Git Bash :
 
@@ -136,7 +136,7 @@ ValidationError | Validation failed | true | [{"path":"ingredients.0.id","messag
 Si le premier `path` sort en `""`, le `join` porte sur le mauvais objet. Si
 `e instanceof Error` est `false`, le `super()` manque.
 
-- [ ] **Step 3: ajouter le schéma du corps**
+- [x] **Step 3: ajouter le schéma du corps**
 
 Dans `src/http/apiResponse.js`, insérer juste après la ligne
 `export const ApiError = z.strictObject({ error: z.string() });` :
@@ -168,7 +168,7 @@ dans un commentaire que seul le mainteneur voit. C'est déjà la convention du
 dépôt, cf. `beers.schemas.js`. Le garder court — il décrit le contrat HTTP, pas
 les schémas zod qui produisent le cas.
 
-- [ ] **Step 4: vérifier le JSON Schema généré**
+- [x] **Step 4: vérifier le JSON Schema généré**
 
 ```bash
 node --input-type=module -e 'const { ApiValidationError, ApiError } = await import("#http/apiResponse.js"); const z = await import("zod"); const s = z.toJSONSchema(ApiValidationError); const d = s.properties.details.items; console.log(s.additionalProperties, d.additionalProperties, s.required.join(","), d.required.join(","), Boolean(d.properties.path.description), JSON.stringify(z.toJSONSchema(ApiError).properties));'
@@ -188,7 +188,7 @@ gagné de clé `details` — `.extend()` ne mute pas le schéma de départ.
 Ne pas comparer la sortie de `z.toJSONSchema` en chaîne complète : l'ordre des
 clés émises par zod n'est pas contractuel (il place `type` avant `description`).
 
-- [ ] **Step 5: commit**
+- [x] **Step 5: commit**
 
 ```bash
 git add src/http/errors/ValidationError.js src/http/apiResponse.js docs/superpowers/plans/2026-08-26-validation-error-handling.md
