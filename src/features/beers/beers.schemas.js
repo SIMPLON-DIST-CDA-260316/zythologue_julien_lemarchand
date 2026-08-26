@@ -1,10 +1,10 @@
 import * as z from "zod";
 
-import { BreweryFields } from "#features/breweries/breweries.schema.js";
-import { Ingredient } from "#features/ingredients/ingredients.schema.js";
-import { Category } from "#features/categories/categories.schema.js";
-import { Photo } from "#features/photos/photos.schema.js";
-import { Outlet } from "#features/outlets/outlets.schema.js";
+import { BreweryFields } from "#features/breweries/breweries.schemas.js";
+import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
+import { Category } from "#features/categories/categories.schemas.js";
+import { Photo } from "#features/photos/photos.schemas.js";
+import { Outlet } from "#features/outlets/outlets.schemas.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 
 // Model -------------------------------------------------------------

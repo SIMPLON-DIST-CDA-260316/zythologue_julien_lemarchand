@@ -16,7 +16,7 @@ import {
   BeerListResponse,
   BeerDetailsResponse,
   UpdateBeer,
-} from "#features/beers/beers.schema.js";
+} from "#features/beers/beers.schemas.js";
 import { NotFoundError } from "#middlewares/notFound.js";
 import { ValidationError } from "#middlewares/validateRequest.js";
 

@@ -1,4 +1,4 @@
-import service from "./beers.services.js";
+import service from "./beers.service.js";
 import { sendOne, sendMany } from "#http/apiResponse.js";
 
 const TestHandler = async (req, res) =>

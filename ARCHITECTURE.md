@@ -28,14 +28,14 @@ plutôt que de les séparer par couche technique :
 features/beers/
 ├── beers.routes.js       # déclaration des routes Express
 ├── beers.controller.js   # req/res, appelle le service, formate la réponse
-├── beers.services.js     # logique métier (actuellement un simple passthrough)
+├── beers.service.js      # logique métier (actuellement un simple passthrough)
 ├── beers.repository.js   # accès DB (requêtes SQL via `pg`)
-└── beers.schema.js       # schémas zod : model, DTOs, réponses
+└── beers.schemas.js      # schémas zod : model, DTOs, réponses
 ```
 
 Flow d'une requête : `routes → controller → service → repository → pool pg`.
 
-## `*.schema.js` — un seul fichier, plusieurs responsabilités marquées
+## `*.schemas.js` — un seul fichier, plusieurs responsabilités marquées
 
 Chaque schéma zod de ressource est structuré en blocs commentés :
 

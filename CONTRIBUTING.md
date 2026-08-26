@@ -27,9 +27,9 @@ Dans `src/features/<ressource>/` :
 |---|---|
 | `*.routes.js` | déclaration des routes Express |
 | `*.controller.js` | req/res, appelle le service |
-| `*.services.js` | logique métier |
+| `*.service.js` | logique métier |
 | `*.repository.js` | accès DB |
-| `*.schema.js` | schémas zod (model, DTOs, réponses) |
+| `*.schemas.js` | schémas zod (model, DTOs, réponses) |
 
 ## Vérifier avant de committer
 

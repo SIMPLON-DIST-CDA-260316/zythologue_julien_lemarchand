@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { Address } from "#features/addresses/addresses.schema.js";
+import { Address } from "#features/addresses/addresses.schemas.js";
 
 // Model -------------------------------------------------------------
 export const OutletFields = {
