@@ -4,6 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import beersRoutes from "#features/beers/beers.routes.js";
 import swaggerDocument from "#config/openapi.js";
 import NotFoundHandler from "#middlewares/notFound.js";
+import errorHandler from "#http/middlewares/errorHandler.js";
 
 export default () =>
   express()
@@ -11,4 +12,5 @@ export default () =>
     .use(logger("dev"))
     .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use("/beers", beersRoutes)
-    .use(NotFoundHandler);
+    .use(NotFoundHandler)
+    .use(errorHandler); // route reconnue mais levée — toujours en dernier
