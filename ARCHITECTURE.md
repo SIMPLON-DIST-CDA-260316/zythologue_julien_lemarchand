@@ -58,9 +58,9 @@ Chaque schéma zod de ressource est structuré en blocs commentés :
   les contrôleurs appellent `sendOne`/`sendMany`, jamais de `res.json({...})`
   à la main — les deux chemins doivent rester alignés sur la même forme.
 
-Erreurs : deux formes distinctes, `{ errors }` (tableau d'issues zod) sur 400,
-`{ error }` (string) ailleurs — gérées par les middlewares `notFound.js` et
-`validateRequest.js`.
+Erreurs : une seule forme, `{ error }`, produite par le seul `errorHandler`.
+Un 400 de validation y ajoute `details`, un tableau de `{ path, message }` —
+`path` en notation pointée, vide quand l'erreur porte sur le corps entier.
 
 ## Documentation OpenAPI
 

@@ -1,13 +1,13 @@
 ---
 plan: validation-error-handling
-status: draft
+status: done
 spec: docs/superpowers/specs/2026-08-26-validation-error-handling-design.md
 branch: main
 worktree: false
 tasks_total: 4
-tasks_done: 3
-current_task: 4
-last_commit: f4fabe2
+tasks_done: 4
+current_task: — (terminé)
+last_commit: e262d6f
 last_updated: 2026-08-26
 ---
 
@@ -637,7 +637,7 @@ EOF
 - Consumes: le contrat de réponse figé à la tâche 3.
 - Produces: rien de consommable par du code.
 
-- [ ] **Step 1: corriger ARCHITECTURE.md**
+- [x] **Step 1: corriger ARCHITECTURE.md**
 
 Remplacer les lignes 61-63 :
 
@@ -658,7 +658,7 @@ Un 400 de validation y ajoute `details`, un tableau de `{ path, message }` —
 Ce passage était faux deux fois : `notFound.js` a été supprimé par le commit
 `9ae7f79`, et la double forme disparaît avec la tâche 3.
 
-- [ ] **Step 2: corriger l'en-tête de requests/beers.http**
+- [x] **Step 2: corriger l'en-tête de requests/beers.http**
 
 Remplacer les lignes 13-15 :
 
@@ -680,7 +680,7 @@ par :
 
 La phrase sur les réponses 2xx est conservée : elle est toujours vraie.
 
-- [ ] **Step 3: corriger les trois annotations qui citent un code zod**
+- [x] **Step 3: corriger les trois annotations qui citent un code zod**
 
 Le code zod n'apparaît plus dans les réponses. Remplacer par du contenu, et non
 par le nom de la clé — écrire « details sur name » serait un recul, `details`
@@ -697,7 +697,7 @@ délibérément — un `j` parasite ligne 30 dans le corps d'une requête, et un
 `PUT /beers/{{id}}` ligne 60 alors que la route est en PATCH. Ils n'ont rien à
 voir avec ce chantier.
 
-- [ ] **Step 4: vérifier qu'aucune mention obsolète ne subsiste**
+- [x] **Step 4: vérifier qu'aucune mention obsolète ne subsiste**
 
 `-F` est indispensable : sans lui, `git grep` interprète les accolades comme un
 quantificateur d'intervalle.
@@ -716,7 +716,7 @@ Cette commande trouve 7 lignes avant la tâche 4 (2 dans `ARCHITECTURE.md`,
 5 dans `requests/beers.http`). Le périmètre est complet : `README.md` et
 `CONTRIBUTING.md` ne contiennent aucun de ces motifs.
 
-- [ ] **Step 5: commit**
+- [x] **Step 5: commit**
 
 ```bash
 git add ARCHITECTURE.md requests/beers.http docs/superpowers/plans/2026-08-26-validation-error-handling.md
