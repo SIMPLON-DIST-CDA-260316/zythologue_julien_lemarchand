@@ -2,9 +2,8 @@ import pool from "#config/database.js";
 
 export default {
   findOne: async (id) => {
-    try {
-      const { rows } = await pool.query(
-        `SELECT 
+    const { rows } = await pool.query(
+      `SELECT 
           b.id,
           b.name, 
           b.description, 
@@ -102,17 +101,13 @@ export default {
         WHERE b.id = $1
         GROUP BY b.id, br.id, rs.average, rs.count
         `,
-        [id],
-      );
-      return rows[0] || null;
-    } catch (error) {
-      throw error;
-    }
+      [id],
+    );
+    return rows[0] || null;
   },
   findAll: async () => {
-    try {
-      const { rows } = await pool.query(
-        `SELECT
+    const { rows } = await pool.query(
+      `SELECT
            id,
            name,
            description,
@@ -123,17 +118,13 @@ export default {
            brewery_id
          FROM beer
          ORDER BY id`,
-      );
+    );
 
-      return rows;
-    } catch (error) {
-      throw error;
-    }
+    return rows;
   },
   createOne: async ({ name, description, alcohol_content, brewery_id }) => {
-    try {
-      const { rows } = await pool.query(
-        `INSERT INTO beer (name, description, alcohol_content, brewery_id)
+    const { rows } = await pool.query(
+      `INSERT INTO beer (name, description, alcohol_content, brewery_id)
          VALUES ($1, $2, $3, $4)
          RETURNING
            id,
@@ -144,13 +135,10 @@ export default {
            created_at,
            updated_at,
            brewery_id`,
-        // Cle absente du body : undefined, que pg ecrit en NULL.
-        [name, description, alcohol_content, brewery_id],
-      );
+      // Cle absente du body : undefined, que pg ecrit en NULL.
+      [name, description, alcohol_content, brewery_id],
+    );
 
-      return rows[0];
-    } catch (error) {
-      throw error;
-    }
+    return rows[0];
   },
 };
