@@ -47,6 +47,19 @@ router
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/NewBeer'
+   *           examples:
+   *             minimale:
+   *               summary: les seuls champs obligatoires
+   *               value:
+   *                 name: Gueuze du Béguinage
+   *                 brewery_id: 1
+   *             complete:
+   *               summary: tous les champs renseignés
+   *               value:
+   *                 name: Ambrée des Wateringues
+   *                 description: Ambrée maltée, finale légèrement caramélisée.
+   *                 alcohol_content: 6.8
+   *                 brewery_id: 2
    *     responses:
    *       201:
    *         description: La bière a été créée
@@ -128,6 +141,15 @@ router
    *         application/json:
    *           schema:
    *             $ref: '#/components/schemas/UpdateBeer'
+   *           examples:
+   *             un_seul_champ:
+   *               summary: renommage — les autres colonnes sont laissées intactes
+   *               value:
+   *                 name: Blonde du Nord — édition d'hiver
+   *             effacement:
+   *               summary: null efface la colonne, contrairement à son absence
+   *               value:
+   *                 description: null
    *     responses:
    *       200:
    *         description: La bière mise à jour
