@@ -8,7 +8,7 @@
 
 
   
-[![Modèle Logique de Données](./diagrams/MPD.svg)](./diagrams/MPD.svg)
+[![Modèle Physique de Données](./diagrams/MPD.svg)](./diagrams/MPD.svg)
 [*lien publique vers le schema dbDiagram.io*](https://dbdiagram.io/d/6a297a709340ecc0656b6baf)
 > Implémentation de référence : [`sql/01_create_schema.sql`](../sql/01_create_schema.sql).*
 
@@ -31,7 +31,7 @@
 | adr_rue | street | VARCHAR(255) | NOT NULL |
 | adr_code_postal | zip_code | VARCHAR(10) | NOT NULL |
 | adr_ville | city | VARCHAR(100) | NOT NULL |
-| adr_pays | country | VARCHAR(60) | NOT NULL, DEFAULT `'France'` |
+| adr_pays | country | VARCHAR(60) | NOT NULL |
 
 ## PHOTO
 
@@ -41,6 +41,7 @@
 | pho_url | url | VARCHAR(255) | NOT NULL |
 | pho_legende | caption | VARCHAR(255) | |
 | pho_date | created_at | TIMESTAMPTZ | NOT NULL, DEFAULT `now()` |
+| — | updated_at | TIMESTAMPTZ | NOT NULL, DEFAULT `now()` (trigger) |
 
 ## CATEGORY
 
