@@ -18,7 +18,7 @@ export default {
           json_agg( 
             DISTINCT jsonb_build_object(
               'name', i.name,
-              'isAllergen', i.is_allergen
+              'is_allergen', i.is_allergen
             )
           ) AS ingredients,
 
@@ -44,13 +44,13 @@ export default {
              'id', o.id,
              'name', o.name,
              'type', o.type,
-             'onlineSale', o.online_sales,
+             'online_sales', o.online_sales,
              'website', o.website,
              'address', CASE WHEN a.id IS NULL THEN NULL ELSE
                jsonb_build_object(
                  'number', a.number,
                  'street', a.street,
-                 'zipCode', a.zip_code,
+                 'zip_code', a.zip_code,
                  'city', a.city,
                  'country', a.country
                )
@@ -64,7 +64,7 @@ export default {
               'average', rs.average,
               'count', rs.count
             )
-          END AS "ratingStats"
+          END AS rating_stats
 
 
         FROM beer b

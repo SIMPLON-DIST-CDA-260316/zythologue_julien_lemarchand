@@ -29,7 +29,7 @@ export default {
    *           maxLength: 120
    *         description:
    *           type: ["string", "null"]
-   *         alcoholContent:
+   *         alcohol_content:
    *           type: ["number", "null"]
    *           format: float
    *           minimum: 0
@@ -75,7 +75,7 @@ export default {
    *               name:
    *                 type: string
    *                 maxLength: 80
-   *               isAllergen:
+   *               is_allergen:
    *                 type: boolean
    *                 description: indique si l'ingrédient est un allergène déclaré
    *         outlets:
@@ -92,7 +92,7 @@ export default {
    *               type:
    *                 type: ["string", "null"]
    *                 enum: [cellar, bar, restaurant, supermarket, null]
-   *               onlineSales:
+   *               online_sales:
    *                 type: boolean
    *                 description: indique si le lieu propose une vente en ligne
    *               website:
@@ -105,11 +105,11 @@ export default {
    *                 properties:
    *                   city:
    *                     type: string
-   *                   zipCode:
+   *                   zip_code:
    *                     type: string
    *                   country:
    *                     type: string
-   *         ratingStats:
+   *         rating_stats:
    *           type: ["object", "null"]
    *           description: null si aucun avis n'a encore été posté
    *           properties:
