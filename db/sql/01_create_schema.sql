@@ -94,7 +94,11 @@ CREATE TABLE beer (
   ),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  brewery_id INTEGER NOT NULL REFERENCES brewery (id) ON DELETE RESTRICT
+  brewery_id INTEGER NOT NULL REFERENCES brewery (id) ON DELETE RESTRICT,
+  -- Deux brasseries peuvent produire une « Triple » ; une seule brasserie ne
+  -- peut pas produire deux bieres du meme nom. Sensible a la casse : « Kwak »
+  -- et « kwak » restent distincts, faute d'index fonctionnel.
+  UNIQUE (name, brewery_id)
 );
 CREATE TABLE outlet (
   id SERIAL PRIMARY KEY,
