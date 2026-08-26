@@ -62,13 +62,16 @@ Prises par l'utilisateur, non rediscutées ici.
    publiée, via `.describe()`.
 5. **Le constructeur prend les `issues`, pas le `ZodError`.** La classe ne
    connaît pas zod.
-6. **La réponse 400 est mutualisée** en `components/responses/BadRequest`. Le
-   commit `79bbc10` avait gardé les 400 inline au motif que leur `description`
-   variait utilement d'une opération à l'autre. Cet argument tombe :
-   `details[].path` nomme désormais le champ fautif, la nuance descriptive
-   n'était qu'un palliatif à un corps opaque. On perd un indice de doc
-   (« l'ID fourni n'est pas un entier positif »), on supprime quatre blocs
-   dupliqués.
+6. **Les quatre 400 restent inline**, seul le nom du schéma référencé change.
+   Une version antérieure de ce design les mutualisait en
+   `components/responses/BadRequest`, au motif que `details[].path` nommerait
+   désormais le champ fautif et rendrait les `description` par-opération
+   superflues. Une revue adversariale a montré que l'argument ne vaut que pour
+   **une** opération sur quatre : `path` est vide sur `GET`, `DELETE` et le
+   `refine` racine de `PATCH`, c'est-à-dire précisément là où la description
+   (« l'ID fourni n'est pas un entier positif ») portait la seule information
+   disponible. Mutualiser détruirait cette information sans rien mettre à la
+   place, et renverserait `79bbc10` — décision prise le même jour, et correcte.
 
 ### Ce qui a été envisagé puis écarté
 
@@ -97,14 +100,13 @@ dans `beers.routes.js`.
 | --- | --- | --- |
 | `ValidationError` (classe) | `src/http/errors/ValidationError.js` | levée par `validateRequest`, mappée sur 400 |
 | `ApiValidationError` (schéma zod) | `src/http/apiResponse.js` | forme du corps 400, alimente `components.schemas` |
-| `BadRequest` (Response Object) | `config/openapi.js` | référencé par les quatre opérations |
+
+Deux symboles, pas trois : la décision 6 renonce au Response Object mutualisé.
 
 La classe garde `ValidationError` : la décision 2 fixe son dossier, et
 `ApiValidationError` comme nom de classe serait un contresens. Le schéma prend
 `ApiValidationError` — il rejoint la famille `ApiResponse` / `ApiListResponse` /
-`ApiError` et hérite littéralement du dernier. Le Response Object suit la règle
-déjà posée par `NotFound` et `InternalServerError` : la reason phrase du code,
-donc `BadRequest`.
+`ApiError` et hérite littéralement du dernier.
 
 ## Flux cible
 
@@ -129,9 +131,8 @@ nom dit : il valide et écrase, il ne répond pas.
  * Une entrée ne respecte pas son schéma. Erreur de protocole, pas de métier :
  * elle vit dans `#http/`, comme `RouteNotFoundError`.
  *
- * Prend les issues et non le `ZodError` : la classe n'a besoin que de
- * `{ path, message }`. Message fixe, contrairement à ses voisines : nommer les
- * champs fautifs dupliquerait `details`.
+ * Message fixe, contrairement à ses voisines : nommer les champs fautifs
+ * dupliquerait `details`.
  */
 export class ValidationError extends Error {
   constructor(issues) {
@@ -160,7 +161,7 @@ export const ApiValidationError = ApiError.extend({
       path: z
         .string()
         .describe(
-          "chemin pointé du champ fautif — vide quand l'échec porte sur la valeur validée elle-même : paramètre scalaire, clé inconnue, règle inter-champs",
+          "chemin pointé du champ fautif — vide quand l'erreur porte sur le corps entier",
         ),
       message: z.string(),
     }),
@@ -221,31 +222,25 @@ point du chantier. Seul écart assumé à « zéro duplication ».
   La dépendance inversée est corrigée : `config/` n'importe plus rien de
   `#http/middlewares/`.
 - `components.schemas` : `ValidationError` → `ApiValidationError`.
-- `components.responses` gagne, en premier :
-
-```js
-BadRequest: jsonResponse(
-  "Une entrée ne respecte pas son schéma. `details` nomme les champs fautifs.",
-  "ApiValidationError",
-),
-```
+- `components.responses` n'est **pas** touché, cf. décision 6.
 
 ### `src/features/beers/beers.routes.js`
 
-Les quatre blocs `400` inline deviennent :
+Quatre lignes, et quatre seulement — 44, 78, 108, 123 :
 
 ```yaml
- *       400:
- *         $ref: '#/components/responses/BadRequest'
+ *               $ref: '#/components/schemas/ApiValidationError'
 ```
 
-Rien d'autre ne change. Le `$ref` du 200 de PATCH reste faux exprès, voir
+Les `description` par-opération sont conservées : ce sont elles qui disent que
+le 400 de `GET`, `PATCH` et `DELETE` concerne l'`id`, là où `details[].path`
+sort vide. Rien d'autre ne change. Le `$ref` du 200 de PATCH reste faux exprès, voir
 « Hors périmètre ».
 
 ### Documentation devenue fausse
 
 `ARCHITECTURE.md:61-63`, à remplacer — le texte actuel cite `notFound.js`,
-supprimé par `035d3c5` :
+supprimé par `9ae7f79` :
 
 ```markdown
 Erreurs : une seule forme, `{ error }`, produite par le seul `errorHandler`.
@@ -323,28 +318,25 @@ Réponses attendues :
 
 ## Commits
 
-Cinq commits, chacun démarre et sert `/docs`. Les deux premiers sont inertes —
-le dépôt a déjà ce pattern.
+Quatre commits, chacun démarre et sert `/docs`. Le premier est inerte — le
+dépôt a déjà ce pattern.
 
-1. **`feat(http): introduit ValidationError`** — `src/http/errors/ValidationError.js`
-   seul. Corps du message : pourquoi `#http/` et non `#errors/`, pourquoi la
-   classe met elle-même les issues en forme, pourquoi un message fixe. Rien ne
-   la lève encore.
-2. **`feat(http): décrit le corps d'une erreur de validation`** —
-   `ApiValidationError` dans `apiResponse.js`, dérivé d'`ApiError` par
-   `.extend()` pour que le champ `error` n'existe qu'une fois. Personne ne
-   l'importe encore.
-3. **`docs(openapi): mutualise la réponse 400 et aligne son schéma`** —
-   `config/openapi.js` et `beers.routes.js`. Corps : la réserve de `79bbc10`
-   tombe, et la dépendance inversée est corrigée. Le schéma zod `ValidationError`
-   devient orphelin mais reste en place ; personne ne l'importe, rien ne casse.
-4. **`refactor(http): fait lever le 400 de validation`** — `validateRequest.js`
-   et `errorHandler.js`. **Seul commit qui change une réponse de l'API** ; le 3
+1. **`feat(http): introduit ValidationError et son corps`** —
+   `src/http/errors/ValidationError.js` et `ApiValidationError` dans
+   `apiResponse.js`. Une erreur et la forme qu'elle publie sont la même idée ;
+   deux commits inertes consécutifs pour deux moitiés d'un seul concept ne se
+   défendent pas. Rien ne lève la classe, personne n'importe le schéma.
+2. **`docs(openapi): aligne le schéma du 400`** — `config/openapi.js` et
+   `beers.routes.js`. Corps : pourquoi les blocs restent inline, et la
+   dépendance inversée corrigée. Le schéma zod `ValidationError` devient
+   orphelin mais reste en place ; personne ne l'importe, rien ne casse.
+3. **`refactor(http): fait lever le 400 de validation`** — `validateRequest.js`
+   et `errorHandler.js`. **Seul commit qui change une réponse de l'API** ; le 2
    ne change que la spec servie sur `/docs`.
-5. **`docs: aligne la description du contrat d'erreur`** — `ARCHITECTURE.md` et
+4. **`docs: aligne la description du contrat d'erreur`** — `ARCHITECTURE.md` et
    `requests/beers.http`.
 
-Le 3 précède le 4 pour que la suppression du schéma orphelin arrive après son
+Le 2 précède le 3 pour que la suppression du schéma orphelin arrive après son
 remplacement dans la spec : jamais d'import cassé à aucun commit.
 
 Ne pas embarquer d'autres fichiers modifiés dans le working tree.
@@ -376,7 +368,7 @@ foreach ($u in @("/beers/1","/beers/9999","/beers","/nope","/beers/abc","/docs/"
 ```
 
 Attendus : (1) `ApiValidationError` présent, `ValidationError` absent, `$ref`
-vers `BadRequest` ; (3) les corps de la section « Cas limites », et les deux 404
+`$ref` intacts ; (3) les corps de la section « Cas limites », et les deux 404
 inchangés en `{ error }` **sans** clé `details` ; (4) `200`, `404`, `200`, `404`,
 `400`, `200`.
 
