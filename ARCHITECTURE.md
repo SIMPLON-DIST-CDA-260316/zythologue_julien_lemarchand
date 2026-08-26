@@ -76,7 +76,8 @@ les lignes rendues par `pg` — jamais dans la logique.
 
 ## Enveloppe de réponse
 
-`src/http/apiResponse.js` est l'unique propriétaire de la forme des réponses :
+`src/http/apiResponse.js` décrit la forme des réponses ; les producteurs réels
+vivent ailleurs et doivent rester alignés sur ce qu'il décrit :
 
 - Succès unique : `{ data }`
 - Succès collection : `{ data, meta: { total } }`
