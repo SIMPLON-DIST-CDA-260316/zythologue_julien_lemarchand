@@ -37,7 +37,9 @@ CREATE TABLE address (
   street VARCHAR(255) NOT NULL,
   zip_code VARCHAR(10) NOT NULL,
   city VARCHAR(100) NOT NULL,
-  country VARCHAR(60) NOT NULL
+  country VARCHAR(60) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE TABLE photo (
   id SERIAL PRIMARY KEY,
@@ -49,12 +51,16 @@ CREATE TABLE photo (
 CREATE TABLE category (
   id SERIAL PRIMARY KEY,
   name VARCHAR(60) NOT NULL UNIQUE,
-  description TEXT
+  description TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE TABLE ingredient (
   id SERIAL PRIMARY KEY,
   name VARCHAR(80) NOT NULL UNIQUE,
-  is_allergen BOOLEAN NOT NULL DEFAULT false
+  is_allergen BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- =====================================================================
 --  Entités - dépendent des références
@@ -188,9 +194,16 @@ CREATE OR REPLACE FUNCTION set_updated_at() RETURNS TRIGGER AS $$ BEGIN NEW.upda
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
--- creation des triggers pour chaque table
+-- creation des triggers pour chaque table horodatee : les tables de liaison
+-- pures n'ont rien a muter, un lien se cree ou se supprime.
+CREATE TRIGGER trg_address_updated_at BEFORE
+UPDATE ON address FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_photo_updated_at BEFORE
 UPDATE ON photo FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER trg_category_updated_at BEFORE
+UPDATE ON category FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER trg_ingredient_updated_at BEFORE
+UPDATE ON ingredient FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_account_updated_at BEFORE
 UPDATE ON account FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER trg_brewery_updated_at BEFORE
