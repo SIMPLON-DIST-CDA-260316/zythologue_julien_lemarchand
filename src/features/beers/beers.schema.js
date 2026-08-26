@@ -13,7 +13,12 @@ export const BeerFields = {
   Id: z.number().int().min(1),
   Name: z.string().trim().min(1).max(120),
   Description: z.string().trim().min(1).nullable(),
-  AlcoholContent: z.number().min(0).max(99.99).nullable(),
+  AlcoholContent: z
+    .number()
+    .min(0)
+    .max(99.99)
+    .nullable()
+    .describe("teneur en alcool en % vol."),
   // TIMESTAMPTZ en base, sérialisé en ISO 8601 UTC par `res.json()`.
   CreatedAt: z.iso.datetime(),
   UpdatedAt: z.iso.datetime(),
@@ -63,7 +68,9 @@ export const Beer = z.strictObject({
 // `BeerDetails` = la row plus ses relations
 const Ingredient = z.strictObject({
   name: z.string().trim().min(1).max(80),
-  is_allergen: z.boolean(),
+  is_allergen: z
+    .boolean()
+    .describe("indique si l'ingrédient est un allergène déclaré"),
 });
 
 const Category = z.strictObject({
@@ -90,35 +97,48 @@ const Outlet = z.strictObject({
   id: z.number().int().min(1),
   name: z.string().trim().min(1).max(120),
   type: z.enum(["cellar", "bar", "restaurant", "supermarket"]).nullable(),
-  online_sales: z.boolean(),
+  online_sales: z
+    .boolean()
+    .describe("indique si le lieu propose une vente en ligne"),
   website: z.url().max(255).nullable(),
-  address: Address.nullable(),
+  address: Address.nullable().describe(
+    "null pour les outlets exclusivement en ligne",
+  ),
 });
 
 // `null` tant qu'aucun avis n'a été posté, cf. le `CASE WHEN rs.count = 0`
 // dans `findOne`.
 const RatingStats = z
   .strictObject({
-    average: z.number().min(1).max(5),
+    average: z
+      .number()
+      .min(1)
+      .max(5)
+      .describe("note moyenne sur une échelle de 1 à 5"),
     count: z.number().int().min(0),
   })
-  .nullable();
+  .nullable()
+  .describe("null si aucun avis n'a encore été posté");
 
-export const BeerDetails = z.strictObject({
-  id: BeerFields.Id,
-  name: BeerFields.Name,
-  description: BeerFields.Description,
-  alcohol_content: BeerFields.AlcoholContent,
-  brewery: z.strictObject({
-    id: BreweryFields.Id,
-    name: BreweryFields.Name,
-  }),
-  ingredients: z.array(Ingredient),
-  categories: z.array(Category),
-  photos: z.array(Photo),
-  outlets: z.array(Outlet),
-  rating_stats: RatingStats,
-});
+export const BeerDetails = z
+  .strictObject({
+    id: BeerFields.Id,
+    name: BeerFields.Name,
+    description: BeerFields.Description,
+    alcohol_content: BeerFields.AlcoholContent,
+    brewery: z.strictObject({
+      id: BreweryFields.Id,
+      name: BreweryFields.Name,
+    }),
+    ingredients: z.array(Ingredient),
+    categories: z.array(Category),
+    photos: z.array(Photo),
+    outlets: z.array(Outlet),
+    rating_stats: RatingStats,
+  })
+  .describe(
+    "Détail complet d'une bière — données propres, brasserie, composition, points de vente et statistiques d'avis.",
+  );
 
 // - réponses --------------------------------------------------
 // Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
