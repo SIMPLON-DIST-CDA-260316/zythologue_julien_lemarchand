@@ -5,9 +5,9 @@ spec: docs/superpowers/specs/2026-08-26-validation-error-handling-design.md
 branch: main
 worktree: false
 tasks_total: 4
-tasks_done: 2
-current_task: 3
-last_commit: 46b26f8
+tasks_done: 3
+current_task: 4
+last_commit: f4fabe2
 last_updated: 2026-08-26
 ---
 
@@ -375,7 +375,7 @@ Note : `validateRequest.js` est modifié dans le working tree (`reject` passé �
 `HTTP_STATUS.BAD_REQUEST`). Le Step 1 remplace tout le fichier, ce changement
 disparaît sans conséquence sur l'état final.
 
-- [ ] **Step 1: réécrire validateRequest.js**
+- [x] **Step 1: réécrire validateRequest.js**
 
 Remplacer **tout** le contenu de `src/http/middlewares/validateRequest.js` par :
 
@@ -444,7 +444,7 @@ Quatre disparitions, toutes voulues :
 
 Le `@module` passe de `middlewares/validateRequest` à `http/middlewares/validateRequest` : il était périmé depuis le déplacement du commit `035d3c5`, et l'en-tête est réécrit de toute façon.
 
-- [ ] **Step 2: réécrire errorHandler.js**
+- [x] **Step 2: réécrire errorHandler.js**
 
 Remplacer **tout** le contenu de `src/http/middlewares/errorHandler.js` par :
 
@@ -485,7 +485,7 @@ Trois changements par rapport à l'existant :
 - le spread conditionnel de `details` sur la branche 4xx. La branche 5xx n'y touche pas : le message d'une 500 ne sort jamais, ses détails non plus ;
 - « Seul point où **le domaine** reçoit un code HTTP » devient « Seul point où **une classe d'erreur** reçoit un code HTTP ». La formulation était déjà approximative — `RouteNotFoundError` n'est pas du domaine — et l'ajout de `ValidationError` la rend franchement fausse. Le JSDoc de l'export est replié sur une ligne et son backtick parasite (`l'app\``) disparaît, le fichier est touché de toute façon.
 
-- [ ] **Step 3: vérifier que le module n'exporte plus le schéma**
+- [x] **Step 3: vérifier que le module n'exporte plus le schéma**
 
 ```bash
 node --input-type=module -e 'const m = await import("#http/middlewares/validateRequest.js"); console.log(Object.keys(m).sort().join(","));'
@@ -497,7 +497,7 @@ Sortie attendue :
 validateBody,validateParam
 ```
 
-- [ ] **Step 4: recharger l'API**
+- [x] **Step 4: recharger l'API**
 
 ```bash
 docker compose up -d api
@@ -510,7 +510,7 @@ dans le conteneur qui a rechargé. Vérifier que le nouveau fichier
 `src/http/errors/ValidationError.js` a bien été pris en compte, le watch est en
 mode polling.
 
-- [ ] **Step 5: vérifier les trois cas où le path est vide**
+- [x] **Step 5: vérifier les trois cas où le path est vide**
 
 ```bash
 curl.exe -s http://localhost:3000/beers/abc
@@ -537,7 +537,7 @@ Ces trois `path` vides sont les trois situations recensées : paramètre scalair
 (`IdParam` parse une valeur, pas un objet), `refine` racine de `UpdateBeer`, et
 clé inconnue sur un `strictObject` — la clé fautive est alors dans le message.
 
-- [ ] **Step 6: vérifier qu'un path non vide sort bien, dans l'ordre**
+- [x] **Step 6: vérifier qu'un path non vide sort bien, dans l'ordre**
 
 ```bash
 curl.exe -s -X POST http://localhost:3000/beers -H "Content-Type: application/json" -d '{}'
@@ -552,7 +552,7 @@ Sortie attendue :
 `name` avant `brewery_id` : zod rapporte les issues dans l'ordre de déclaration
 du schéma.
 
-- [ ] **Step 7: vérifier que les 404 n'ont pas gagné de clé details**
+- [x] **Step 7: vérifier que les 404 n'ont pas gagné de clé details**
 
 ```bash
 curl.exe -s http://localhost:3000/beers/999999
@@ -571,7 +571,7 @@ Sorties attendues :
 Aucune clé `details`, même vide. C'est la non-régression qui compte sur le
 spread conditionnel.
 
-- [ ] **Step 8: vérifier les codes de statut de bout en bout**
+- [x] **Step 8: vérifier les codes de statut de bout en bout**
 
 Cette étape suppose une base **déjà initialisée et peuplée**. Sur un volume
 `postgres18_cluster` neuf, `/beers/1` et `/beers` rendent 500 et l'étape n'est
@@ -600,7 +600,7 @@ Les trois premiers et le dernier sont le vrai apport de l'étape : ils prouvent
 que rien d'autre n'a cassé. Les deux autres ont déjà rendu leur corps aux
 Steps 5 et 7.
 
-- [ ] **Step 9: commit**
+- [x] **Step 9: commit**
 
 ```bash
 git add src/http/middlewares/validateRequest.js src/http/middlewares/errorHandler.js docs/superpowers/plans/2026-08-26-validation-error-handling.md
