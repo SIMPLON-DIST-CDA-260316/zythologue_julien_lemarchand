@@ -59,13 +59,70 @@ export const Beer = z.strictObject({
   brewery_id: BeerFields.BreweryId,
 });
 
-// ! `BeerDetails` — la row plus ses relations — reste décrit à la main dans le
-// ! JSDoc du contrôleur. À modéliser ici, avec photos, categories, brewery,
-// ! composition, outlets et ratingStats, dès que les ressources liées ont
-// ! leurs schémas.
+// - sortie, détail --------------------------------------------
+// `BeerDetails` = la row plus ses relations
+const Ingredient = z.strictObject({
+  name: z.string().trim().min(1).max(80),
+  is_allergen: z.boolean(),
+});
+
+const Category = z.strictObject({
+  id: z.number().int().min(1),
+  name: z.string().trim().min(1).max(60),
+});
+
+const Photo = z.strictObject({
+  url: z.url().max(255),
+  caption: z.string().trim().min(1).max(255).nullable(),
+});
+
+// Absente pour les outlets exclusivement en ligne, d'où la nullabilité portée
+// par le champ `address` sur `Outlet`, pas ici.
+const Address = z.strictObject({
+  number: z.string().trim().min(1).max(10).nullable(),
+  street: z.string().trim().min(1).max(255),
+  zip_code: z.string().trim().min(1).max(10),
+  city: z.string().trim().min(1).max(100),
+  country: z.string().trim().min(1).max(60),
+});
+
+const Outlet = z.strictObject({
+  id: z.number().int().min(1),
+  name: z.string().trim().min(1).max(120),
+  type: z.enum(["cellar", "bar", "restaurant", "supermarket"]).nullable(),
+  online_sales: z.boolean(),
+  website: z.url().max(255).nullable(),
+  address: Address.nullable(),
+});
+
+// `null` tant qu'aucun avis n'a été posté, cf. le `CASE WHEN rs.count = 0`
+// dans `findOne`.
+const RatingStats = z
+  .strictObject({
+    average: z.number().min(1).max(5),
+    count: z.number().int().min(0),
+  })
+  .nullable();
+
+export const BeerDetails = z.strictObject({
+  id: BeerFields.Id,
+  name: BeerFields.Name,
+  description: BeerFields.Description,
+  alcohol_content: BeerFields.AlcoholContent,
+  brewery: z.strictObject({
+    id: BreweryFields.Id,
+    name: BreweryFields.Name,
+  }),
+  ingredients: z.array(Ingredient),
+  categories: z.array(Category),
+  photos: z.array(Photo),
+  outlets: z.array(Outlet),
+  rating_stats: RatingStats,
+});
 
 // - réponses --------------------------------------------------
 // Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
 // la ressource nue, réutilisable telle quelle dans une autre enveloppe.
 export const BeerResponse = ApiResponse(Beer);
 export const BeerListResponse = ApiListResponse(Beer);
+export const BeerDetailsResponse = ApiResponse(BeerDetails);
