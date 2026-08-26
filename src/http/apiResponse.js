@@ -10,6 +10,7 @@
  * @module apiResponse
  */
 import * as z from "zod";
+import { HTTP_STATUS } from "#http/httpStatus.js";
 
 /** Ressource unique : `{ data: <T> }`. */
 export const ApiResponse = (schema) => z.strictObject({ data: schema });
@@ -23,10 +24,10 @@ export const ApiListResponse = (schema) =>
     }),
   });
 
-/** Émet une ressource unique — `status` à 201 sur une création. */
-export const sendOne = (res, data, status = 200) =>
+/** Émet une ressource unique — `status` à `CREATED` sur une création. */
+export const sendOne = (res, data, status = HTTP_STATUS.OK) =>
   res.status(status).json({ data });
 
 /** Émet une collection. `total` est à passer dès qu'un LIMIT existe. */
 export const sendMany = (res, data, total = data.length) =>
-  res.status(200).json({ data, meta: { total } });
+  res.status(HTTP_STATUS.OK).json({ data, meta: { total } });
