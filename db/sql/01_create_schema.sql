@@ -94,12 +94,13 @@ CREATE TABLE beer (
   ),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  brewery_id INTEGER NOT NULL REFERENCES brewery (id) ON DELETE RESTRICT,
-  -- Deux brasseries peuvent produire une « Triple » ; une seule brasserie ne
-  -- peut pas produire deux bieres du meme nom. Sensible a la casse : « Kwak »
-  -- et « kwak » restent distincts, faute d'index fonctionnel.
-  UNIQUE (name, brewery_id)
+  brewery_id INTEGER NOT NULL REFERENCES brewery (id) ON DELETE RESTRICT
 );
+-- Deux brasseries peuvent produire une « Triple » ; une seule brasserie ne peut
+-- pas produire deux bieres du meme nom. « Kwak » et « kwak » sont la meme biere,
+-- d'ou LOWER() : une contrainte de table n'acceptant pas d'expression, c'est un
+-- index unique. Il leve le meme 23505.
+CREATE UNIQUE INDEX beer_lower_name_brewery_id_key ON beer (LOWER(name), brewery_id);
 CREATE TABLE outlet (
   id SERIAL PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
