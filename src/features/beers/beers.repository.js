@@ -16,31 +16,31 @@ export default {
           ) AS brewery,
 
           -- construction d'un tableau d'ingredients
-          json_agg( 
+          COALESCE(json_agg(
             DISTINCT jsonb_build_object(
               'name', i.name,
               'is_allergen', i.is_allergen
             )
-          ) AS ingredients,
+          ) FILTER (WHERE i.id IS NOT NULL), '[]') AS ingredients,
 
           -- construction d'un tableau de categories
-          json_agg(
+          COALESCE(json_agg(
             DISTINCT jsonb_build_object(
               'id', cat.id,
               'name',cat.name
             )
-          ) AS categories,
+          ) FILTER (WHERE cat.id IS NOT NULL), '[]') AS categories,
 
           -- construction d'un tableau de photos
-          json_agg(
+          COALESCE(json_agg(
             DISTINCT jsonb_build_object(
               'url', p.url,
               'caption', p.caption
             )
-          ) AS photos,
-          
+          ) FILTER (WHERE p.id IS NOT NULL), '[]') AS photos,
+
           -- construction d'un tableau d'outlets
-          json_agg(
+          COALESCE(json_agg(
             DISTINCT jsonb_build_object(
              'id', o.id,
              'name', o.name,
@@ -57,7 +57,7 @@ export default {
                )
              END
             )
-          ) AS outlets,
+          ) FILTER (WHERE o.id IS NOT NULL), '[]') AS outlets,
 
           -- statistiques d'avis : null tant qu'aucun avis n'a ete poste
           CASE WHEN rs.count = 0 THEN NULL ELSE
