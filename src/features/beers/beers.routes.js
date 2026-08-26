@@ -22,6 +22,7 @@ router
    * @openapi
    * /beers:
    *   get:
+   *     operationId: listBeers
    *     tags: [Beers]
    *     summary: récupère toutes les bières
    *     description: >
@@ -43,6 +44,7 @@ router
    * @openapi
    * /beers:
    *   post:
+   *     operationId: createBeer
    *     tags: [Beers]
    *     summary: crée une nouvelle bière
    *     description: >
@@ -110,6 +112,7 @@ router
    * @openapi
    * /beers/{id}:
    *   get:
+   *     operationId: getBeer
    *     tags: [Beers]
    *     summary: récupère une bière par son ID
    *     description: >
@@ -142,6 +145,7 @@ router
    * @openapi
    * /beers/{id}:
    *   patch:
+   *     operationId: updateBeer
    *     tags: [Beers]
    *     summary: met à jour une bière par son ID
    *     description: >
@@ -193,6 +197,7 @@ router
    * @openapi
    * /beers/{id}:
    *   delete:
+   *     operationId: deleteBeer
    *     tags: [Beers]
    *     summary: supprime une bière par son ID
    *     description: >
