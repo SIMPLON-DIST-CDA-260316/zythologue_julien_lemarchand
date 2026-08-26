@@ -11,8 +11,8 @@
     "#errors/*": "./src/errors/*"
   },
   "scripts": {
-    "dev": "nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
-    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "NODE_ENV=development nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env server.js",
     "db:schema": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /docker-entrypoint-initdb.d/01_create_schema.sql\"",
     "db:seed": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER -d $POSTGRES_DB -f /docker-entrypoint-initdb.d/02_seed.sql\"",
     "db:reset": "pnpm db:schema && pnpm db:seed",
