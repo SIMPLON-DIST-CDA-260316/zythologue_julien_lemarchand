@@ -1,43 +1,18 @@
 import service from "./beers.service.js";
 import { sendOne, sendMany } from "#http/apiResponse.js";
+import { HTTP_STATUS } from "#http/httpStatus.js";
 
 const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
 
 export default {
-  findOne: async (req, res) => {
-    try {
-      const beer = await service.findOne(req.params.id);
-      if (beer === null)
-        return res
-          .status(404)
-          .json({ error: `Beer with id ${req.params.id} not found` });
-      return sendOne(res, beer);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
-    }
-  },
-  findAll: async (req, res) => {
-    try {
-      const beers = await service.findAll();
+  getOne: async (req, res) => sendOne(res, await service.getOne(req.params.id)),
 
-      return sendMany(res, beers);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
-    }
-  },
-  createOne: async (req, res) => {
-    try {
-      const beer = await service.createOne(req.body);
+  findAll: async (req, res) => sendMany(res, await service.findAll()),
 
-      return sendOne(res, beer, 201);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
-    }
-  },
+  createOne: async (req, res) =>
+    sendOne(res, await service.createOne(req.body), HTTP_STATUS.CREATED),
+
   deleteOne: TestHandler,
   updateOne: TestHandler,
 };

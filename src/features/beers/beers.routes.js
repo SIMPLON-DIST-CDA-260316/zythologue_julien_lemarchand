@@ -138,7 +138,7 @@ router
 router
   .param("id", validateParam(IdParam))
   .route("/:id")
-  .get(controller.findOne)
+  .get(controller.getOne)
   .patch(validateBody(UpdateBeer), controller.updateOne)
   .delete(controller.deleteOne);
 
