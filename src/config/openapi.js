@@ -18,7 +18,7 @@ import {
   UpdateBeer,
 } from "#features/beers/beers.schemas.js";
 import { ApiError } from "#http/apiResponse.js";
-import { ValidationError } from "#middlewares/validateRequest.js";
+import { ValidationError } from "#http/middlewares/validateRequest.js";
 
 /**
  * Convertit un schéma zod en Schema Object OpenAPI 3.1, qui suit JSON Schema

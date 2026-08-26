@@ -6,7 +6,6 @@
   "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
   "imports": {
     "#features/*": "./src/features/*",
-    "#middlewares/*": "./src/middlewares/*",
     "#config/*": "./src/config/*",
     "#http/*": "./src/http/*",
     "#errors/*": "./src/errors/*"
