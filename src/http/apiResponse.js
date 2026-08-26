@@ -4,13 +4,13 @@
  * Un array racine ne pourra jamais accueillir `meta` sans casser les clients ;
  * la ressource unique prend l'enveloppe par cohérence.
  *
- * Les fabriques alimentent la spec OpenAPI, les `send*` sont ce qu'appellent
- * les handlers — construire `{ data }` à la main fait diverger les deux.
+ * Les fabriques alimentent la spec OpenAPI ; les producteurs réels sont
+ * ailleurs (`attachResponseHelpers` pour le succès, `errorHandler` pour
+ * l'échec) et doivent rester alignés sur les formes décrites ici.
  *
  * @module apiResponse
  */
 import * as z from "zod";
-import { HTTP_STATUS } from "#http/httpStatus.js";
 
 /** Ressource unique : `{ data: <T> }`. */
 export const ApiResponse = (schema) => z.strictObject({ data: schema });
@@ -40,11 +40,3 @@ export const ApiValidationError = ApiError.extend({
     }),
   ),
 });
-
-/** Émet une ressource unique — `status` à `CREATED` sur une création. */
-export const sendOne = (res, data, status = HTTP_STATUS.OK) =>
-  res.status(status).json({ data });
-
-/** Émet une collection. `total` est à passer dès qu'un LIMIT existe. */
-export const sendMany = (res, data, total = data.length) =>
-  res.status(HTTP_STATUS.OK).json({ data, meta: { total } });

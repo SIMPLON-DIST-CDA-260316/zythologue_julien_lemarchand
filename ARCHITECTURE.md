@@ -56,7 +56,7 @@ Trois registres, une frontière nette :
 | --- | --- | --- |
 | `PascalCase` | briques de champ du model | `BeerFields.AlcoholContent` |
 | `snake_case` | colonnes Postgres **et** clés de payload | `alcohol_content`, `is_allergen` |
-| `camelCase` | code applicatif | `findAll`, `sendOne`, `isServerErrorStatus` |
+| `camelCase` | code applicatif | `findAll`, `sendItem`, `isServerErrorStatus` |
 
 Aligner le payload sur les colonnes supprime toute couche de mapping : le
 repository écrit `SELECT alcohol_content` sans alias, le contrôleur passe
@@ -81,8 +81,9 @@ les lignes rendues par `pg` — jamais dans la logique.
 - Succès unique : `{ data }`
 - Succès collection : `{ data, meta: { total } }`
 - Les fabriques (`ApiResponse`, `ApiListResponse`) alimentent la spec OpenAPI ;
-  les contrôleurs appellent `sendOne`/`sendMany`, jamais de `res.json({...})`
-  à la main — les deux chemins doivent rester alignés sur la même forme.
+  les contrôleurs appellent `res.sendItem`/`res.sendCollection` (attachés par
+  `attachResponseHelpers`), jamais de `res.json({...})` à la main — les deux
+  chemins doivent rester alignés sur la même forme.
 
 Erreurs : une seule forme, `{ error }`, produite par le seul `errorHandler`.
 Un 400 de validation y ajoute `details`, un tableau de `{ path, message }` —
