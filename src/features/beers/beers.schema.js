@@ -1,6 +1,10 @@
 import * as z from "zod";
 
 import { BreweryFields } from "#features/breweries/breweries.schema.js";
+import { Ingredient } from "#features/ingredients/ingredients.schema.js";
+import { Category } from "#features/categories/categories.schema.js";
+import { Photo } from "#features/photos/photos.schema.js";
+import { Outlet } from "#features/outlets/outlets.schema.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 
 // Model -------------------------------------------------------------
@@ -65,46 +69,6 @@ export const Beer = z.strictObject({
 });
 
 // - sortie, détail --------------------------------------------
-// `BeerDetails` = la row plus ses relations
-const Ingredient = z.strictObject({
-  name: z.string().trim().min(1).max(80),
-  is_allergen: z
-    .boolean()
-    .describe("indique si l'ingrédient est un allergène déclaré"),
-});
-
-const Category = z.strictObject({
-  id: z.number().int().min(1),
-  name: z.string().trim().min(1).max(60),
-});
-
-const Photo = z.strictObject({
-  url: z.url().max(255),
-  caption: z.string().trim().min(1).max(255).nullable(),
-});
-
-// Absente pour les outlets exclusivement en ligne, d'où la nullabilité portée
-// par le champ `address` sur `Outlet`, pas ici.
-const Address = z.strictObject({
-  number: z.string().trim().min(1).max(10).nullable(),
-  street: z.string().trim().min(1).max(255),
-  zip_code: z.string().trim().min(1).max(10),
-  city: z.string().trim().min(1).max(100),
-  country: z.string().trim().min(1).max(60),
-});
-
-const Outlet = z.strictObject({
-  id: z.number().int().min(1),
-  name: z.string().trim().min(1).max(120),
-  type: z.enum(["cellar", "bar", "restaurant", "supermarket"]).nullable(),
-  online_sales: z
-    .boolean()
-    .describe("indique si le lieu propose une vente en ligne"),
-  website: z.url().max(255).nullable(),
-  address: Address.nullable().describe(
-    "null pour les outlets exclusivement en ligne",
-  ),
-});
 
 // `null` tant qu'aucun avis n'a été posté, cf. le `CASE WHEN rs.count = 0`
 // dans `findOne`.
