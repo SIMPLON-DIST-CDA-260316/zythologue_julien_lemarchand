@@ -10,7 +10,11 @@ try {
 const PORT = process.env.PORT || 3000;
 create_app().listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+
+  // Raccourci cliquable pour le poste de dev : ailleurs, l'hôte n'est pas nous.
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`http://localhost:${PORT}`);
+  }
 });
 
 process.on("SIGINT", async () => {
