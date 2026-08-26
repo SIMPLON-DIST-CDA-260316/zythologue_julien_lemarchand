@@ -46,4 +46,9 @@ export default {
     if (beer === null) throw new ResourceNotFoundError("Beer", id);
     return beer;
   },
+  deleteOne: async (id) => {
+    const success = await beerRepository.deleteOne(id);
+    if (!success) throw new ResourceNotFoundError("Beer", id);
+    return;
+  },
 };

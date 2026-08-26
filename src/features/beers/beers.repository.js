@@ -146,9 +146,12 @@ export default {
     // du body. Seules les cles presentes entrent dans le SET, si bien qu'une
     // cle absente laisse la colonne intacte et qu'une cle a null l'efface.
     // Le body a deja passe UpdateBeer, qui garantit au moins une cle.
-    const columns = ["name", "description", "alcohol_content", "brewery_id"].filter(
-      (column) => column in body,
-    );
+    const columns = [
+      "name",
+      "description",
+      "alcohol_content",
+      "brewery_id",
+    ].filter((column) => column in body);
 
     const { rows } = await pool.query(
       `UPDATE beer
@@ -168,5 +171,15 @@ export default {
     );
 
     return rows[0] || null;
+  },
+  deleteOne: async (id) => {
+    const { rowCount } = await pool.query(
+      `DELETE FROM beer
+        WHERE beer.id=$1
+      `,
+      [id],
+    );
+
+    return !!rowCount;
   },
 };
