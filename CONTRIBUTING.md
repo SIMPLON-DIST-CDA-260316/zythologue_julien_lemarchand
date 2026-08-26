@@ -11,9 +11,16 @@ Pour lancer le projet, voir [`README.md`](README.md).
 <type>(<scope>): <description>
 ```
 
-Types observés dans l'historique : `feat`, `fix`, `refactor`, `docs`, `chore`,
-`test`. Scope = nom de la ressource ou du sujet touché (`beers`, `openapi`,
-`structure`...), omis si le changement est transverse.
+Types observés dans l'historique, par fréquence : `feat`, `docs`, `refactor`,
+`fix`, `chore`, `build`, `test`, `style`.
+
+`build` couvre ce qui touche la chaîne de construction et d'exécution —
+`Dockerfile`, `compose.yaml`, dépendances, scripts npm ; `chore` prend le reste
+de l'intendance qui ne construit rien. `style` est réservé au formatage sans
+effet sur le comportement : dès qu'une ligne change de sens, c'est `refactor`.
+
+Scope = nom de la ressource ou du sujet touché (`beers`, `openapi`, `http`,
+`errors`...), omis si le changement est transverse.
 
 Un commit = un changement atomique. Un renommage et un déplacement de dossier
 distincts vont dans deux commits séparés, même s'ils sont demandés dans la
@@ -47,7 +54,10 @@ En attendant :
 ## Alias d'import
 
 Same-scope (même dossier) → relatif. Cross-scope (feature différente,
-`config/`, `middlewares/`, `http/`) → alias `#*` déclaré dans le champ
-`imports` de `package.json`. Ne pas ajouter de nouveau chemin relatif
-`../../` qui traverse une frontière de dossier — ajouter/étendre un alias
-à la place.
+`config/`, `http/`, `errors/`) → alias `#*` déclaré dans le champ
+`imports` de `package.json` : `#features/*`, `#config/*`, `#http/*`,
+`#errors/*`. Ne pas ajouter de nouveau chemin relatif `../../` qui traverse
+une frontière de dossier — ajouter/étendre un alias à la place.
+
+Un alias pointe une racine : les middlewares s'importent via
+`#http/middlewares/…`, il n'y a pas d'alias `#middlewares/*`.
