@@ -1,11 +1,11 @@
 import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
+import { RouteNotFoundError } from "#http/errors/RouteNotFoundError.js";
 import { HTTP_STATUS, isServerErrorStatus } from "#http/httpStatus.js";
 
 /** Seul point où le domaine reçoit un code HTTP. Absent = imprévu = 500. */
-const HTTP_STATUS_BY_ERROR = new Map().set(
-  ResourceNotFoundError,
-  HTTP_STATUS.NOT_FOUND,
-);
+const HTTP_STATUS_BY_ERROR = new Map()
+  .set(ResourceNotFoundError, HTTP_STATUS.NOT_FOUND)
+  .set(RouteNotFoundError, HTTP_STATUS.NOT_FOUND);
 
 /**
  * Terminal, à monter en dernier dans l'app`.
