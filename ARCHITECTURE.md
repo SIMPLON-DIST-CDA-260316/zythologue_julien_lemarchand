@@ -48,6 +48,32 @@ Chaque schéma zod de ressource est structuré en blocs commentés :
 - **Réponses** (`BeerResponse`, `BeerListResponse`) — DTO de sortie + enveloppe
   HTTP, ce que le contrôleur sérialise réellement.
 
+## Nomenclature
+
+Trois registres, une frontière nette :
+
+| Registre | Où | Exemple |
+| --- | --- | --- |
+| `PascalCase` | briques de champ du model | `BeerFields.AlcoholContent` |
+| `snake_case` | colonnes Postgres **et** clés de payload | `alcohol_content`, `is_allergen` |
+| `camelCase` | code applicatif | `findAll`, `sendOne`, `isServerErrorStatus` |
+
+Aligner le payload sur les colonnes supprime toute couche de mapping : le
+repository écrit `SELECT alcohol_content` sans alias, le contrôleur passe
+`req.body` au service sans traduction. L'inverse coûterait un `AS
+"alcoholContent"` — guillemets obligatoires, Postgres repliant tout identifiant
+non quoté en minuscules — sur chaque colonne, dans les deux sens. Un mapping
+tenu à la main sur chaque champ est un endroit où le code et la doc divergent en
+silence : un `AS "ratingStats"` a déjà disparu d'une réécriture sans que rien ne
+le signale.
+
+Aucun standard ne tranche : ni RFC 8259, ni JSON Schema, ni OpenAPI ne se
+prononcent sur la casse des noms de membres. Les guides de style recommandent
+camelCase (Google, Microsoft), les API les plus utilisées font du snake_case
+(Stripe, GitHub, Slack, OpenAI, Shopify). Le prix assumé du choix retenu : du
+snake_case apparaît dans du JavaScript aux frontières — `req.body.alcohol_content`,
+les lignes rendues par `pg` — jamais dans la logique.
+
 ## Enveloppe de réponse
 
 `src/http/apiResponse.js` est l'unique propriétaire de la forme des réponses :
