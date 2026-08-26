@@ -1,7 +1,25 @@
 import beerRepository from "./beers.repository.js";
 import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
 import { InvalidReferenceError } from "#errors/InvalidReferenceError.js";
+import { ConflictError } from "#errors/ConflictError.js";
 import { PG_ERROR } from "#config/database.js";
+
+/**
+ * Traduit les deux violations que le client peut provoquer. `beer` n'a qu'une
+ * clé étrangère et qu'un UNIQUE : le code suffit à les distinguer, sans lire
+ * le nom de la contrainte.
+ *
+ * Rend l'erreur au lieu de la lever, pour que le `throw` reste visible à
+ * l'appel. Ce qu'elle ne sait pas nommer repart tel quel : absent de la table
+ * d'`errorHandler` = imprévu = 500.
+ */
+const translate = (error, body) => {
+  if (error.code === PG_ERROR.FOREIGN_KEY_VIOLATION)
+    return new InvalidReferenceError("brewery_id", body.brewery_id);
+  if (error.code === PG_ERROR.UNIQUE_VIOLATION)
+    return new ConflictError("Beer", ["name", "brewery_id"]);
+  return error;
+};
 
 export default {
   getOne: async (id) => {
@@ -10,16 +28,11 @@ export default {
     return beer;
   },
   findAll: beerRepository.findAll,
-  // Le seul catch justifie sa place : il traduit, il ne relaie pas. `beer`
-  // n'a qu'une clé étrangère, inutile d'identifier la contrainte. Tout ce
-  // qu'il ne sait pas nommer repart : absent de la table = imprévu = 500.
   createOne: async (body) => {
     try {
       return await beerRepository.createOne(body);
     } catch (error) {
-      if (error.code === PG_ERROR.FOREIGN_KEY_VIOLATION)
-        throw new InvalidReferenceError("brewery_id", body.brewery_id);
-      throw error;
+      throw translate(error, body);
     }
   },
   // Le RETURNING vide vaut inexistence : pas de SELECT prealable.
@@ -28,9 +41,7 @@ export default {
     try {
       beer = await beerRepository.updateOne(id, body);
     } catch (error) {
-      if (error.code === PG_ERROR.FOREIGN_KEY_VIOLATION)
-        throw new InvalidReferenceError("brewery_id", body.brewery_id);
-      throw error;
+      throw translate(error, body);
     }
     if (beer === null) throw new ResourceNotFoundError("Beer", id);
     return beer;

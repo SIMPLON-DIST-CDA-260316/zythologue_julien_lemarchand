@@ -8,6 +8,7 @@ const { Pool } = pg;
  */
 export const PG_ERROR = Object.freeze({
   FOREIGN_KEY_VIOLATION: "23503",
+  UNIQUE_VIOLATION: "23505",
 });
 
 const pool = new Pool({
