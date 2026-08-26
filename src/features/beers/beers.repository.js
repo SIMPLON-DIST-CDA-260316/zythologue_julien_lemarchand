@@ -141,4 +141,32 @@ export default {
 
     return rows[0];
   },
+  updateOne: async (id, body) => {
+    // Un nom de colonne ne se parametre pas : il vient de cette liste, jamais
+    // du body. Seules les cles presentes entrent dans le SET, si bien qu'une
+    // cle absente laisse la colonne intacte et qu'une cle a null l'efface.
+    // Le body a deja passe UpdateBeer, qui garantit au moins une cle.
+    const columns = ["name", "description", "alcohol_content", "brewery_id"].filter(
+      (column) => column in body,
+    );
+
+    const { rows } = await pool.query(
+      `UPDATE beer
+          SET ${columns.map((column, i) => `${column} = $${i + 2}`).join(", ")}
+        WHERE id = $1
+        RETURNING
+          id,
+          name,
+          description,
+          -- sans ce cast, NUMERIC sort en string
+          alcohol_content::float AS alcohol_content,
+          created_at,
+          updated_at,
+          brewery_id`,
+      // updated_at n'est pas ecrit ici : trg_beer_updated_at s'en charge.
+      [id, ...columns.map((column) => body[column])],
+    );
+
+    return rows[0] || null;
+  },
 };

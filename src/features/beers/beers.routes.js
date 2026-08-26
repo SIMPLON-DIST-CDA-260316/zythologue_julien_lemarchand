@@ -97,7 +97,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Beer'
+ *               $ref: '#/components/schemas/BeerResponse'
  *       400:
  *         description: >
  *           L'ID fourni n'est pas un entier positif, ou le corps ne respecte

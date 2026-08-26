@@ -14,5 +14,6 @@ export default {
     sendOne(res, await service.createOne(req.body), HTTP_STATUS.CREATED),
 
   deleteOne: TestHandler,
-  updateOne: TestHandler,
+  updateOne: async (req, res) =>
+    sendOne(res, await service.updateOne(req.params.id, req.body)),
 };

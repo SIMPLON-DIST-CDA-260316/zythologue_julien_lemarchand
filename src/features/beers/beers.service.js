@@ -8,4 +8,10 @@ export default {
   },
   findAll: beerRepository.findAll,
   createOne: beerRepository.createOne,
+  // Le RETURNING vide vaut inexistence : pas de SELECT prealable.
+  updateOne: async (id, body) => {
+    const beer = await beerRepository.updateOne(id, body);
+    if (beer === null) throw new ResourceNotFoundError("Beer", id);
+    return beer;
+  },
 };
