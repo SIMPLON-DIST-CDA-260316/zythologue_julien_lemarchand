@@ -17,7 +17,7 @@ import {
   BeerDetailsResponse,
   UpdateBeer,
 } from "#features/beers/beers.schemas.js";
-import { NotFoundError } from "#middlewares/notFound.js";
+import { ApiError } from "#http/apiResponse.js";
 import { ValidationError } from "#middlewares/validateRequest.js";
 
 /**
@@ -45,7 +45,7 @@ export default swaggerJsdoc({
         BeerListResponse: toSchemaObject(BeerListResponse),
         BeerDetailsResponse: toSchemaObject(BeerDetailsResponse),
         UpdateBeer: toSchemaObject(UpdateBeer),
-        NotFoundError: toSchemaObject(NotFoundError),
+        ApiError: toSchemaObject(ApiError),
         ValidationError: toSchemaObject(ValidationError),
       },
     },

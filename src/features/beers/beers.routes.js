@@ -78,7 +78,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/NotFoundError'
+ *               $ref: '#/components/schemas/ApiError'
  *       500:
  *         description: Erreur serveur
  *   patch:
@@ -112,7 +112,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/NotFoundError'
+ *               $ref: '#/components/schemas/ApiError'
  *       500:
  *         description: Erreur serveur
  *   delete:
@@ -131,7 +131,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/NotFoundError'
+ *               $ref: '#/components/schemas/ApiError'
  *       500:
  *         description: Erreur serveur
  */

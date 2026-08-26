@@ -1,5 +1,5 @@
 /**
- * Enveloppe des réponses en succès — seul propriétaire de sa forme.
+ * Enveloppes de réponse — seul propriétaire de leur forme, succès et échec.
  *
  * Un array racine ne pourra jamais accueillir `meta` sans casser les clients ;
  * la ressource unique prend l'enveloppe par cohérence.
@@ -23,6 +23,9 @@ export const ApiListResponse = (schema) =>
       total: z.number().int().min(0),
     }),
   });
+
+/** Échec : `{ error }`. Émis par `errorHandler`, seul producteur de cette forme. */
+export const ApiError = z.strictObject({ error: z.string() });
 
 /** Émet une ressource unique — `status` à `CREATED` sur une création. */
 export const sendOne = (res, data, status = HTTP_STATUS.OK) =>
