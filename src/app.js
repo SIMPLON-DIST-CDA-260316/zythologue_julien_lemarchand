@@ -14,5 +14,5 @@ export default () =>
     .use(attachResponseHelpers)
     .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use("/beers", beersRoutes)
-    .use(routeNotFoundHandler) // URL non reconnue
-    .use(errorHandler); // route reconnue mais levée — toujours en dernier
+    .use(routeNotFoundHandler)
+    .use(errorHandler); // le `catch` de l'app : toute erreur levée finit ici
