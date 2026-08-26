@@ -1,6 +1,15 @@
 import pg from "pg";
 const { Pool } = pg;
 
+/**
+ * SQLSTATE, classe 23 — violation de contrainte d'intégrité. Le module qui
+ * possède le driver possède son vocabulaire ; les services le lisent pour
+ * traduire. À sortir dans son propre fichier au-delà de quelques entrées.
+ */
+export const PG_ERROR = Object.freeze({
+  FOREIGN_KEY_VIOLATION: "23503",
+});
+
 const pool = new Pool({
   host: process.env.POSTGRES_HOST || "localhost",
   port: process.env.POSTGRES_PORT || 5432,
