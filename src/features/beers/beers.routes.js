@@ -41,7 +41,7 @@ const router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ValidationError'
+ *               $ref: '#/components/schemas/ApiValidationError'
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
@@ -75,7 +75,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ValidationError'
+ *               $ref: '#/components/schemas/ApiValidationError'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *       500:
@@ -105,7 +105,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ValidationError'
+ *               $ref: '#/components/schemas/ApiValidationError'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *       500:
@@ -120,7 +120,7 @@ router
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ValidationError'
+ *               $ref: '#/components/schemas/ApiValidationError'
  *       404:
  *         $ref: '#/components/responses/NotFound'
  *       500:

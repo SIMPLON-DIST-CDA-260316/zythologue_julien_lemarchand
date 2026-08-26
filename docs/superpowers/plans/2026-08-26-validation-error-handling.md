@@ -5,9 +5,9 @@ spec: docs/superpowers/specs/2026-08-26-validation-error-handling-design.md
 branch: main
 worktree: false
 tasks_total: 4
-tasks_done: 1
-current_task: 2
-last_commit: —
+tasks_done: 2
+current_task: 3
+last_commit: 46b26f8
 last_updated: 2026-08-26
 ---
 
@@ -230,7 +230,7 @@ EOF
 - Consumes: `ApiValidationError` de la tâche 1.
 - Produces: `#/components/schemas/ApiValidationError` dans la spec. Le schéma `#/components/schemas/ValidationError` **disparaît**, et `config/openapi.js` n'importe plus rien de `#http/middlewares/`.
 
-- [ ] **Step 1: corriger l'import dans openapi.js**
+- [x] **Step 1: corriger l'import dans openapi.js**
 
 Dans `src/config/openapi.js`, remplacer les deux lignes :
 
@@ -248,7 +248,7 @@ import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 C'est la correction d'une dépendance inversée : un module de configuration
 importait un schéma de réponse depuis un middleware.
 
-- [ ] **Step 2: renommer l'entrée de components.schemas**
+- [x] **Step 2: renommer l'entrée de components.schemas**
 
 Toujours dans `src/config/openapi.js`, remplacer :
 
@@ -265,7 +265,7 @@ par :
 Ne pas toucher à `components.responses`. Les 400 restent inline, décidé
 sciemment : voir l'encadré du Step 3.
 
-- [ ] **Step 3: renommer le schéma référencé par les quatre 400**
+- [x] **Step 3: renommer le schéma référencé par les quatre 400**
 
 Dans `src/features/beers/beers.routes.js`, quatre lignes et quatre seulement —
 44, 78, 108 et 123. Chacune passe de :
@@ -302,7 +302,7 @@ comme les quatre 200 du même fichier — le fichier reste cohérent avec lui-m�
 Ne toucher à rien d'autre : ni les `description` des 400, ni les 200, 404 et
 500, ni les `summary`, ni le `description` du PATCH, ni le bloc `parameters`.
 
-- [ ] **Step 4: vérifier la spec générée**
+- [x] **Step 4: vérifier la spec générée**
 
 ```bash
 node --input-type=module -e 'const s = (await import("./src/config/openapi.js")).default; console.log("schemas:", Object.keys(s.components.schemas).join(",")); console.log("responses:", Object.keys(s.components.responses).join(",")); for (const [p, ops] of Object.entries(s.paths)) for (const [m, op] of Object.entries(ops)) { const r = op.responses?.["400"]; if (r) console.log(m.toUpperCase(), p, r.content["application/json"].schema.$ref, "|", r.description); }'
@@ -330,7 +330,7 @@ manque, un bloc a été mutilé au-delà du renommage.
 Cette commande fonctionne aussi avant modification — la lancer d'abord donne la
 photo d'avant, où les quatre `$ref` portent encore `ValidationError`.
 
-- [ ] **Step 5: commit**
+- [x] **Step 5: commit**
 
 Le schéma zod `ValidationError` est maintenant orphelin dans
 `validateRequest.js` — plus personne ne l'importe. Il reste en place jusqu'à la

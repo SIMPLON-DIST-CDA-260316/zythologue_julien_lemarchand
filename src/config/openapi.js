@@ -17,8 +17,7 @@ import {
   BeerDetailsResponse,
   UpdateBeer,
 } from "#features/beers/beers.schemas.js";
-import { ApiError } from "#http/apiResponse.js";
-import { ValidationError } from "#http/middlewares/validateRequest.js";
+import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
  * Convertit un schéma zod en Schema Object OpenAPI 3.1, qui suit JSON Schema
@@ -57,7 +56,7 @@ export default swaggerJsdoc({
         BeerDetailsResponse: toSchemaObject(BeerDetailsResponse),
         UpdateBeer: toSchemaObject(UpdateBeer),
         ApiError: toSchemaObject(ApiError),
-        ValidationError: toSchemaObject(ValidationError),
+        ApiValidationError: toSchemaObject(ApiValidationError),
       },
       // Définies une fois, référencées par toutes les routes : le contrat
       // d'erreur ne peut pas dériver d'une opération à l'autre.
