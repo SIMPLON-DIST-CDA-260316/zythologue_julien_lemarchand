@@ -65,6 +65,14 @@ export default swaggerJsdoc({
           "La ressource demandée n'existe pas",
           "ApiError",
         ),
+        Conflict: jsonResponse(
+          "La ressource entre en conflit avec une ressource existante.",
+          "ApiError",
+        ),
+        UnprocessableContent: jsonResponse(
+          "Le corps est bien formé mais désigne une ressource inexistante.",
+          "ApiError",
+        ),
         InternalServerError: jsonResponse(
           "Erreur inattendue. Le détail reste côté serveur, jamais exposé.",
           "ApiError",

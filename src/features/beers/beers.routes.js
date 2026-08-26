@@ -42,6 +42,10 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ApiValidationError'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ *       422:
+ *         $ref: '#/components/responses/UnprocessableContent'
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
@@ -108,6 +112,10 @@ router
  *               $ref: '#/components/schemas/ApiValidationError'
  *       404:
  *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ *       422:
+ *         $ref: '#/components/responses/UnprocessableContent'
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  *   delete:

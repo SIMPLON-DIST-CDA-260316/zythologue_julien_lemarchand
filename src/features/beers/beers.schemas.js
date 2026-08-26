@@ -15,7 +15,12 @@ import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 // `nullable` se déclare ici, c'est une propriété de la colonne.
 export const BeerFields = {
   Id: z.number().int().min(1),
-  Name: z.string().trim().min(1).max(120),
+  Name: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .describe("unique par brasserie, la comparaison ignore la casse"),
   Description: z.string().trim().min(1).nullable(),
   AlcoholContent: z
     .number()
