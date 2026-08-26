@@ -8,7 +8,8 @@ export default {
           b.id,
           b.name, 
           b.description, 
-          b.alcohol_content,
+          -- sans ce cast, NUMERIC sort en string
+          b.alcohol_content::float AS alcohol_content,
           jsonb_build_object(
             'id', br.id,
             'name', br.name
