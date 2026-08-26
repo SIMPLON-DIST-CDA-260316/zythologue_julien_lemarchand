@@ -57,6 +57,7 @@
 | -- | une BIÈRE **doit déclarer** ses INGRÉDIENTS                                        | CTRL |
 | -- | le DEGRÉ d'alcool d'une BIÈRE **est compris entre** 0 et 100                       | CTRL |
 | -- | une BIÈRE **a au moins une** CATÉGORIE et une BRASSERIE                            | CTRL |
+| -- | une BIÈRE **a un nom unique** au sein de sa BRASSERIE (casse ignorée)              | CTRL |
 |    |                                                                                    |      |
 | 15 | un INGRÉDIENT **compose une ou plusieurs** BIÈRES                                  | STRU |
 | -- | un INGRÉDIENT **peut être classé comme** ALLERGÈNE                                 | CTRL |

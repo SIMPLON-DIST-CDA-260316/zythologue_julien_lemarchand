@@ -86,6 +86,10 @@ Table "beer" {
   "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
   "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
   "brewery_id" INTEGER [NOT NULL]
+
+  Indexes {
+    (`lower(name)`, brewery_id) [unique, name: "beer_lower_name_brewery_id_key"]
+  }
 }
 
 Table "outlet" {

@@ -51,7 +51,7 @@
 
 | Code              | Description             | Format         | Longueur | Règle                                  |
 |-------------------|-------------------------|----------------|----------|----------------------------------------|
-| bie_nom           | Nom de la bière         | Alphanumérique | 120      | obligatoire                            |
+| bie_nom           | Nom de la bière         | Alphanumérique | 120      | obligatoire, unique par brasserie      |
 | bie_description   | Description de la bière | Alphanumérique | —        | facultatif                             |
 | bie_degre_alcool  | Degré d'alcool (% vol.) | Numérique      | 4,2      | facultatif, 0 ≤ degré ≤ 100            |
 

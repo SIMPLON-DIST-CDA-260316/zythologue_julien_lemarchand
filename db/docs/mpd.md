@@ -97,15 +97,16 @@
 
 ## BEER
 
-| Code             | Colonne         | Type         | Contraintes                                 |
-| ---------------- | --------------- | ------------ | ------------------------------------------- |
-| bie_id           | id              | SERIAL       | PK                                          |
-| bie_nom          | name            | VARCHAR(120) | NOT NULL                                    |
-| bie_description  | description     | TEXT         |                                             |
-| bie_degre_alcool | alcohol_content | NUMERIC(4,2) | CHECK (0 ≤ alcohol_content ≤ 100)           |
-| —                | created_at      | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()`                   |
-| —                | updated_at      | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()` (trigger)         |
-| —                | brewery_id      | INTEGER      | NOT NULL, FK → brewery (ON DELETE RESTRICT) |
+| Code             | Colonne         | Type         | Contraintes                                                           |
+| ---------------- | --------------- | ------------ | --------------------------------------------------------------------- |
+| bie_id           | id              | SERIAL       | PK                                                                    |
+| bie_nom          | name            | VARCHAR(120) | NOT NULL                                                              |
+| bie_description  | description     | TEXT         |                                                                       |
+| bie_degre_alcool | alcohol_content | NUMERIC(4,2) | CHECK (0 ≤ alcohol_content ≤ 100)                                     |
+| —                | created_at      | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()`                                             |
+| —                | updated_at      | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()` (trigger)                                   |
+| —                | brewery_id      | INTEGER      | NOT NULL, FK → brewery (ON DELETE RESTRICT)                           |
+|                  |                 |              | UNIQUE (LOWER(name), brewery_id) — 1 nom par brasserie, casse ignorée |
 
 ## OUTLET
 
