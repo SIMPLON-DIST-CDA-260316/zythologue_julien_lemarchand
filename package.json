@@ -8,7 +8,8 @@
     "#features/*": "./src/features/*",
     "#middlewares/*": "./src/middlewares/*",
     "#config/*": "./src/config/*",
-    "#http/*": "./src/http/*"
+    "#http/*": "./src/http/*",
+    "#errors/*": "./src/errors/*"
   },
   "scripts": {
     "dev": "nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
