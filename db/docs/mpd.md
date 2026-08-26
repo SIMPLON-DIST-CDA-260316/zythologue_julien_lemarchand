@@ -32,6 +32,8 @@
 | adr_code_postal | zip_code   | VARCHAR(10)  | NOT NULL                            |
 | adr_ville       | city       | VARCHAR(100) | NOT NULL                            |
 | adr_pays        | country    | VARCHAR(60)  | NOT NULL                            |
+| —               | created_at | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()`           |
+| —               | updated_at | TIMESTAMPTZ  | NOT NULL, DEFAULT `now()` (trigger) |
 
 ## PHOTO
 
@@ -50,6 +52,8 @@
 | cat_id          | id          | SERIAL      | PK                                  |
 | cat_nom         | name        | VARCHAR(60) | NOT NULL, UNIQUE                    |
 | cat_description | description | TEXT        |                                     |
+| —               | created_at  | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`           |
+| —               | updated_at  | TIMESTAMPTZ | NOT NULL, DEFAULT `now()` (trigger) |
 
 ## INGREDIENT
 
@@ -58,6 +62,8 @@
 | ing_id            | id          | SERIAL      | PK                                  |
 | ing_nom           | name        | VARCHAR(80) | NOT NULL, UNIQUE                    |
 | ing_est_allergene | is_allergen | BOOLEAN     | NOT NULL, DEFAULT `false`           |
+| —                 | created_at  | TIMESTAMPTZ | NOT NULL, DEFAULT `now()`           |
+| —                 | updated_at  | TIMESTAMPTZ | NOT NULL, DEFAULT `now()` (trigger) |
 
 ## ACCOUNT
 

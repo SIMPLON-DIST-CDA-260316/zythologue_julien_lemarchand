@@ -24,6 +24,8 @@ Table "address" {
   "zip_code" VARCHAR(10) [NOT NULL]
   "city" VARCHAR(100) [NOT NULL]
   "country" VARCHAR(60) [NOT NULL]
+  "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
 }
 
 Table "photo" {
@@ -38,12 +40,16 @@ Table "category" {
   "id" SERIAL [pk]
   "name" VARCHAR(60) [NOT NULL, unique]
   "description" TEXT
+  "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
 }
 
 Table "ingredient" {
   "id" SERIAL [pk]
   "name" VARCHAR(80) [NOT NULL, unique]
   "is_allergen" BOOLEAN [NOT NULL, default: false]
+  "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
+  "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
 }
 
 Table "account" {
