@@ -1,20 +1,15 @@
 /**
- * Validation des entrées HTTP avec zod.
- *
- * Chaque validateur remplace la valeur brute par la valeur parsée, si bien que
- * le contrôleur ne reçoit que des champs déclarés. Un échec lève une
- * `ValidationError` : la réponse appartient à `errorHandler`, pas ici.
+ * Validation des entrées HTTP avec zod. Le résultat est écrit sous
+ * `req.validated.<source>`, jamais sur `req.body`/`params`/`query`
+ * (nécessaire pour `query`, un getter sans setter en Express 5).
  *
  * @module http/middlewares/validateRequest
  */
 import { ValidationError } from "#http/errors/ValidationError.js";
 
 /**
- * Valide un paramètre de route et écrase `req.params[nom]` par la valeur parsée.
- *
- * À monter via `router.param(nom, ...)`, pas via `use` : l'arité est celle des
- * param callbacks Express, qui fournissent la valeur brute et le nom du
- * paramètre en 4e et 5e arguments.
+ * Valide un paramètre de route (monté via `router.param`, arité différente
+ * de `use`) et fusionne le résultat dans `req.validated.params`.
  *
  * @param {import("zod").ZodType} schema
  * @returns {import("express").RequestParamHandler}
@@ -24,31 +19,41 @@ import { ValidationError } from "#http/errors/ValidationError.js";
 export const validateParam =
   (schema) => (req, res, next, rawValue, paramName) => {
     const { success, error, data } = schema.safeParse(rawValue);
-    if (!success) return next(new ValidationError(error.issues));
-    req.params[paramName] = data;
+    if (!success) throw new ValidationError(error.issues);
+    req.validated ??= {};
+    req.validated.params ??= {};
+    req.validated.params[paramName] = data;
     next();
   };
 
 /**
- * Fabrique un middleware qui valide une clé de `req` et l'écrase par la valeur
- * parsée. Toutes les sources de même arité passent par ici : `body`, `query`.
+ * Valide `req[source]` et écrit le résultat dans `req.validated[source]`.
  *
  * @param {"body" | "query"} source
  * @returns {(schema: import("zod").ZodType) => import("express").RequestHandler}
  */
 const validateIn = (source) => (schema) => (req, res, next) => {
   const { success, error, data } = schema.safeParse(req[source]);
-  if (!success) return next(new ValidationError(error.issues));
-  req[source] = data;
+  if (!success) throw new ValidationError(error.issues);
+  req.validated ??= {};
+  req.validated[source] = data;
   next();
 };
 
 /**
- * Valide le corps de la requête et écrase `req.body` par la valeur parsée.
- *
  * @param {import("zod").ZodType} schema
  * @returns {import("express").RequestHandler}
  * @example
  * router.post("/", validateBody(NewBeer), controller.createOne);
+ * // req.validated.body
  */
 export const validateBody = validateIn("body");
+
+/**
+ * @param {import("zod").ZodType} schema
+ * @returns {import("express").RequestHandler}
+ * @example
+ * router.get("/", validateQuery(BeerQuery), controller.findAll);
+ * // req.validated.query
+ */
+export const validateQuery = validateIn("query");

@@ -5,14 +5,19 @@ const TestHandler = async (req, res) =>
   res.send(`hello world from ${req.method} : ${req.path}`);
 
 export default {
-  getOne: async (req, res) => res.sendItem(await service.getOne(req.params.id)),
+  getOne: async (req, res) =>
+    res.sendItem(await service.getOne(req.validated.params.id)),
   findAll: async (req, res) => res.sendCollection(await service.findAll()),
   createOne: async (req, res) =>
-    res.status(HTTP_STATUS.CREATED).sendItem(await service.createOne(req.body)),
+    res
+      .status(HTTP_STATUS.CREATED)
+      .sendItem(await service.createOne(req.validated.body)),
   updateOne: async (req, res) =>
-    res.sendItem(await service.updateOne(req.params.id, req.body)),
+    res.sendItem(
+      await service.updateOne(req.validated.params.id, req.validated.body),
+    ),
   deleteOne: async (req, res) => {
-    await service.deleteOne(req.params.id);
+    await service.deleteOne(req.validated.params.id);
     res.status(HTTP_STATUS.NO_CONTENT).end();
   },
 };
