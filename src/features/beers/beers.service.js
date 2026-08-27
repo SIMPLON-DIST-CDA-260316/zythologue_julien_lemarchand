@@ -1,4 +1,6 @@
 import beerRepository from "./beers.repository.js";
+import photoRepository from "#features/photos/photos.repository.js";
+import uploadService from "#features/upload/upload.service.js";
 import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
 import { InvalidReferenceError } from "#errors/InvalidReferenceError.js";
 import { ConflictError } from "#errors/ConflictError.js";
@@ -57,9 +59,19 @@ export default {
     if (!success) throw new ResourceNotFoundError("Beer", id);
     return;
   },
-  // ! baby step — pas de persistance pour l'instant.
-  createPhoto: async (beerId, file) => {
-    console.log({ beerId, file });
-    return;
+  createPhoto: async (beerId, file, caption) => {
+    const beer = await beerRepository.findOne(beerId);
+
+    if (beer === null) throw new ResourceNotFoundError("Beer", beerId);
+
+    const stored = await uploadService.store(file.buffer);
+
+    const photo = await photoRepository.createOne(
+      stored.filename,
+      stored.url,
+      caption,
+    );
+
+    return photo;
   },
 };
