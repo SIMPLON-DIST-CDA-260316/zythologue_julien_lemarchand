@@ -45,6 +45,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./server.js:/app/server.js
+      - ./uploads:/app/uploads
     develop:
       watch:
         - action: rebuild

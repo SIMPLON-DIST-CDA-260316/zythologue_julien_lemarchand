@@ -11,6 +11,7 @@ import {
   validateParam,
   validateQuery,
 } from "#http/middlewares/validateRequest.js";
+import uploadHanlder from "#features/upload/upload.middleware.js";
 const router = Router();
 
 /**
@@ -227,5 +228,9 @@ router
    *         $ref: '#/components/responses/InternalServerError'
    */
   .delete(controller.deleteOne);
+
+router
+  .route("/:id/photos")
+  .post(uploadHanlder.single("photo"), controller.createPhoto);
 
 export default router;

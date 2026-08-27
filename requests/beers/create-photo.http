@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@breweryId = 1
+
+# Baby step — endpoint pas fonctionnel : renvoie juste 201 { received: true },
+# rien n'est écrit en base ni servi.
+
+### setup — bière jetable à illustrer dans le scénario ci-dessous
+# @name createTemp
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "Temp {{$randomInt 1 1000000}}",
+  "brewery_id": {{breweryId}}
+}
+
+### NOMINAL — upload d'une image → 201
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
