@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:3000
+@id = 1
+
+# Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+# rend `{ error }`, une string. Un 400 y ajoute `details`.
+
+### NOMINAL — bière existante → 200, { data: {...} }
+GET {{baseUrl}}/beers/{{id}}
+
+### EDGE — id inexistant → 404
+GET {{baseUrl}}/beers/999999
+
+### EDGE — id à 0 → 400, min 1
+GET {{baseUrl}}/beers/0
+
+### EDGE — id négatif → 400
+GET {{baseUrl}}/beers/-1
+
+### EDGE — id non numérique → 400, coercion échoue
+GET {{baseUrl}}/beers/abc

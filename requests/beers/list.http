@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:3000
+
+# Toute réponse 2xx est enveloppée : charge utile sous `data`, plus `meta`
+# pour les collections. Toute erreur rend `{ error }`, une string. Un 400 y
+# ajoute `details`, un tableau de `{ path, message }`.
+
+### NOMINAL — page explicite → 200, { data: [...], meta: { total } }
+GET {{baseUrl}}/beers?page=1
+
+### NOMINAL — page et size explicites → 200
+GET {{baseUrl}}/beers?page=1&size=5
+
+### NOMINAL — sans query → 200, défauts page=1 size=12
+GET {{baseUrl}}/beers
+
+### EDGE — page à 0 → 400, min 1
+GET {{baseUrl}}/beers?page=0
+
+### EDGE — page non numérique → 400, coercion échoue
+GET {{baseUrl}}/beers?page=abc
+
+### EDGE — size négatif → 400, min 1
+GET {{baseUrl}}/beers?size=-1

@@ -1,0 +1,87 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+@name = Kwak {{$randomInt 1 1000000}}
+@description = brune belge
+@alcoholContent = 8.4
+@breweryId = 1
+# Guillemets inclus : le body reçoit une string là où un number est attendu.
+@invalidTypeId = "1"
+# Bière seedée, réutilisée pour déclencher le conflit d'unicité.
+@existingName = Blonde du Nord
+
+# Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+# rend `{ error }`, une string. Un 400 y ajoute `details`.
+
+### NOMINAL — tous les champs → 201
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}},
+  "brewery_id": {{breweryId}}
+}
+
+### NOMINAL — seulement les champs obligatoires → 201
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "brewery_id": {{breweryId}}
+}
+
+### EDGE — sans body → 400, name et brewery_id manquants
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+### EDGE — brewery_id manquant → 400
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}}
+}
+
+### EDGE — brewery_id en string → 400, type attendu number
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "alcohol_content": {{alcoholContent}},
+  "brewery_id": {{invalidTypeId}}
+}
+
+### EDGE — champ inconnu → 400, schéma strict
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "brewery_id": {{breweryId}},
+  "color": "blonde"
+}
+
+### EDGE — nom déjà pris dans la même brasserie → 409
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{existingName}}",
+  "brewery_id": {{breweryId}}
+}
+
+### EDGE — brewery_id inexistant → 422
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "{{name}}",
+  "brewery_id": 999999
+}

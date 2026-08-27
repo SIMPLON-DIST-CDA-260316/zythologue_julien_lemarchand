@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@breweryId = 1
+
+# Suppression en cascade : avis, catégorisations, compositions, favoris,
+# illustrations et mises en vente rattachés disparaissent avec la bière.
+# Réponse sans corps.
+
+### setup — bière jetable à supprimer dans le scénario nominal
+# @name createTemp
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "Temp {{$randomInt 1 1000000}}",
+  "brewery_id": {{breweryId}}
+}
+
+### NOMINAL — suppression d'une bière existante → 204
+DELETE {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+
+### EDGE — id déjà supprimé / inexistant → 404
+DELETE {{baseUrl}}/beers/999999
+
+### EDGE — id non numérique → 400
+DELETE {{baseUrl}}/beers/abc

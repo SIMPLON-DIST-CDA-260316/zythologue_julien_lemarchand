@@ -1,0 +1,83 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@breweryId = 1
+@existingName = Blonde du Nord
+
+# Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+# rend `{ error }`, une string. Un 400 y ajoute `details`.
+#
+# PATCH, pas PUT : mise à jour partielle, une clé absente laisse la colonne
+# inchangée, une clé à `null` l'efface.
+
+### setup — bière jetable à modifier dans les scénarios ci-dessous
+# @name createTemp
+POST {{baseUrl}}/beers
+Content-Type: {{contentType}}
+
+{
+  "name": "Temp {{$randomInt 1 1000000}}",
+  "description": "à modifier",
+  "brewery_id": {{breweryId}}
+}
+
+### NOMINAL — renommage, les autres colonnes intactes → 200
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Temp renommée {{$randomInt 1 1000000}}"
+}
+
+### NOMINAL — null efface la colonne → 200
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{
+  "description": null
+}
+
+### EDGE — corps vide → 400, au moins un champ requis
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{}
+
+### EDGE — champ inconnu → 400, schéma strict
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{
+  "color": "blonde"
+}
+
+### EDGE — id inexistant → 404
+PATCH {{baseUrl}}/beers/999999
+Content-Type: {{contentType}}
+
+{
+  "name": "peu importe"
+}
+
+### EDGE — id non numérique → 400
+PATCH {{baseUrl}}/beers/abc
+Content-Type: {{contentType}}
+
+{
+  "name": "peu importe"
+}
+
+### EDGE — nom déjà pris dans la même brasserie → 409
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{
+  "name": "{{existingName}}"
+}
+
+### EDGE — brewery_id inexistant → 422
+PATCH {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
+Content-Type: {{contentType}}
+
+{
+  "brewery_id": 999999
+}
