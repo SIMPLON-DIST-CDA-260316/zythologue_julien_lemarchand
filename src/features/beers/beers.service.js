@@ -57,4 +57,9 @@ export default {
     if (!success) throw new ResourceNotFoundError("Beer", id);
     return;
   },
+  // ! baby step — pas de persistance pour l'instant.
+  createPhoto: async (beerId, file) => {
+    console.log({ beerId, file });
+    return;
+  },
 };

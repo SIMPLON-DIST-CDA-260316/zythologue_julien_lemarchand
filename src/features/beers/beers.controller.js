@@ -23,8 +23,8 @@ export default {
     await service.deleteOne(req.validated.params.id);
     res.status(HTTP_STATUS.NO_CONTENT).end();
   },
-  // ! baby step — rien de fonctionnel derrière pour l'instant.
   createPhoto: async (req, res) => {
-    res.status(HTTP_STATUS.CREATED).json({ received: true });
+    await service.createPhoto(req.validated.params.id, req.file);
+    res.status(HTTP_STATUS.CREATED).end();
   },
 };
