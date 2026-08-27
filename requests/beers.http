@@ -17,7 +17,7 @@
 # entier.
 
 ### READ ALL — liste des bières → 200, { data: [...], meta: { total } }
-GET {{baseUrl}}/beers
+GET {{baseUrl}}/beers?page=1
 
 ### READ ONE — une bière par id → 200, { data: {...} }
 GET {{baseUrl}}/beers/{{id}}

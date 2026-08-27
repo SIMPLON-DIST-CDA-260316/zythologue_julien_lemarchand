@@ -7,7 +7,10 @@ const TestHandler = async (req, res) =>
 export default {
   getOne: async (req, res) =>
     res.sendItem(await service.getOne(req.validated.params.id)),
-  findAll: async (req, res) => res.sendCollection(await service.findAll()),
+  findAll: async (req, res) => {
+    const { page, size } = req.validated.query;
+    return res.sendCollection(await service.findAll({ page, size }));
+  },
   createOne: async (req, res) =>
     res
       .status(HTTP_STATUS.CREATED)

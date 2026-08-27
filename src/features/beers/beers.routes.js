@@ -1,9 +1,15 @@
 import { Router } from "express";
 import controller from "./beers.controller.js";
-import { BeerIdParam, NewBeer, UpdateBeer } from "./beers.schemas.js";
+import {
+  BeerIdParam,
+  NewBeer,
+  UpdateBeer,
+  BeerQuery,
+} from "./beers.schemas.js";
 import {
   validateBody,
   validateParam,
+  validateQuery,
 } from "#http/middlewares/validateRequest.js";
 const router = Router();
 
@@ -39,7 +45,7 @@ router
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  .get(controller.findAll)
+  .get(validateQuery(BeerQuery), controller.findAll)
   /**
    * @openapi
    * /beers:

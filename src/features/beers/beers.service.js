@@ -21,13 +21,19 @@ const translate = (error, body) => {
   return error;
 };
 
+const toLimitOffset = ({ page, size }) => ({
+  limit: size,
+  offset: (page - 1) * size,
+});
+
 export default {
   getOne: async (id) => {
     const beer = await beerRepository.findOne(id);
     if (beer === null) throw new ResourceNotFoundError("Beer", id);
     return beer;
   },
-  findAll: beerRepository.findAll,
+  findAll: async ({ page, size }) =>
+    beerRepository.findAll(toLimitOffset({ page, size })),
   createOne: async (body) => {
     try {
       return await beerRepository.createOne(body);

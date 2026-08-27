@@ -45,6 +45,14 @@ export const BeerFields = {
 // Un segment d'URL est toujours une string, d'où la coercition.
 export const BeerIdParam = z.coerce.number().pipe(BeerFields.Id);
 
+const PaginationFilter = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  size: z.coerce.number().int().min(1).default(12),
+});
+
+// à étendre avec un filtre (brewery_id...) et un tri plus tard.
+export const BeerQuery = PaginationFilter;
+
 // ==========================================================================
 // DTOs — L'optionalité appartient au contrat de l'endpoint, pas au modèle.
 // ==========================================================================
