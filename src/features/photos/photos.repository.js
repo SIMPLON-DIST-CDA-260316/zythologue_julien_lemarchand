@@ -6,23 +6,15 @@ export default {
 
   createOne: async ({ filename, url, caption, beerId }) => {
     // TODO : ajouter le code pour faire le INSERT dans la table de relation. creer la relation avec la biere.
-    const stub = {
-      id: 1,
-      url,
-      caption,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
     const { rows } = await pool.query(
       `
-      INSERT INTO photo (url,caption)
+      INSERT INTO photo (url, caption)
       VALUES ($1, $2)
-    
+      RETURNING id, url, caption, created_at, updated_at
     `,
-      [url, caption ?? ""],
+      [url, caption],
     );
 
-    return stub;
+    return rows[0];
   },
 };
