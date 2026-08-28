@@ -110,23 +110,28 @@ export default {
     return rows[0] || null;
   },
   findAll: async ({ limit, offset }) => {
-    const { rows } = await pool.query(
-      `SELECT
-      id,
-      name,
-      description,
-      -- sans ce cast, NUMERIC sort en string
-      alcohol_content::float AS alcohol_content,
-      created_at,
-           updated_at,
-           brewery_id
-         FROM beer
-         ORDER BY id
-         LIMIT $1 OFFSET $2;`,
-      [limit, offset],
-    );
+    const [{ rows: items }, {
+      rows: [{ count: total }],
+    }] = await Promise.all([
+      pool.query(
+        `SELECT
+        id,
+        name,
+        description,
+        -- sans ce cast, NUMERIC sort en string
+        alcohol_content::float AS alcohol_content,
+        created_at,
+             updated_at,
+             brewery_id
+           FROM beer
+           ORDER BY id
+           LIMIT $1 OFFSET $2;`,
+        [limit, offset],
+      ),
+      pool.query(`SELECT COUNT(*)::int AS count FROM beer;`),
+    ]);
 
-    return rows;
+    return { items, total };
   },
   createOne: async ({ name, description, alcohol_content, brewery_id }) => {
     const { rows } = await pool.query(

@@ -9,7 +9,8 @@ export default {
     res.sendItem(await service.getOne(req.validated.params.id)),
   findAll: async (req, res) => {
     const { page, size } = req.validated.query;
-    return res.sendCollection(await service.findAll({ page, size }));
+    const { items, total } = await service.findAll({ page, size });
+    return res.sendCollection(items, { total, page, size });
   },
   createOne: async (req, res) =>
     res

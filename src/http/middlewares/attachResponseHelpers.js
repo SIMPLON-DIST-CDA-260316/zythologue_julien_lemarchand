@@ -7,8 +7,8 @@ export default (req, res, next) => {
   res.sendItem = function (data) {
     return this.json({ data });
   };
-  res.sendCollection = function (data, total = data.length) {
-    return this.json({ data, meta: { total } });
+  res.sendCollection = function (data, meta) {
+    return this.json({ data, meta });
   };
   next();
 };

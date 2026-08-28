@@ -21,6 +21,8 @@ export const ApiListResponse = (schema) =>
     data: z.array(schema),
     meta: z.strictObject({
       total: z.number().int().min(0),
+      page: z.number().int().min(1),
+      size: z.number().int().min(1),
     }),
   });
 

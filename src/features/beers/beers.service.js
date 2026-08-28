@@ -34,8 +34,12 @@ export default {
     if (beer === null) throw new ResourceNotFoundError("Beer", id);
     return beer;
   },
-  findAll: async ({ page, size }) =>
-    beerRepository.findAll(toLimitOffset({ page, size })),
+  findAll: async ({ page, size }) => {
+    const { items, total } = await beerRepository.findAll(
+      toLimitOffset({ page, size }),
+    );
+    return { items, total, page, size };
+  },
   createOne: async (body) => {
     try {
       return await beerRepository.createOne(body);
