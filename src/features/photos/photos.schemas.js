@@ -24,6 +24,7 @@ export const PhotoResponse = z.strictObject({
   id: PhotoFields.Id,
   url: PhotoFields.Url,
   caption: PhotoFields.Caption,
+  mimetype: PhotoFields.Mimetype,
   created_at: PhotoFields.CreatedAt,
   updated_at: PhotoFields.UpdatedAt,
 });

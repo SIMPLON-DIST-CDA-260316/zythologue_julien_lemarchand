@@ -64,15 +64,17 @@ export default {
 
     if (beer === null) throw new ResourceNotFoundError("Beer", beerId);
 
-    const { filename, storageRef, url } = await uploadService.store(
-      file.buffer,
-    );
+    const { filename, url, mimetype } = await uploadService.store({
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+    });
 
     const photo = await photoRepository.createOne({
       filename,
       url,
       caption,
       beerId,
+      mimetype,
     });
 
     return photo;
