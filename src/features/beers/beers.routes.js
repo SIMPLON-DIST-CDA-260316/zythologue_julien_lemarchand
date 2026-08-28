@@ -291,9 +291,80 @@ router
   );
 
 router
+  /**
+   * @openapi
+   * components:
+   *   parameters:
+   *     PhotoId:
+   *       in: path
+   *       name: photoId
+   *       required: true
+   *       description: la clef primaire d'une photo
+   *       schema:
+   *         $ref: '#/components/schemas/PhotoIdParam'
+   */
   .param("photoId", validateParam(PhotoIdParam))
   .route("/:id/photos/:photoId")
+  /**
+   * @openapi
+   * /beers/{id}/photos/{photoId}:
+   *   get:
+   *     operationId: getBeerPhoto
+   *     tags: [Beers]
+   *     summary: récupère une photo d'une bière par son ID
+   *     description: >
+   *       404 si la photo n'existe pas, ou si elle existe mais appartient à
+   *       une autre bière — les deux cas restent indistinguables côté client.
+   *     parameters:
+   *       - $ref: '#/components/parameters/BeerId'
+   *       - $ref: '#/components/parameters/PhotoId'
+   *     responses:
+   *       200:
+   *         description: La photo demandée
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/PhotoResponse'
+   *       400:
+   *         description: L'ID de bière ou de photo n'est pas un entier positif
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiValidationError'
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   .get(controller.getPhoto)
+  /**
+   * @openapi
+   * /beers/{id}/photos/{photoId}:
+   *   delete:
+   *     operationId: deleteBeerPhoto
+   *     tags: [Beers]
+   *     summary: supprime une photo d'une bière par son ID
+   *     description: >
+   *       404 si la photo n'existe pas, ou si elle existe mais appartient à
+   *       une autre bière — les deux cas restent indistinguables côté client.
+   *       Réponse sans corps.
+   *     parameters:
+   *       - $ref: '#/components/parameters/BeerId'
+   *       - $ref: '#/components/parameters/PhotoId'
+   *     responses:
+   *       204:
+   *         description: La photo a été supprimée
+   *       400:
+   *         description: L'ID de bière ou de photo n'est pas un entier positif
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiValidationError'
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   .delete(controller.deletePhoto);
 
 export default router;

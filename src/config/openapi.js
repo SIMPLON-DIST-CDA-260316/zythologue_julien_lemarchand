@@ -17,7 +17,11 @@ import {
   UpdateBeer,
   BeerIdParam,
 } from "#features/beers/beers.schemas.js";
-import { NewPhoto, PhotoResponse } from "#features/photos/photos.schemas.js";
+import {
+  NewPhoto,
+  PhotoResponse,
+  PhotoIdParam,
+} from "#features/photos/photos.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -58,6 +62,7 @@ export default swaggerJsdoc({
         UpdateBeer: toSchemaObject(UpdateBeer),
         NewPhoto: toSchemaObject(NewPhoto),
         PhotoResponse: toSchemaObject(PhotoResponse),
+        PhotoIdParam: toSchemaObject(PhotoIdParam),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),
       },
