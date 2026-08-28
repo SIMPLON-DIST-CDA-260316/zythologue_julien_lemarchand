@@ -3,7 +3,7 @@ import * as z from "zod";
 import { BreweryFields } from "#features/breweries/breweries.schemas.js";
 import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
 import { Category } from "#features/categories/categories.schemas.js";
-import { PhotoResponse } from "#features/photos/photos.schemas.js";
+import { Photo } from "#features/photos/photos.schemas.js";
 import { Outlet } from "#features/outlets/outlets.schemas.js";
 import { CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
@@ -116,7 +116,7 @@ export const BeerDetails = z
     }),
     ingredients: z.array(Ingredient),
     categories: z.array(Category),
-    photos: z.array(PhotoResponse),
+    photos: z.array(Photo),
     outlets: z.array(Outlet),
     rating_stats: RatingStats,
   })

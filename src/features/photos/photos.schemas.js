@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
+import { ApiResponse } from "#http/apiResponse.js";
 
 export const ALLOWED_PHOTO_MIMETYPES = [
   "image/jpeg",
@@ -24,9 +25,10 @@ export const PhotoFields = {
 };
 
 // - sortie ----------------------------------------------------
-// Vue embarquée (beer.photos) — partagée avec review.photo_id en base, pas
-// d'endpoint /photos pour l'instant, donc pas d'id exposé.
-export const PhotoResponse = z.strictObject({
+// Vue embarquée (beer.photos), partagée avec review.photo_id en base — pas
+// de ressource /photos autonome, donc réutilisée telle quelle en réponse de
+// POST /beers/:id/photos.
+export const Photo = z.strictObject({
   id: PhotoFields.Id,
   url: PhotoFields.Url,
   caption: PhotoFields.Caption,
@@ -34,3 +36,5 @@ export const PhotoResponse = z.strictObject({
   created_at: PhotoFields.CreatedAt,
   updated_at: PhotoFields.UpdatedAt,
 });
+
+export const PhotoResponse = ApiResponse(Photo);

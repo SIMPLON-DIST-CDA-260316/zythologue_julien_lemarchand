@@ -18,6 +18,7 @@ import {
   UpdateBeer,
   BeerIdParam,
 } from "#features/beers/beers.schemas.js";
+import { PhotoResponse } from "#features/photos/photos.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -57,6 +58,7 @@ export default swaggerJsdoc({
         BeerListResponse: toSchemaObject(BeerListResponse),
         BeerDetailsResponse: toSchemaObject(BeerDetailsResponse),
         UpdateBeer: toSchemaObject(UpdateBeer),
+        PhotoResponse: toSchemaObject(PhotoResponse),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),
       },
@@ -74,6 +76,11 @@ export default swaggerJsdoc({
         UnprocessableContent: jsonResponse(
           "Le corps est bien formé mais désigne une ressource inexistante.",
           "ApiError",
+        ),
+        UnsupportedMediaType: jsonResponse(
+          "Le mimetype du fichier envoyé n'est pas dans la whitelist.",
+          "ApiError",
+          { error: "Unsupported mimetype: text/plain" },
         ),
         InternalServerError: jsonResponse(
           "Erreur inattendue. Le détail reste côté serveur, jamais exposé.",

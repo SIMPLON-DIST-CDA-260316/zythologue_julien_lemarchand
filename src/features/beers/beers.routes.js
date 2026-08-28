@@ -231,6 +231,55 @@ router
 
 router
   .route("/:id/photos")
+  /**
+   * @openapi
+   * /beers/{id}/photos:
+   *   post:
+   *     operationId: createBeerPhoto
+   *     tags: [Beers]
+   *     summary: ajoute une photo à une bière
+   *     description: >
+   *       Ajoute une photo à la galerie de la bière, sans remplacer les
+   *       photos existantes. Le mimetype doit faire partie de la whitelist
+   *       (`image/jpeg`, `image/png`, `image/webp`), vérifié avant toute
+   *       écriture disque.
+   *     parameters:
+   *       - $ref: '#/components/parameters/BeerId'
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             type: object
+   *             required: [photo]
+   *             properties:
+   *               photo:
+   *                 type: string
+   *                 format: binary
+   *                 description: fichier image, mimetype dans la whitelist
+   *               caption:
+   *                 type: string
+   *                 description: légende optionnelle
+   *     responses:
+   *       201:
+   *         description: La photo a été ajoutée
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/PhotoResponse'
+   *       400:
+   *         description: L'ID fourni n'est pas un entier positif
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiValidationError'
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       415:
+   *         $ref: '#/components/responses/UnsupportedMediaType'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   .post(uploadHanlder.single("photo"), controller.createPhoto);
 
 export default router;
