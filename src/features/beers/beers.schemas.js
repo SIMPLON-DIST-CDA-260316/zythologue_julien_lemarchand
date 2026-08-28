@@ -3,8 +3,9 @@ import * as z from "zod";
 import { BreweryFields } from "#features/breweries/breweries.schemas.js";
 import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
 import { Category } from "#features/categories/categories.schemas.js";
-import { Photo } from "#features/photos/photos.schemas.js";
+import { PhotoResponse } from "#features/photos/photos.schemas.js";
 import { Outlet } from "#features/outlets/outlets.schemas.js";
+import { CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 
 // Model -------------------------------------------------------------
@@ -35,9 +36,8 @@ export const BeerFields = {
     .nullable()
     .describe("teneur en alcool en % vol.")
     .meta({ example: 5.2 }),
-  // TIMESTAMPTZ en base, sérialisé en ISO 8601 UTC par `res.json()`.
-  CreatedAt: z.iso.datetime().meta({ example: "2026-08-26T19:17:59.934Z" }),
-  UpdatedAt: z.iso.datetime().meta({ example: "2026-08-26T19:17:59.934Z" }),
+  CreatedAt,
+  UpdatedAt,
   BreweryId: BreweryFields.Id,
 };
 
@@ -116,7 +116,7 @@ export const BeerDetails = z
     }),
     ingredients: z.array(Ingredient),
     categories: z.array(Category),
-    photos: z.array(Photo),
+    photos: z.array(PhotoResponse),
     outlets: z.array(Outlet),
     rating_stats: RatingStats,
   })
