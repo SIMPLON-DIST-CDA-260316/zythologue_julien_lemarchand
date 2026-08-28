@@ -11,14 +11,13 @@ import * as z from "zod";
 
 import {
   NewBeer,
-  Beer,
   BeerResponse,
   BeerListResponse,
   BeerDetailsResponse,
   UpdateBeer,
   BeerIdParam,
 } from "#features/beers/beers.schemas.js";
-import { PhotoResponse } from "#features/photos/photos.schemas.js";
+import { NewPhoto, PhotoResponse } from "#features/photos/photos.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -53,11 +52,11 @@ export default swaggerJsdoc({
       schemas: {
         BeerIdParam: toSchemaObject(BeerIdParam),
         NewBeer: toSchemaObject(NewBeer),
-        Beer: toSchemaObject(Beer),
         BeerResponse: toSchemaObject(BeerResponse),
         BeerListResponse: toSchemaObject(BeerListResponse),
         BeerDetailsResponse: toSchemaObject(BeerDetailsResponse),
         UpdateBeer: toSchemaObject(UpdateBeer),
+        NewPhoto: toSchemaObject(NewPhoto),
         PhotoResponse: toSchemaObject(PhotoResponse),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),

@@ -261,7 +261,7 @@ router
    *                 format: binary
    *                 description: fichier image, mimetype dans la whitelist
    *               caption:
-   *                 type: string
+   *                 $ref: '#/components/schemas/NewPhoto/properties/caption'
    *                 description: légende optionnelle
    *     responses:
    *       201:
