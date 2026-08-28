@@ -137,3 +137,23 @@ Content-Type: image/png
 
 < ../../db/img/bier.png
 --{{boundary}}--
+
+### NOMINAL — suppression d'une photo existante → 204
+# @name createForDelete
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}--
+
+###
+
+GET {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos/{{createForDelete.response.body.data.id}}
+
+
+###
+DELETE {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos/{{createForDelete.response.body.data.id}}

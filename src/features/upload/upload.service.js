@@ -28,4 +28,8 @@ export default {
       url: "http://localhost:3000/" + storageRef,
     };
   },
+  delete: async ({ storageRef }) => {
+    // TODO: supprimer le fichier du filesystem
+    return true;
+  },
 };

@@ -83,4 +83,19 @@ export default {
 
     return photo;
   },
+  getPhoto: async (beerId, photoId) => {
+    const photo = await photoRepository.findOne(photoId);
+    if (photo === null || photo.beer_id !== beerId)
+      throw new ResourceNotFoundError("Photo", photoId);
+    const { beer_id, ...rest } = photo;
+    return rest;
+  },
+  deletePhoto: async (beerId, photoId) => {
+    const photo = await photoRepository.findOne(photoId);
+    if (photo === null || photo.beer_id !== beerId)
+      throw new ResourceNotFoundError("Photo", photoId);
+    await photoRepository.deleteOne(photoId);
+    await uploadService.delete({ storageRef: photo.storageRef });
+    return;
+  },
 };

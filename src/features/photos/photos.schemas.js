@@ -25,6 +25,9 @@ export const PhotoFields = {
 };
 
 
+// Params ------------------------------------------------------------
+export const PhotoIdParam = z.coerce.number().pipe(PhotoFields.Id);
+
 // - entrée ----------------------------------------------------
 export const NewPhoto = z.strictObject({
   caption: PhotoFields.Caption.optional(),

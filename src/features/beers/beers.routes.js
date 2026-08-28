@@ -14,7 +14,7 @@ import {
 import uploadHanlder, {
   requirePhoto,
 } from "#features/upload/upload.middleware.js";
-import { NewPhoto } from "#features/photos/photos.schemas.js";
+import { NewPhoto, PhotoIdParam } from "#features/photos/photos.schemas.js";
 const router = Router();
 
 /**
@@ -289,5 +289,11 @@ router
     validateBody(NewPhoto),
     controller.createPhoto,
   );
+
+router
+  .param("photoId", validateParam(PhotoIdParam))
+  .route("/:id/photos/:photoId")
+  .get(controller.getPhoto)
+  .delete(controller.deletePhoto);
 
 export default router;

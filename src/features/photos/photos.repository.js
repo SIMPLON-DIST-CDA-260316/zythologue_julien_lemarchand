@@ -26,13 +26,25 @@ export default {
   findOne: async (id) => {
     const { rows } = await pool.query(
       `
-      SELECT id, url, caption, mimetype, created_at, updated_at 
-      FROM photo
-      WHERE id = $1
+        SELECT p.id, p.url, p.caption, p.mimetype, p.created_at, p.updated_at, ib.beer_id
+        FROM photo p
+        JOIN illustration_beer ib ON ib.photo_id = p.id
+        WHERE p.id = $1
       `,
       [id],
     );
 
-    return rows[0];
+    return rows[0] || null;
+  },
+  // TODO: verifier la relation avec la biere , sinon on supprime pas
+  deleteOne: async (id) => {
+    const { rowCount } = await pool.query(
+      `DELETE FROM photo
+        WHERE id=$1
+      `,
+      [id],
+    );
+
+    return !!rowCount;
   },
 };

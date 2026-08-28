@@ -34,4 +34,18 @@ export default {
           req.validated.body.caption,
         ),
       ),
+  getPhoto: async (req, res) =>
+    res.sendItem(
+      await service.getPhoto(
+        req.validated.params.id,
+        req.validated.params.photoId,
+      ),
+    ),
+  deletePhoto: async (req, res) => {
+    await service.deletePhoto(
+      req.validated.params.id,
+      req.validated.params.photoId,
+    );
+    res.status(HTTP_STATUS.NO_CONTENT).end();
+  },
 };
