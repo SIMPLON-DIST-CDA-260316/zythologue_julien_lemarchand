@@ -1,8 +1,9 @@
 import * as z from "zod";
+import { Id } from "#shared/common.schemas.js";
 
 // Model -------------------------------------------------------------
 export const CategoryFields = {
-  Id: z.number().int().min(1),
+  Id,
   Name: z.string().trim().min(1).max(60),
 };
 

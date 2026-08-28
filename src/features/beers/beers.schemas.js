@@ -5,7 +5,7 @@ import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
 import { Category } from "#features/categories/categories.schemas.js";
 import { Photo } from "#features/photos/photos.schemas.js";
 import { Outlet } from "#features/outlets/outlets.schemas.js";
-import { CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
+import { Id, CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 
 // Model -------------------------------------------------------------
@@ -15,7 +15,7 @@ import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
 //
 // `nullable` se déclare ici, c'est une propriété de la colonne.
 export const BeerFields = {
-  Id: z.number().int().min(1).meta({ example: 1 }),
+  Id: Id.meta({ example: 1 }),
   Name: z
     .string()
     .trim()

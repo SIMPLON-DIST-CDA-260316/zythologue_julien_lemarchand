@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
+import { Id, CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
 import { ApiResponse } from "#http/apiResponse.js";
 
 export const ALLOWED_PHOTO_MIMETYPES = [
@@ -16,7 +16,7 @@ export const PHOTO_MIMETYPE_EXTENSIONS = {
 
 // Model -------------------------------------------------------------
 export const PhotoFields = {
-  Id: z.number().int().min(1),
+  Id,
   Url: z.url().max(255),
   Caption: z.string().trim().min(1).max(255).nullable(),
   Mimetype: z.enum(ALLOWED_PHOTO_MIMETYPES),

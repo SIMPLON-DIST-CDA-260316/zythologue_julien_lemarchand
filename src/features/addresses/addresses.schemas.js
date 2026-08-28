@@ -1,8 +1,9 @@
 import * as z from "zod";
+import { Id } from "#shared/common.schemas.js";
 
 // Model -------------------------------------------------------------
 export const AddressFields = {
-  Id: z.number().int().min(1),
+  Id,
   Number: z.string().trim().min(1).max(10).nullable(),
   Street: z.string().trim().min(1).max(255),
   ZipCode: z.string().trim().min(1).max(10),

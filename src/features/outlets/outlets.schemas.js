@@ -1,10 +1,11 @@
 import * as z from "zod";
 
 import { Address } from "#features/addresses/addresses.schemas.js";
+import { Id } from "#shared/common.schemas.js";
 
 // Model -------------------------------------------------------------
 export const OutletFields = {
-  Id: z.number().int().min(1),
+  Id,
   Name: z.string().trim().min(1).max(120),
   Type: z.enum(["cellar", "bar", "restaurant", "supermarket"]).nullable(),
   OnlineSales: z
