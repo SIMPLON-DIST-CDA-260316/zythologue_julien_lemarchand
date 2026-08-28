@@ -33,8 +33,12 @@ export default {
           -- construction d'un tableau de photos
           COALESCE(json_agg(
             DISTINCT jsonb_build_object(
+              'id', p.id,
               'url', p.url,
-              'caption', p.caption
+              'caption', p.caption,
+              'mimetype', p.mimetype,
+              'created_at', p.created_at,
+              'updated_at', p.updated_at
             )
           ) FILTER (WHERE p.id IS NOT NULL), '[]') AS photos,
 
