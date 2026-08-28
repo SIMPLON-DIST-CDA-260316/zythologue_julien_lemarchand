@@ -14,5 +14,6 @@ export default () =>
     .use(attachResponseHelpers)
     .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use("/beers", beersRoutes)
+    .use(express.static("public"))
     .use(routeNotFoundHandler)
     .use(errorHandler); // le `catch` de l'app : toute erreur levée finit ici
