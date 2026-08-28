@@ -47,38 +47,46 @@ VALUES (
     'Lille',
     'France'
   );
-INSERT INTO photo (url, caption)
+INSERT INTO photo (url, caption, mimetype)
 VALUES (
     'https://cdn.zytho.test/breweries/celestins.jpg',
-    'Salle de brassage des Célestins'
+    'Salle de brassage des Célestins',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/breweries/hopfield.jpg',
-    'Façade Hopfield'
+    'Façade Hopfield',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/beers/blonde-nord.jpg',
-    'Blonde du Nord'
+    'Blonde du Nord',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/beers/triple-flandre.jpg',
-    'Triple de Flandre'
+    'Triple de Flandre',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/beers/ipa-houblon.jpg',
-    'IPA Houblon Sauvage'
+    'IPA Houblon Sauvage',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/beers/stout-minuit.jpg',
-    'Stout Minuit'
+    'Stout Minuit',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/avatars/marie.jpg',
-    'Avatar de Marie'
+    'Avatar de Marie',
+    'image/jpeg'
   ),
   (
     'https://cdn.zytho.test/reviews/degustation.jpg',
-    'Dégustation entre amis'
+    'Dégustation entre amis',
+    'image/jpeg'
   );
 INSERT INTO category (name, description)
 VALUES (

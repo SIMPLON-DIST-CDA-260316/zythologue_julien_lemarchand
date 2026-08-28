@@ -45,6 +45,7 @@ CREATE TABLE photo (
   id SERIAL PRIMARY KEY,
   url VARCHAR(255) NOT NULL,
   caption VARCHAR(255),
+  mimetype VARCHAR(20) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
