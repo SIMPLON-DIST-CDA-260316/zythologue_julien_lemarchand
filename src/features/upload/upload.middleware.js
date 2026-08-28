@@ -1,6 +1,7 @@
 import multer from "multer";
 import { ALLOWED_PHOTO_MIMETYPES } from "#features/photos/photos.schemas.js";
 import { UnsupportedMediaTypeError } from "#errors/UnsupportedMediaTypeError.js";
+import { ValidationError } from "#http/errors/ValidationError.js";
 
 export default multer({
   storage: multer.memoryStorage(),
@@ -11,3 +12,11 @@ export default multer({
     cb(null, true);
   },
 });
+
+export const requirePhoto = (req, res, next) => {
+  if (!req.file)
+    throw new ValidationError([
+      { path: ["photo"], message: "Photo file is required" },
+    ]);
+  next();
+};

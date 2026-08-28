@@ -31,7 +31,7 @@ export default {
         await service.createPhoto(
           req.validated.params.id,
           req.file,
-          req.body.caption,
+          req.validated.body.caption,
         ),
       ),
 };

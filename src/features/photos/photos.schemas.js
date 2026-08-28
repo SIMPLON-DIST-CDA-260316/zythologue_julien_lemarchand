@@ -24,6 +24,12 @@ export const PhotoFields = {
   UpdatedAt,
 };
 
+
+// - entrée ----------------------------------------------------
+export const NewPhoto = z.strictObject({
+  caption: PhotoFields.Caption.optional(),
+});
+
 // - sortie ----------------------------------------------------
 // Vue embarquée (beer.photos), partagée avec review.photo_id en base — pas
 // de ressource /photos autonome, donc réutilisée telle quelle en réponse de

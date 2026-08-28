@@ -11,7 +11,10 @@ import {
   validateParam,
   validateQuery,
 } from "#http/middlewares/validateRequest.js";
-import uploadHanlder from "#features/upload/upload.middleware.js";
+import uploadHanlder, {
+  requirePhoto,
+} from "#features/upload/upload.middleware.js";
+import { NewPhoto } from "#features/photos/photos.schemas.js";
 const router = Router();
 
 /**
@@ -280,6 +283,11 @@ router
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
-  .post(uploadHanlder.single("photo"), controller.createPhoto);
+  .post(
+    uploadHanlder.single("photo"),
+    requirePhoto,
+    validateBody(NewPhoto),
+    controller.createPhoto,
+  );
 
 export default router;

@@ -1,11 +1,16 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
 @breweryId = 1
+@boundary = ----WebKitFormBoundary7MA4YWxkTrZu0gW
+@longCaption = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
-# Baby step — endpoint pas fonctionnel : renvoie juste 201 { received: true },
-# rien n'est écrit en base ni servi.
+# Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+# rend `{ error }`, une string. Un 400 y ajoute `details`.
+#
+# `photo` requis (multer + garde `requirePhoto`), `caption` optionnel
+# (`NewPhoto`, trim, 1-255 caractères si présent).
 
-### setup — bière jetable à illustrer dans le scénario ci-dessous
+### setup — bière jetable à illustrer dans les scénarios ci-dessous
 # @name createTemp
 POST {{baseUrl}}/beers
 Content-Type: {{contentType}}
@@ -15,13 +20,120 @@ Content-Type: {{contentType}}
   "brewery_id": {{breweryId}}
 }
 
-### NOMINAL — upload d'une image → 201
-POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+### setup — récupération de la bière jetable
+GET {{baseUrl}}/beers/{{createTemp.response.body.data.id}}
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
+
+### NOMINAL — upload avec caption → 201
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
 Content-Disposition: form-data; name="photo"; filename="bier.png"
 Content-Type: image/png
 
 < ../../db/img/bier.png
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
+--{{boundary}}
+Content-Disposition: form-data; name="caption"
+
+Une bière bien fraîche
+--{{boundary}}--
+
+### NOMINAL — upload sans caption (optionnel) → 201, caption: null
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}--
+
+### EDGE — sans fichier photo → 400, photo requis
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="caption"
+
+Sans fichier
+--{{boundary}}--
+
+### EDGE — mimetype hors whitelist → 415
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="notes.txt"
+Content-Type: text/plain
+
+pas une image
+--{{boundary}}--
+
+### EDGE — caption trop longue (>255) → 400
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}
+Content-Disposition: form-data; name="caption"
+
+{{longCaption}}
+--{{boundary}}--
+
+### EDGE — caption vide → 400
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}
+Content-Disposition: form-data; name="caption"
+
+
+--{{boundary}}--
+
+### EDGE — champ inconnu dans le body → 400, schéma strict
+POST {{baseUrl}}/beers/{{createTemp.response.body.data.id}}/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}
+Content-Disposition: form-data; name="color"
+
+blonde
+--{{boundary}}--
+
+### EDGE — bière inexistante → 404
+POST {{baseUrl}}/beers/999999/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}--
+
+### EDGE — id non numérique → 400
+POST {{baseUrl}}/beers/abc/photos
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="photo"; filename="bier.png"
+Content-Type: image/png
+
+< ../../db/img/bier.png
+--{{boundary}}--
