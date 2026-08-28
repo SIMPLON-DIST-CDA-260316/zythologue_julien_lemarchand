@@ -7,6 +7,12 @@ export const ALLOWED_PHOTO_MIMETYPES = [
   "image/webp",
 ];
 
+export const PHOTO_MIMETYPE_EXTENSIONS = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
 // Model -------------------------------------------------------------
 export const PhotoFields = {
   Id: z.number().int().min(1),

@@ -2,16 +2,20 @@ import { randomUUIDv7 } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { PHOTO_MIMETYPE_EXTENSIONS } from "#features/photos/photos.schemas.js";
+import { UnsupportedMediaTypeError } from "#errors/UnsupportedMediaTypeError.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const uploadDir = "public/uploads";
 const relativePath = join(__dirname, "..", "..", "..", uploadDir);
 
 export default {
-  // ! pas d'extension, pas de traitement Sharp, pas d'URL.
   store: async ({ buffer, mimetype }) => {
+    const extension = PHOTO_MIMETYPE_EXTENSIONS[mimetype];
+    if (!extension) throw new UnsupportedMediaTypeError(mimetype);
+
     await mkdir(relativePath, { recursive: true });
-    const filename = randomUUIDv7();
+    const filename = `${randomUUIDv7()}.${extension}`;
     await writeFile(join(relativePath, filename), buffer);
     const storageRef = uploadDir + "/" + filename;
 
