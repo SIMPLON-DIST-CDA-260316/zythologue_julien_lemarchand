@@ -69,8 +69,8 @@ CREATE TABLE ingredient (
 CREATE TABLE account (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
-  last_name VARCHAR(80) NOT NULL,
-  first_name VARCHAR(80) NOT NULL,
+  last_name VARCHAR(80),
+  first_name VARCHAR(80),
   password VARCHAR(255) NOT NULL,
   role account_role NOT NULL DEFAULT 'customer',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
