@@ -30,6 +30,7 @@ export const UserFields = {
 // ==========================================================================
 
 // - entrée ----------------------------------------------------
+// TODO: verifier la complexité du mdp via regex
 const Password = z.string(z.string().min(6).max(255));
 
 export const NewUser = z.strictObject({

@@ -9,9 +9,15 @@ const toDomainError = (error) => {
   return error;
 };
 
+const hashPassword = async (psw) => {
+  // TODO: hashage du mot de passe
+  return psw;
+};
+
 export default {
   createOne: async (body) => {
     try {
+      body.password = await hashPassword(body.password);
       return await repository.createOne(body);
     } catch (error) {
       throw toDomainError(error);
