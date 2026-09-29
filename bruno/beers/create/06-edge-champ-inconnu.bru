@@ -1,0 +1,22 @@
+meta {
+  name: Edge - champ inconnu
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Kwak {{rand}}",
+    "brewery_id": {{breweryId}},
+    "color": "blonde"
+  }
+}
+
+docs {
+  EDGE — champ inconnu → 400, schéma strict
+}
