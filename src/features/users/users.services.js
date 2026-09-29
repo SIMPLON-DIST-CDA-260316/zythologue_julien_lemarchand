@@ -1,17 +1,13 @@
 import repository from "./users.repository.js";
 import { ConflictError } from "#errors/ConflictError.js";
 import { PG_ERROR } from "#config/database.js";
+import { hashPassword } from "#features/auth/auth.lib.js";
 
 // TODO: deuxième occurrence de cette fonction (../beers/beers.service.js), signature légèrement différente. À refactoriser à l'occasion.
 const toDomainError = (error) => {
   if (error.code === PG_ERROR.UNIQUE_VIOLATION)
     return new ConflictError("User", ["email"]);
   return error;
-};
-
-const hashPassword = async (psw) => {
-  // TODO: hashage du mot de passe
-  return psw;
 };
 
 export default {
