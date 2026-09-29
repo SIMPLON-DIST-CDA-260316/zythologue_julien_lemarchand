@@ -1,10 +1,20 @@
 @baseUrl = http://localhost:3000
 @contentType = application/json
 
-POST  {{baseUrl}}/users
+### NOMINAL — email fixe, déclenche un 409 si déjà en base
+POST {{baseUrl}}/users
 Content-Type: {{contentType}}
 
 {
   "email": "lemar.jul@gmail.com",
+  "password": "1234567"
+}
+
+### NOMINAL — email généré (timestamp), toujours unique → 201
+POST {{baseUrl}}/users
+Content-Type: {{contentType}}
+
+{
+  "email": "test.{{$timestamp}}@example.com",
   "password": "1234567"
 }
