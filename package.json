@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "argon2": "^0.45.1",
+    "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
     "morgan": "^1.11.0",
     "multer": "^2.2.0",

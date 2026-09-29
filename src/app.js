@@ -1,6 +1,7 @@
 import express from "express";
 import logger from "morgan";
 import swaggerUi from "swagger-ui-express";
+import cookieParser from "cookie-parser";
 import beersRoutes from "#features/beers/beers.routes.js";
 import usersRoutes from "#features/users/users.routes.js";
 import swaggerDocument from "#config/openapi.js";
@@ -11,6 +12,7 @@ import errorHandler from "#http/middlewares/errorHandler.js";
 export default () =>
   express()
     .use(express.json())
+    .use(cookieParser())
     .use(logger("dev"))
     .use(attachResponseHelpers)
     .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
