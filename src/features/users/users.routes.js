@@ -48,8 +48,6 @@ router
    *               $ref: '#/components/schemas/ApiValidationError'
    *       409:
    *         $ref: '#/components/responses/Conflict'
-   *       422:
-   *         $ref: '#/components/responses/UnprocessableContent'
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
