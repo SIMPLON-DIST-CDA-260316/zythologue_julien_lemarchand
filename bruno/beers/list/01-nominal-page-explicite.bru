@@ -1,0 +1,18 @@
+meta {
+  name: Nominal - page explicite
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/beers?page=1
+  body: none
+}
+
+params:query {
+  page: 1
+}
+
+docs {
+  NOMINAL — page explicite → 200, { data: [...], meta: { total } }
+}

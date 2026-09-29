@@ -1,0 +1,14 @@
+meta {
+  name: Edge - id non numérique
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/beers/abc
+  body: none
+}
+
+docs {
+  EDGE — id non numérique → 400, coercion échoue
+}
