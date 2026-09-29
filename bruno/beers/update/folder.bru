@@ -1,0 +1,17 @@
+meta {
+  name: update
+}
+
+vars:pre-request {
+  breweryId: 1
+  existingName: Blonde du Nord
+}
+
+script:pre-request {
+  bru.setVar("rand", Math.floor(Math.random() * 999999) + 1);
+}
+
+docs {
+  PATCH, pas PUT : mise à jour partielle, une clé absente laisse la colonne
+  inchangée, une clé à `null` l'efface.
+}

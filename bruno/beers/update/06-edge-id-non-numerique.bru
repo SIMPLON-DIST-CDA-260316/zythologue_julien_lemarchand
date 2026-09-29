@@ -1,0 +1,20 @@
+meta {
+  name: Edge - id non numérique
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/beers/abc
+  body: json
+}
+
+body:json {
+  {
+    "name": "peu importe"
+  }
+}
+
+docs {
+  EDGE — id non numérique → 400
+}
