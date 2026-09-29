@@ -1,0 +1,14 @@
+meta {
+  name: Nominal - suppression d'une bière existante
+  type: http
+  seq: 1
+}
+
+delete {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: none
+}
+
+docs {
+  NOMINAL — suppression d'une bière existante → 204
+}

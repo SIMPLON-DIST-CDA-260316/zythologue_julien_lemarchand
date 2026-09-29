@@ -1,0 +1,18 @@
+meta {
+  name: Edge - corps vide
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: json
+}
+
+body:json {
+  {}
+}
+
+docs {
+  EDGE — corps vide → 400, au moins un champ requis
+}

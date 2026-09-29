@@ -1,0 +1,18 @@
+meta {
+  name: Edge - size négatif
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/beers?size=-1
+  body: none
+}
+
+params:query {
+  size: -1
+}
+
+docs {
+  EDGE — size négatif → 400, min 1
+}

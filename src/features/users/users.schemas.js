@@ -12,14 +12,13 @@ import { ApiResponse } from "#http/apiResponse.js";
 export const UserFields = {
   Id: Id.meta({ example: 1 }),
   Email: z
-    .email()
+    .email({ pattern: z.regexes.rfc5322Email }) // https://www.rfc-editor.org/info/rfc5322/
     .describe("unique par utilisateur, la comparaison ignore la casse")
     .meta({ example: "user@domain.com" }),
   PasswordHash: z
     .string()
-    .trim()
     .min(1)
-    .nullable()
+    .max(255)
     .meta({ example: "Blonde légère et désaltérante." }),
   CreatedAt,
   UpdatedAt,
@@ -30,8 +29,12 @@ export const UserFields = {
 // ==========================================================================
 
 // - entrée ----------------------------------------------------
-// TODO: verifier la complexité du mdp via regex
-const Password = z.string(z.string().min(6).max(255));
+const Password = z
+  .string()
+  .min(8)
+  .max(255)
+  .regex(/[0-9]/, "doit contenir au moins un chiffre")
+  .regex(/[^a-zA-Z0-9]/, "doit contenir au moins un caractère spécial");
 
 export const NewUser = z.strictObject({
   email: UserFields.Email,

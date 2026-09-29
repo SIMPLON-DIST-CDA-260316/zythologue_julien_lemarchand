@@ -1,0 +1,20 @@
+meta {
+  name: Nominal - null efface la colonne
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: json
+}
+
+body:json {
+  {
+    "description": null
+  }
+}
+
+docs {
+  NOMINAL — null efface la colonne → 200
+}

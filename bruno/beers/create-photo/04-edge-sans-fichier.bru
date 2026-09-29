@@ -1,0 +1,18 @@
+meta {
+  name: Edge - sans fichier photo
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  caption: Sans fichier
+}
+
+docs {
+  EDGE — sans fichier photo → 400, photo requis
+}

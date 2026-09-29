@@ -1,0 +1,18 @@
+meta {
+  name: Edge - page à 0
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/beers?page=0
+  body: none
+}
+
+params:query {
+  page: 0
+}
+
+docs {
+  EDGE — page à 0 → 400, min 1
+}

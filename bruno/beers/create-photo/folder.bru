@@ -1,0 +1,20 @@
+meta {
+  name: create-photo
+}
+
+vars:pre-request {
+  breweryId: 1
+  longCaption: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+}
+
+script:pre-request {
+  bru.setVar("rand", Math.floor(Math.random() * 999999) + 1);
+}
+
+docs {
+  Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+  rend `{ error }`, une string. Un 400 y ajoute `details`.
+
+  `photo` requis (multer + garde `requirePhoto`), `caption` optionnel
+  (`NewPhoto`, trim, 1-255 caractères si présent).
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Nominal - page et size explicites
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/beers?page=1&size=5
+  body: none
+}
+
+params:query {
+  page: 1
+  size: 5
+}
+
+docs {
+  NOMINAL — page et size explicites → 200
+}

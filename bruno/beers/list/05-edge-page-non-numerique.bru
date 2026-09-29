@@ -1,0 +1,18 @@
+meta {
+  name: Edge - page non numérique
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/beers?page=abc
+  body: none
+}
+
+params:query {
+  page: abc
+}
+
+docs {
+  EDGE — page non numérique → 400, coercion échoue
+}

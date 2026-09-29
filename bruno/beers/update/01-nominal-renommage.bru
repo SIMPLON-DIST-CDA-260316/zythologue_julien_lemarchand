@@ -1,0 +1,20 @@
+meta {
+  name: Nominal - renommage
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: json
+}
+
+body:json {
+  {
+    "name": "Temp renommée {{rand}}"
+  }
+}
+
+docs {
+  NOMINAL — renommage, les autres colonnes intactes → 200
+}

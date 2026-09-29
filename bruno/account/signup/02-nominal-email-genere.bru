@@ -1,0 +1,25 @@
+meta {
+  name: Nominal - email généré
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.{{ts}}@example.com",
+    "password": "1234567!"
+  }
+}
+
+script:pre-request {
+  bru.setVar("ts", Date.now());
+}
+
+docs {
+  NOMINAL — email généré (timestamp), toujours unique → 201
+}

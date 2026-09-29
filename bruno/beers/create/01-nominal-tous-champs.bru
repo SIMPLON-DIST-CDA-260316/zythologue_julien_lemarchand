@@ -1,0 +1,23 @@
+meta {
+  name: Nominal - tous les champs
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Kwak {{rand}}",
+    "description": "{{description}}",
+    "alcohol_content": {{alcoholContent}},
+    "brewery_id": {{breweryId}}
+  }
+}
+
+docs {
+  NOMINAL — tous les champs → 201
+}

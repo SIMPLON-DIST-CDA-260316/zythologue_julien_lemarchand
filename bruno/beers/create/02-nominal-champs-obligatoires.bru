@@ -1,0 +1,21 @@
+meta {
+  name: Nominal - champs obligatoires seulement
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Kwak {{rand}}",
+    "brewery_id": {{breweryId}}
+  }
+}
+
+docs {
+  NOMINAL — seulement les champs obligatoires → 201
+}

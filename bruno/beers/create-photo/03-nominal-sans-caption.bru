@@ -1,0 +1,18 @@
+meta {
+  name: Nominal - upload sans caption
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+}
+
+docs {
+  NOMINAL — upload sans caption (optionnel) → 201, caption: null
+}

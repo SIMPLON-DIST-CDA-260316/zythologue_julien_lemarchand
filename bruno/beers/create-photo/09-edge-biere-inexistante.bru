@@ -1,0 +1,18 @@
+meta {
+  name: Edge - bière inexistante
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/beers/999999/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+}
+
+docs {
+  EDGE — bière inexistante → 404
+}

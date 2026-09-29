@@ -1,0 +1,19 @@
+meta {
+  name: Nominal - upload avec caption
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+  caption: Une bière bien fraîche
+}
+
+docs {
+  NOMINAL — upload avec caption → 201
+}

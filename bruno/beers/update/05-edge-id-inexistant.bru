@@ -1,0 +1,20 @@
+meta {
+  name: Edge - id inexistant
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/beers/999999
+  body: json
+}
+
+body:json {
+  {
+    "name": "peu importe"
+  }
+}
+
+docs {
+  EDGE — id inexistant → 404
+}
