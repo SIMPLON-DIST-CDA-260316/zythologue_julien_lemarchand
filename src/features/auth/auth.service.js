@@ -1,12 +1,18 @@
 import userService from "#features/users/users.services.js";
 import { InvalidCredentialsError } from "#errors/InvalidCredentialsError.js";
 import { verifyPassword } from "./auth.lib.js";
+import jwt from "jsonwebtoken";
 
-// jwt stub
-const generateToken = (id) => ({
-  user_id: 1234,
-  expiration_date: Date.now() + 3600000,
-});
+const JWT_DURATION = "15m";
+
+const generateToken = (id) => {
+  // https://datatracker.ietf.org/doc/html/rfc7519
+  const payload = { sub: String(id) };
+
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: JWT_DURATION,
+  });
+};
 
 export default {
   loginUser: async ({ email, password }) => {

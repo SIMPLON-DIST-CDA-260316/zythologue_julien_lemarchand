@@ -17,6 +17,11 @@ body:json {
   }
 }
 
+assert {
+  res.headers['set-cookie'][0]: contains token=
+  res.headers['set-cookie'][0]: notContains token=undefined
+}
+
 settings {
   encodeUrl: true
   timeout: 0
