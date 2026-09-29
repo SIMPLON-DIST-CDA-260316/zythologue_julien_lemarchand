@@ -22,6 +22,7 @@ import {
   PhotoResponse,
   PhotoIdParam,
 } from "#features/photos/photos.schemas.js";
+import { NewUser, UserResponse } from "#features/users/users.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -63,6 +64,8 @@ export default swaggerJsdoc({
         NewPhoto: toSchemaObject(NewPhoto),
         PhotoResponse: toSchemaObject(PhotoResponse),
         PhotoIdParam: toSchemaObject(PhotoIdParam),
+        NewUser: toSchemaObject(NewUser),
+        UserResponse: toSchemaObject(UserResponse),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),
       },

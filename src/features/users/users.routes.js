@@ -19,9 +19,10 @@ router
    *   post:
    *     operationId: createUser
    *     tags: [Users]
-   *     summary: crée une nouvelle utilisateur
+   *     summary: crée un nouvel utilisateur
    *     description: >
-   *      crée une nouvelle utilisateur
+   *       L'email doit être libre, la comparaison ignorant la casse — un
+   *       email déjà utilisé donne un 409.
    *     requestBody:
    *       required: true
    *       content:
@@ -34,7 +35,7 @@ router
    *               password: 1234567
    *     responses:
    *       201:
-   *         description: Le compte utilsateur a été crée
+   *         description: Le compte utilisateur a été créé
    *         content:
    *           application/json:
    *             schema:
