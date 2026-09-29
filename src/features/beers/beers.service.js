@@ -15,7 +15,8 @@ import { PG_ERROR } from "#config/database.js";
  * l'appel. Ce qu'elle ne sait pas nommer repart tel quel : absent de la table
  * d'`errorHandler` = imprévu = 500.
  */
-const translate = (error, body) => {
+// TODO: deuxième occurrence de cette fonction (../users/users.services.js), signature légèrement différente. À refactoriser à l'occasion.
+const toDomainError = (error, body) => {
   if (error.code === PG_ERROR.FOREIGN_KEY_VIOLATION)
     return new InvalidReferenceError("brewery_id", body.brewery_id);
   if (error.code === PG_ERROR.UNIQUE_VIOLATION)
@@ -44,7 +45,7 @@ export default {
     try {
       return await beerRepository.createOne(body);
     } catch (error) {
-      throw translate(error, body);
+      throw toDomainError(error, body);
     }
   },
   // Le RETURNING vide vaut inexistence : pas de SELECT prealable.
@@ -53,7 +54,7 @@ export default {
     try {
       beer = await beerRepository.updateOne(id, body);
     } catch (error) {
-      throw translate(error, body);
+      throw toDomainError(error, body);
     }
     if (beer === null) throw new ResourceNotFoundError("Beer", id);
     return beer;

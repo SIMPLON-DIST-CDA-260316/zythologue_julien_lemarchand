@@ -1,11 +1,11 @@
 import repository from "./users.repository.js";
+import { ConflictError } from "#errors/ConflictError.js";
 import { PG_ERROR } from "#config/database.js";
 
-const translate = (error, body) => {
-  if (error.code === PG_ERROR.FOREIGN_KEY_VIOLATION)
-    return new InvalidReferenceError("brewery_id", body.brewery_id);
+// TODO: deuxième occurrence de cette fonction (../beers/beers.service.js), signature légèrement différente. À refactoriser à l'occasion.
+const toDomainError = (error) => {
   if (error.code === PG_ERROR.UNIQUE_VIOLATION)
-    return new ConflictError("Beer", ["name", "brewery_id"]);
+    return new ConflictError("User", ["email"]);
   return error;
 };
 
@@ -14,7 +14,7 @@ export default {
     try {
       return await repository.createOne(body);
     } catch (error) {
-      throw translate(error, body);
+      throw toDomainError(error);
     }
   },
 };
