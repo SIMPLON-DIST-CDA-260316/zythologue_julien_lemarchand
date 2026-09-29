@@ -30,8 +30,8 @@ qu'une autre ressource les référence (`BreweryFields.Id` dans un DTO de bière
 pas parce qu'un endpoint les attend. Seul `beers` est monté dans `app.js`.
 
 `src/` ne contient que du code chargé au build/runtime de l'app. Rien qui vit
-en dehors de ce contrat (fichiers `.http` de dev, docs, config Docker...) n'y
-a sa place — voir `requests/`, `docs/`, racine du repo.
+en dehors de ce contrat (collection Bruno de dev, docs, config Docker...) n'y
+a sa place — voir `bruno/`, `docs/`, racine du repo.
 
 ## Une feature = une ressource
 
@@ -194,8 +194,9 @@ a pas d'alias `#middlewares/*`.
 Alias natifs Node (spec ESM, préfixe `#` imposé), pas de bundler ni de
 `tsconfig.paths` — zéro dépendance, résolu directement par `node`.
 
-## `requests/*.http`
+## `bruno/`
 
-Fichiers scratch REST Client (extension VSCode) — requêtes manuelles contre
-un serveur vivant, un fichier par ressource. Aucune assertion, jamais importé
-par le code : outillage de dev, pas une suite de tests automatisée.
+Collection [Bruno](https://www.usebruno.com/) — requêtes manuelles contre un
+serveur vivant, un dossier par endpoint, un fichier `.bru` par scénario
+(NOMINAL/EDGE). Aucune assertion, jamais importé par le code : outillage de
+dev (usage GUI), pas une suite de tests automatisée.

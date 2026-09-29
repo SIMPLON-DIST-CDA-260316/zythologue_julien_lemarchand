@@ -1,0 +1,21 @@
+meta {
+  name: Edge - brewery_id inexistant
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Kwak {{rand}}",
+    "brewery_id": 999999
+  }
+}
+
+docs {
+  EDGE — brewery_id inexistant → 422
+}

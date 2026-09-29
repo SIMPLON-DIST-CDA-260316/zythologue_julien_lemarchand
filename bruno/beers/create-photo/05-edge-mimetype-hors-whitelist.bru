@@ -1,0 +1,18 @@
+meta {
+  name: Edge - mimetype hors whitelist
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(fixtures/notes.txt) @contentType(text/plain)
+}
+
+docs {
+  EDGE — mimetype hors whitelist → 415
+}

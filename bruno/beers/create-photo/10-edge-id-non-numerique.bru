@@ -1,0 +1,18 @@
+meta {
+  name: Edge - id non numérique
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/beers/abc/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+}
+
+docs {
+  EDGE — id non numérique → 400
+}

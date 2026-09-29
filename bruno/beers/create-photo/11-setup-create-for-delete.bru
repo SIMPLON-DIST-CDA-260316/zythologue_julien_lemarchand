@@ -1,0 +1,22 @@
+meta {
+  name: Setup - photo à supprimer
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+}
+
+script:post-response {
+  bru.setVar("photoId", res.body.data.id);
+}
+
+docs {
+  setup — photo jetable pour le scénario de suppression ci-dessous
+}

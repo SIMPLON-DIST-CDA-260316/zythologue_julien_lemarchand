@@ -1,0 +1,26 @@
+meta {
+  name: Setup - crée une bière jetable
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Temp {{rand}}",
+    "description": "à modifier",
+    "brewery_id": {{breweryId}}
+  }
+}
+
+script:post-response {
+  bru.setVar("tempId", res.body.data.id);
+}
+
+docs {
+  setup — bière jetable à modifier dans les scénarios ci-dessous
+}

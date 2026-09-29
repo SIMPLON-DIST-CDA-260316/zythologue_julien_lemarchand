@@ -46,8 +46,9 @@ En attendant :
 
 - L'app démarre : `docker compose up -d --build api` (ou `pnpm dev` hors
   conteneur), logs sans erreur.
-- Si un endpoint est ajouté/modifié : le fichier `requests/<ressource>.http`
-  correspondant est mis à jour avec les nouveaux cas.
+- Si un endpoint est ajouté/modifié : le dossier `bruno/<ressource>/<endpoint>/`
+  correspondant est mis à jour avec les nouveaux cas (collection Bruno,
+  fichiers `.bru`).
 - Si un schéma zod change : la doc `/docs` reflète le changement (générée
   depuis le schéma, donc automatique, mais à relire).
 

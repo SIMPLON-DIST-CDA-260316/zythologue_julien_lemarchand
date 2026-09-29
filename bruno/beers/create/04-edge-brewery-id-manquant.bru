@@ -1,0 +1,22 @@
+meta {
+  name: Edge - brewery_id manquant
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/beers
+  body: json
+}
+
+body:json {
+  {
+    "name": "Kwak {{rand}}",
+    "description": "{{description}}",
+    "alcohol_content": {{alcoholContent}}
+  }
+}
+
+docs {
+  EDGE — brewery_id manquant → 400
+}

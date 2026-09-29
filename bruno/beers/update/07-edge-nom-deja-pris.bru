@@ -1,0 +1,20 @@
+meta {
+  name: Edge - nom déjà pris
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: json
+}
+
+body:json {
+  {
+    "name": "{{existingName}}"
+  }
+}
+
+docs {
+  EDGE — nom déjà pris dans la même brasserie → 409
+}

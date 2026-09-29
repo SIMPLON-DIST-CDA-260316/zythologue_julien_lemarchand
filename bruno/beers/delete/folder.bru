@@ -1,0 +1,17 @@
+meta {
+  name: delete
+}
+
+vars:pre-request {
+  breweryId: 1
+}
+
+script:pre-request {
+  bru.setVar("rand", Math.floor(Math.random() * 999999) + 1);
+}
+
+docs {
+  Suppression en cascade : avis, catégorisations, compositions, favoris,
+  illustrations et mises en vente rattachés disparaissent avec la bière.
+  Réponse sans corps.
+}

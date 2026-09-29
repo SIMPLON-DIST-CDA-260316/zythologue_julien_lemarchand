@@ -1,0 +1,20 @@
+meta {
+  name: Edge - champ inconnu
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/beers/{{tempId}}
+  body: json
+}
+
+body:json {
+  {
+    "color": "blonde"
+  }
+}
+
+docs {
+  EDGE — champ inconnu → 400, schéma strict
+}

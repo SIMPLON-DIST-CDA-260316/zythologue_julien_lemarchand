@@ -1,0 +1,19 @@
+meta {
+  name: create
+}
+
+vars:pre-request {
+  breweryId: 1
+  description: brune belge
+  alcoholContent: 8.4
+  existingName: Blonde du Nord
+}
+
+script:pre-request {
+  bru.setVar("rand", Math.floor(Math.random() * 999999) + 1);
+}
+
+docs {
+  Toute réponse 2xx est enveloppée : charge utile sous `data`. Toute erreur
+  rend `{ error }`, une string. Un 400 y ajoute `details`.
+}
