@@ -1,12 +1,13 @@
 meta {
-  name: Nominal - email fixe
+  name: Nominal
   type: http
   seq: 1
 }
 
 post {
-  url: {{baseUrl}}/users
+  url: {{baseUrl}}/auth/login
   body: json
+  auth: inherit
 }
 
 body:json {
@@ -16,6 +17,7 @@ body:json {
   }
 }
 
-docs {
-  NOMINAL — email fixe, déclenche un 409 si déjà en base
+settings {
+  encodeUrl: true
+  timeout: 0
 }

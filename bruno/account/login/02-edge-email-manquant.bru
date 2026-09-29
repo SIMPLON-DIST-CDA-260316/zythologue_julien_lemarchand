@@ -1,0 +1,22 @@
+meta {
+  name: edge - email manquant
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "password": "1234567!"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
