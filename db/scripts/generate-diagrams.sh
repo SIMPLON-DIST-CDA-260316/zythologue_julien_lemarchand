@@ -70,7 +70,7 @@ sed -i \
   -e 's/\bpdv_nom\b/name/g' -e 's/\bpdv_type\b/type/g' -e 's/\bpdv_vente_ligne\b/online_sales/g' -e 's/\bpdv_telephone\b/phone/g' -e 's/\bpdv_site_web\b/website/g' \
   -e 's/\badr_numero\b/number/g' -e 's/\badr_rue\b/street/g' -e 's/\badr_code_postal\b/zip_code/g' -e 's/\badr_ville\b/city/g' -e 's/\badr_pays\b/country/g' \
   -e 's/\bbra_nom\b/name/g' -e 's/\bbra_description\b/description/g' -e 's/\bbra_annee_creation\b/founding_year/g' -e 's/\bbra_capacite_prod\b/production_capacity/g' -e 's/\bbra_type_prod\b/production_type/g' -e 's/\bbra_telephone\b/phone/g' -e 's/\bbra_site_web\b/website/g' \
-  -e 's/\bper_email\b/email/g' -e 's/\bper_nom\b/last_name/g' -e 's/\bper_prenom\b/first_name/g' -e 's/\bper_mdp\b/password/g' -e 's/\bper_role\b/role/g' -e 's/\bper_date_inscr\b/created_at/g' \
+  -e 's/\bper_email\b/email/g' -e 's/\bper_nom\b/last_name/g' -e 's/\bper_prenom\b/first_name/g' -e 's/\bper_mdp\b/hashed_password/g' -e 's/\bper_role\b/role/g' -e 's/\bper_date_inscr\b/created_at/g' \
   -e 's/\bpho_url\b/url/g' -e 's/\bpho_legende\b/caption/g' -e 's/\bpho_date\b/created_at/g' \
   -e 's/\bavi_note\b/rating/g' -e 's/\bavi_commentaire\b/comment/g' -e 's/\bavi_date\b/created_at/g' -e 's/\bavi_signale\b/reported/g' -e 's/\bavi_reponse\b/reply/g' \
   -e 's/\bven_prix\b/price/g' \

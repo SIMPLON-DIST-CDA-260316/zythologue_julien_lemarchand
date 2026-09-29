@@ -71,7 +71,7 @@ $fr2en = @(
   @('\bpdv_nom\b', 'name'), @('\bpdv_type\b', 'type'), @('\bpdv_vente_ligne\b', 'online_sales'), @('\bpdv_telephone\b', 'phone'), @('\bpdv_site_web\b', 'website'),
   @('\badr_numero\b', 'number'), @('\badr_rue\b', 'street'), @('\badr_code_postal\b', 'zip_code'), @('\badr_ville\b', 'city'), @('\badr_pays\b', 'country'),
   @('\bbra_nom\b', 'name'), @('\bbra_description\b', 'description'), @('\bbra_annee_creation\b', 'founding_year'), @('\bbra_capacite_prod\b', 'production_capacity'), @('\bbra_type_prod\b', 'production_type'), @('\bbra_telephone\b', 'phone'), @('\bbra_site_web\b', 'website'),
-  @('\bper_email\b', 'email'), @('\bper_nom\b', 'last_name'), @('\bper_prenom\b', 'first_name'), @('\bper_mdp\b', 'password'), @('\bper_role\b', 'role'), @('\bper_date_inscr\b', 'created_at'),
+  @('\bper_email\b', 'email'), @('\bper_nom\b', 'last_name'), @('\bper_prenom\b', 'first_name'), @('\bper_mdp\b', 'hashed_password'), @('\bper_role\b', 'role'), @('\bper_date_inscr\b', 'created_at'),
   @('\bpho_url\b', 'url'), @('\bpho_legende\b', 'caption'), @('\bpho_date\b', 'created_at'),
   @('\bavi_note\b', 'rating'), @('\bavi_commentaire\b', 'comment'), @('\bavi_date\b', 'created_at'), @('\bavi_signale\b', 'reported'), @('\bavi_reponse\b', 'reply'),
   @('\bven_prix\b', 'price'),

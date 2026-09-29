@@ -73,7 +73,7 @@
 | per_email      | email      | VARCHAR(255)   | NOT NULL, UNIQUE                    |
 | per_nom        | last_name  | VARCHAR(80)    | NOT NULL                            |
 | per_prenom     | first_name | VARCHAR(80)    | NOT NULL                            |
-| per_mdp        | password   | VARCHAR(255)   | NOT NULL                            |
+| per_mdp        | hashed_password | VARCHAR(255) | NOT NULL                            |
 | per_role       | role       | `account_role` | NOT NULL, DEFAULT `'customer'`      |
 | per_date_inscr | created_at | TIMESTAMPTZ    | NOT NULL, DEFAULT `now()`           |
 | —              | updated_at | TIMESTAMPTZ    | NOT NULL, DEFAULT `now()` (trigger) |

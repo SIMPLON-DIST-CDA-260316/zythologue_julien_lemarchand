@@ -15,7 +15,7 @@ export const UserFields = {
     .email({ pattern: z.regexes.rfc5322Email }) // https://www.rfc-editor.org/info/rfc5322/
     .describe("unique par utilisateur, la comparaison ignore la casse")
     .meta({ example: "user@domain.com" }),
-  PasswordHash: z
+  HashedPassword: z
     .string()
     .min(1)
     .max(255)
@@ -29,7 +29,7 @@ export const UserFields = {
 // ==========================================================================
 
 // - entrée ----------------------------------------------------
-const Password = z
+export const Password = z
   .string()
   .min(8)
   .max(255)

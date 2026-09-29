@@ -11,10 +11,10 @@ const toDomainError = (error) => {
 };
 
 export default {
-  createOne: async (body) => {
+  createOne: async ({ email, password }) => {
     try {
-      body.password = await hashPassword(body.password);
-      return await repository.createOne(body);
+      const hashed_password = await hashPassword(password);
+      return await repository.createOne({ email, hashed_password });
     } catch (error) {
       throw toDomainError(error);
     }

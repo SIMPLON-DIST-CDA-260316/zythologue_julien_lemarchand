@@ -234,21 +234,21 @@
 <!-- Entity ACCOUNT -->
 <g>
 	<g>
-		<rect x="257" y="472" width="82" height="26" fill="#FFFFFF" stroke="none" stroke-width="0" opacity="1"/>
-		<rect x="257" y="498" width="82" height="152" fill="#FFFFFF" stroke="none" stroke-width="0" opacity="1"/>
-		<rect x="257" y="472" width="82" height="178" fill="none" stroke="#000000" stroke-width="1.5" opacity="1"/>
-		<line x1="257" y1="498" x2="339" y2="498" stroke="#000000" stroke-width="1"/>
+		<rect x="236" y="472" width="124" height="26" fill="#FFFFFF" stroke="none" stroke-width="0" opacity="1"/>
+		<rect x="236" y="498" width="124" height="152" fill="#FFFFFF" stroke="none" stroke-width="0" opacity="1"/>
+		<rect x="236" y="472" width="124" height="178" fill="none" stroke="#000000" stroke-width="1.5" opacity="1"/>
+		<line x1="236" y1="498" x2="360" y2="498" stroke="#000000" stroke-width="1"/>
 	</g>
 	<text x="272" y="490.6" fill="#000000" font-family="Trebuchet MS" font-size="14">account</text>
-	<text x="262" y="516.6" fill="#000000" font-family="Trebuchet MS" font-size="14">id</text>
-	<line x1="262" y1="519" x2="275" y2="519" stroke="#000000" stroke-width="1"/>
-	<text x="262" y="534.6" fill="#000000" font-family="Trebuchet MS" font-size="14">email</text>
-	<text x="262" y="552.6" fill="#000000" font-family="Trebuchet MS" font-size="14">last_name</text>
-	<text x="262" y="570.6" fill="#000000" font-family="Trebuchet MS" font-size="14">first_name</text>
-	<text x="262" y="588.6" fill="#000000" font-family="Trebuchet MS" font-size="14">password</text>
-	<text x="262" y="606.6" fill="#000000" font-family="Trebuchet MS" font-size="14">role</text>
-	<text x="262" y="624.6" fill="#000000" font-family="Trebuchet MS" font-size="14">created_at</text>
-	<text x="262" y="642.6" fill="#000000" font-family="Trebuchet MS" font-size="14">#photo_id</text>
+	<text x="241" y="516.6" fill="#000000" font-family="Trebuchet MS" font-size="14">id</text>
+	<line x1="241" y1="519" x2="254" y2="519" stroke="#000000" stroke-width="1"/>
+	<text x="241" y="534.6" fill="#000000" font-family="Trebuchet MS" font-size="14">email</text>
+	<text x="241" y="552.6" fill="#000000" font-family="Trebuchet MS" font-size="14">last_name</text>
+	<text x="241" y="570.6" fill="#000000" font-family="Trebuchet MS" font-size="14">first_name</text>
+	<text x="241" y="588.6" fill="#000000" font-family="Trebuchet MS" font-size="14">hashed_password</text>
+	<text x="241" y="606.6" fill="#000000" font-family="Trebuchet MS" font-size="14">role</text>
+	<text x="241" y="624.6" fill="#000000" font-family="Trebuchet MS" font-size="14">created_at</text>
+	<text x="241" y="642.6" fill="#000000" font-family="Trebuchet MS" font-size="14">#photo_id</text>
 </g>
 
 <!-- Entity REVIEW -->
@@ -338,8 +338,8 @@
 <circle cx="757" cy="338" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (FAVORITE_BEER) to &quot;id&quot; (ACCOUNT) -->
-<path d="M152 443 C204.5 477.5 187 512 257 512" fill="none" stroke="#000000" stroke-width="1"/>
-<polygon points="257 512 245 518 249 512 245 506" fill="#000000" stroke-width="0"/>
+<path d="M152 443 C194 477.5 180 512 236 512" fill="none" stroke="#000000" stroke-width="1"/>
+<polygon points="236 512 224 518 228 512 224 506" fill="#000000" stroke-width="0"/>
 <circle cx="152" cy="443" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (FAVORITE_BEER) to &quot;id&quot; (BEER) -->
@@ -353,8 +353,8 @@
 <circle cx="575" cy="524" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (FAVORITE_BREWERY) to &quot;id&quot; (ACCOUNT) -->
-<path d="M163 566 C210 539 194.33 512 257 512" fill="none" stroke="#000000" stroke-width="1"/>
-<polygon points="257 512 245 518 249 512 245 506" fill="#000000" stroke-width="0"/>
+<path d="M163 566 C199.5 539 187.33 512 236 512" fill="none" stroke="#000000" stroke-width="1"/>
+<polygon points="236 512 224 518 228 512 224 506" fill="#000000" stroke-width="0"/>
 <circle cx="163" cy="566" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (FAVORITE_BREWERY) to &quot;id&quot; (BREWERY) -->
@@ -363,9 +363,9 @@
 <circle cx="163" cy="584" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (ACCOUNT) to &quot;id&quot; (PHOTO) -->
-<path d="M339 638 C582 531.5 501 425 825 425" fill="none" stroke="#000000" stroke-width="1"/>
+<path d="M360 638 C592.5 531.5 515 425 825 425" fill="none" stroke="#000000" stroke-width="1"/>
 <polygon points="825 425 813 431 817 425 813 419" fill="#000000" stroke-width="0"/>
-<circle cx="339" cy="638" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
+<circle cx="360" cy="638" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (REVIEW) to &quot;id&quot; (BEER) -->
 <path d="M821 734 C588.5 452.5 666 171 356 171" fill="none" stroke="#000000" stroke-width="1"/>
@@ -378,7 +378,7 @@
 <circle cx="821" cy="752" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 
 <!-- Link from &quot;id&quot; (REVIEW) to &quot;id&quot; (ACCOUNT) -->
-<path d="M821 770 C580 641 660.33 512 339 512" fill="none" stroke="#000000" stroke-width="1"/>
-<polygon points="339 512 351 506 347 512 351 518" fill="#000000" stroke-width="0"/>
+<path d="M821 770 C590.5 641 667.33 512 360 512" fill="none" stroke="#000000" stroke-width="1"/>
+<polygon points="360 512 372 506 368 512 372 518" fill="#000000" stroke-width="0"/>
 <circle cx="821" cy="770" r="1.5" stroke="#000000" stroke-width="1.5" fill="#000000"/>
 </svg>

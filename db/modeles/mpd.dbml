@@ -57,7 +57,7 @@ Table "account" {
   "email" VARCHAR(255) [NOT NULL, unique]
   "last_name" VARCHAR(80) [NOT NULL]
   "first_name" VARCHAR(80) [NOT NULL]
-  "password" VARCHAR(255) [NOT NULL]
+  "hashed_password" VARCHAR(255) [NOT NULL]
   "role" "account_role" [NOT NULL, default: 'customer']
   "created_at" TIMESTAMPTZ [NOT NULL, default: `now()`]
   "updated_at" TIMESTAMPTZ [NOT NULL, default: `now()`]

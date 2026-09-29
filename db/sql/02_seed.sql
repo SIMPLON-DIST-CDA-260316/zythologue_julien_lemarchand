@@ -133,7 +133,7 @@ INSERT INTO account (
     email,
     last_name,
     first_name,
-    password,
+    hashed_password,
     role,
     photo_id
   )
@@ -962,7 +962,7 @@ INSERT INTO account (
     email,
     last_name,
     first_name,
-    password,
+    hashed_password,
     role,
     photo_id
   )

@@ -16,7 +16,7 @@ De gauche à droite :
 | BRASSERIE | **brewery** (<u>id</u>, name, description, founding_year, production_capacity, production_type, phone, website, *#address_id*) |
 | CATÉGORIE | **category** (<u>id</u>, name, description) |
 | INGRÉDIENT | **ingredient** (<u>id</u>, name, is_allergen) |
-| PERSONNE | **account** (<u>id</u>, email, last_name, first_name, password, role, created_at, *#photo_id*) |
+| PERSONNE | **account** (<u>id</u>, email, last_name, first_name, hashed_password, role, created_at, *#photo_id*) |
 | PHOTO | **photo** (<u>id</u>, url, caption, created_at) |
 | POINT DE VENTE | **outlet** (<u>id</u>, name, type, online_sales, phone, website, *#address_id*, *#brewery_id*) |
 | Catégoriser | **categorization** (<u>*#beer_id*</u>, <u>*#category_id*</u>) |

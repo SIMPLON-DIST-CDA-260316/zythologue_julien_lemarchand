@@ -1,9 +1,9 @@
 import pool from "#config/database.js";
 
 export default {
-  createOne: async ({ email, password }) => {
+  createOne: async ({ email, hashed_password }) => {
     const { rows } = await pool.query(
-      `INSERT INTO account (email, password)
+      `INSERT INTO account (email, hashed_password)
          VALUES ($1, $2)
          RETURNING
            id,
@@ -15,7 +15,7 @@ export default {
            created_at,
            updated_at`,
       // Cle absente du body : undefined, que pg ecrit en NULL.
-      [email, password],
+      [email, hashed_password],
     );
 
     return rows[0];
