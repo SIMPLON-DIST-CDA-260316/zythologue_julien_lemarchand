@@ -1,0 +1,21 @@
+meta {
+  name: Nominal - email fixe
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "lemar.jul@gmail.com",
+    "password": "1234567!"
+  }
+}
+
+docs {
+  NOMINAL — email fixe, déclenche un 409 si déjà en base
+}
