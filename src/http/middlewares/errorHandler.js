@@ -2,6 +2,7 @@ import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
 import { InvalidReferenceError } from "#errors/InvalidReferenceError.js";
 import { ConflictError } from "#errors/ConflictError.js";
 import { UnsupportedMediaTypeError } from "#errors/UnsupportedMediaTypeError.js";
+import { InvalidCredentialsError } from "#errors/InvalidCredentialsError.js";
 import { RouteNotFoundError } from "#http/errors/RouteNotFoundError.js";
 import { ValidationError } from "#http/errors/ValidationError.js";
 import { HTTP_STATUS, isServerErrorStatus } from "#http/httpStatus.js";
@@ -13,7 +14,8 @@ const HTTP_STATUS_BY_ERROR = new Map()
   .set(ValidationError, HTTP_STATUS.BAD_REQUEST)
   .set(InvalidReferenceError, HTTP_STATUS.UNPROCESSABLE_CONTENT)
   .set(ConflictError, HTTP_STATUS.CONFLICT)
-  .set(UnsupportedMediaTypeError, HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE);
+  .set(UnsupportedMediaTypeError, HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE)
+  .set(InvalidCredentialsError, HTTP_STATUS.UNAUTHORIZED);
 
 /** Terminal, à monter en dernier dans l'app. */
 export default (error, req, res, next) => {

@@ -13,8 +13,17 @@ const toDomainError = (error) => {
 export default {
   createOne: async ({ email, password }) => {
     try {
-      const hashed_password = await hashPassword(password);
-      return await repository.createOne({ email, hashed_password });
+      return await repository.createOne({
+        email,
+        hashed_password: await hashPassword(password),
+      });
+    } catch (error) {
+      throw toDomainError(error);
+    }
+  },
+  findByEmail: async ({ email }) => {
+    try {
+      return await repository.findByEmail({ email });
     } catch (error) {
       throw toDomainError(error);
     }

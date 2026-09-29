@@ -20,4 +20,17 @@ export default {
 
     return rows[0];
   },
+  findByEmail: async ({ email }) => {
+    const { rows } = await pool.query(
+      `SELECT
+          id,
+          email,
+          hashed_password
+        FROM account
+        WHERE email = $1`,
+      [email],
+    );
+
+    return rows[0];
+  },
 };
