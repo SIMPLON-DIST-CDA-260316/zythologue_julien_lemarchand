@@ -1,0 +1,19 @@
+meta {
+  name: Edge - caption trop longue
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+  caption: {{longCaption}}
+}
+
+docs {
+  EDGE — caption trop longue (>255) → 400
+}

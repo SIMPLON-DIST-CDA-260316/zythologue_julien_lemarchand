@@ -1,0 +1,19 @@
+meta {
+  name: Edge - champ inconnu
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/beers/{{tempId}}/photos
+  body: multipartForm
+}
+
+body:multipart-form {
+  photo: @file(../db/img/bier.png) @contentType(image/png)
+  color: blonde
+}
+
+docs {
+  EDGE — champ inconnu dans le body → 400, schéma strict
+}

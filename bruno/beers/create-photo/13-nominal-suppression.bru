@@ -1,0 +1,14 @@
+meta {
+  name: Nominal - suppression d'une photo existante
+  type: http
+  seq: 13
+}
+
+delete {
+  url: {{baseUrl}}/beers/{{tempId}}/photos/{{photoId}}
+  body: none
+}
+
+docs {
+  NOMINAL — suppression d'une photo existante → 204
+}
