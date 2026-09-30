@@ -1,0 +1,31 @@
+meta {
+  name: edge - mot de passe incorrect
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "test.fixe@example.com",
+    "password": "mauvais-mot-de-passe!1"
+  }
+}
+
+assert {
+  res.status: eq 401
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  EDGE — mot de passe incorrect pour un compte existant → 401
+}

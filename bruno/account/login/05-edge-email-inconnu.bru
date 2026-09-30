@@ -1,0 +1,36 @@
+meta {
+  name: edge - email inconnu
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "inconnu.{{ts}}@example.com",
+    "password": "1234567!"
+  }
+}
+
+script:pre-request {
+  bru.setVar("ts", Date.now());
+}
+
+assert {
+  res.status: eq 401
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  EDGE — email inconnu en base → 401 (même code que mot de passe incorrect,
+  aucun oracle ne doit distinguer les deux cas)
+}
