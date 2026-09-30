@@ -11,11 +11,13 @@ import {
   validateParam,
   validateQuery,
 } from "#http/middlewares/validateRequest.js";
+import requireAuth from "#http/middlewares/requireAuth.js";
 import uploadHanlder, {
   requirePhoto,
 } from "#features/upload/upload.middleware.js";
 import { NewPhoto, PhotoIdParam } from "#features/photos/photos.schemas.js";
 const router = Router();
+
 
 /**
  * @openapi
@@ -25,6 +27,8 @@ const router = Router();
  *       Catalogue des bières : la ressource, sa composition et ses points de
  *       vente. Chaque bière appartient à une brasserie et y porte un nom unique.
  */
+
+router.use(requireAuth);
 
 router
   .route("/")
