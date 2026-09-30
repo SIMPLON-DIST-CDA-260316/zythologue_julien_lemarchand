@@ -10,7 +10,7 @@ const cookieOptions = {
 };
 
 export const login = async (req, res) => {
-  const token = await authService.loginUser(req.validated.body);
+  const token = await authService.login(req.validated.body);
 
   res.cookie("token", token, cookieOptions).status(HTTP_STATUS.OK).end();
 };

@@ -3,7 +3,7 @@ import { InvalidCredentialsError } from "#errors/InvalidCredentialsError.js";
 import { verifyPassword, generateToken } from "./auth.lib.js";
 
 export default {
-  loginUser: async ({ email, password }) => {
+  login: async ({ email, password }) => {
     const user = await userService.findByEmail({ email });
 
     if (!user) throw new InvalidCredentialsError();

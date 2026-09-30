@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { login } from "./auth.controller.js";
 import { validateBody } from "#http/middlewares/validateRequest.js";
-import { LoginUser } from "./auth.schemas.js";
+import { Login } from "./auth.schemas.js";
 const router = Router();
 
 /**
@@ -30,7 +30,7 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LoginUser'
+ *             $ref: '#/components/schemas/Login'
  *           examples:
  *             value:
  *               email: user@email.com
@@ -56,6 +56,6 @@ const router = Router();
  *       500:
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post("/login", validateBody(LoginUser), login);
+router.post("/login", validateBody(Login), login);
 
 export default router;
