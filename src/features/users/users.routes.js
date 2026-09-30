@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { NewUser, UserIdParam, UpdateUser } from "./users.schemas.js";
 import controller from "./users.controller.js";
-import { requireAuth } from "#http/middlewares/requireAuth.js";
+import requireAuth from "#http/middlewares/requireAuth.js";
 import {
   validateBody,
   validateParam,
