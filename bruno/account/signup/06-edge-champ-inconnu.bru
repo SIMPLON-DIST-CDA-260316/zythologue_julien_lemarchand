@@ -1,0 +1,30 @@
+meta {
+  name: Edge - champ inconnu
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.{{ts}}@example.com",
+    "password": "1234567!",
+    "role": "admin"
+  }
+}
+
+script:pre-request {
+  bru.setVar("ts", Date.now());
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  EDGE — champ inconnu (role) → 400, schéma strict
+}

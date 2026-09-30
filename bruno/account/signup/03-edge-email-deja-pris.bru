@@ -1,0 +1,25 @@
+meta {
+  name: Edge - email déjà pris
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.fixe@example.com",
+    "password": "1234567!"
+  }
+}
+
+assert {
+  res.status: eq 409
+}
+
+docs {
+  EDGE — email déjà pris (créé par 01-nominal-email-fixe) → 409
+}

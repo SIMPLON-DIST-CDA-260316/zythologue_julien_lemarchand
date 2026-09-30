@@ -1,0 +1,25 @@
+meta {
+  name: Edge - email invalide
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "pas-un-email",
+    "password": "1234567!"
+  }
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  EDGE — email au format invalide → 400
+}
