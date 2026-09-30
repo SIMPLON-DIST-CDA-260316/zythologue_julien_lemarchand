@@ -15,11 +15,17 @@ export default {
 
     return generateToken(user.id);
   },
-  checkAuth: (token) => {
+  checkAuth: async (token) => {
+    let id;
     try {
-      return verifyToken(token);
+      id = verifyToken(token);
     } catch {
       throw new UnauthorizedError();
     }
+
+    const user = await userService.findOne(id);
+    if (!user) throw new UnauthorizedError();
+
+    return user;
   },
 };

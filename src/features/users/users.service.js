@@ -37,6 +37,13 @@ export default {
     if (user === null) throw new ResourceNotFoundError("User", id);
     return user;
   },
+  findOne: async (id) => {
+    try {
+      return await repository.findOne(id);
+    } catch (error) {
+      throw toDomainError(error);
+    }
+  },
   findByEmail: async ({ email }) => {
     try {
       return await repository.findByEmail({ email });

@@ -52,6 +52,24 @@ export default {
 
     return rows[0] || null;
   },
+  findOne: async (id) => {
+    const { rows } = await pool.query(
+      `SELECT
+          id,
+          email,
+          last_name,
+          first_name,
+          role,
+          photo_id,
+          created_at,
+          updated_at
+        FROM account
+        WHERE id = $1`,
+      [id],
+    );
+
+    return rows[0] || null;
+  },
   findByEmail: async ({ email }) => {
     const { rows } = await pool.query(
       `SELECT
