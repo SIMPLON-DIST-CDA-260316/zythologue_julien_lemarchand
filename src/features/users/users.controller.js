@@ -1,4 +1,4 @@
-import service from "./users.services.js";
+import service from "./users.service.js";
 import { HTTP_STATUS } from "#http/httpStatus.js";
 
 export default {
