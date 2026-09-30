@@ -1,7 +1,11 @@
+import authService from "#features/auth/auth.service.js";
 import { UnauthorizedError } from "#errors/UnauthorizedError.js";
 
 export default (req, res, next) => {
-  if (!req.cookies.token) throw new UnauthorizedError();
+  const token = req.cookies.token;
+  if (!token) throw new UnauthorizedError();
+
+  req.userId = authService.checkAuth(token);
 
   next();
 };

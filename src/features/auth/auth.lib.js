@@ -24,3 +24,8 @@ export const generateToken = (id) => {
     expiresIn: JWT_DURATION,
   });
 };
+
+export const verifyToken = (token) => {
+  const payload = jwt.verify(token, process.env.JWT_SECRET);
+  return payload.sub;
+};
