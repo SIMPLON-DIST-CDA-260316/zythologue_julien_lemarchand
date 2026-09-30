@@ -1,4 +1,4 @@
-import userService from "#features/users/users.services.js";
+import userService from "#features/users/users.service.js";
 import { InvalidCredentialsError } from "#errors/InvalidCredentialsError.js";
 import { verifyPassword, generateToken } from "./auth.lib.js";
 
