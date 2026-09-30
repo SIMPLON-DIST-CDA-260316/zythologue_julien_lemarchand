@@ -65,13 +65,13 @@ router
    *   parameters:
    *     UserId:
    *       in: path
-   *       name: userId
+   *       name: id
    *       required: true
    *       description: la clef primaire d'un user
    *       schema:
    *         $ref: '#/components/schemas/UserIdParam'
    */
-  .param("userId", validateParam(UserIdParam))
+  .param("id", validateParam(UserIdParam))
   .route("/:id")
   .patch(requireAuth, validateBody(UpdateUser), controller.updateOne);
 
