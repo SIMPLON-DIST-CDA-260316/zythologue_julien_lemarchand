@@ -29,6 +29,7 @@ import {
   UserResponse,
 } from "#features/users/users.schemas.js";
 import { Login } from "#features/auth/auth.schemas.js";
+import { AUTH_COOKIE_NAME } from "#features/auth/auth.config.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -82,7 +83,7 @@ export default swaggerJsdoc({
         cookieAuth: {
           type: "apiKey",
           in: "cookie",
-          name: "token",
+          name: AUTH_COOKIE_NAME,
           description: "JWT de session posé par POST /auth/login.",
         },
       },

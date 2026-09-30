@@ -1,6 +1,6 @@
 import { HTTP_STATUS } from "#http/httpStatus.js";
 import authService from "./auth.service.js";
-import { JWT_DURATION_MS } from "./auth.config.js";
+import { JWT_DURATION_MS, AUTH_COOKIE_NAME } from "./auth.config.js";
 
 const cookieOptions = {
   httpOnly: true,
@@ -13,5 +13,5 @@ const cookieOptions = {
 export const login = async (req, res) => {
   const token = await authService.login(req.validated.body);
 
-  res.cookie("token", token, cookieOptions).status(HTTP_STATUS.OK).end();
+  res.cookie(AUTH_COOKIE_NAME, token, cookieOptions).status(HTTP_STATUS.OK).end();
 };
