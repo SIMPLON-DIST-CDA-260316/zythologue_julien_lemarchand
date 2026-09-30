@@ -1,5 +1,7 @@
+import { UnauthorizedError } from "#errors/UnauthorizedError.js";
+
 export default (req, res, next) => {
-  console.log("hello from requireAuth middleware ");
-  // stub : on suppose que le token est valide
+  if (!req.cookies.token) throw new UnauthorizedError();
+
   next();
 };
