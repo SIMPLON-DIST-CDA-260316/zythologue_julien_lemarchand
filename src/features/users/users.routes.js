@@ -2,6 +2,7 @@ import { Router } from "express";
 import { NewUser, UserIdParam, UpdateUser } from "./users.schemas.js";
 import controller from "./users.controller.js";
 import requireAuth from "#http/middlewares/requireAuth.js";
+import requireSelf from "#http/middlewares/requireSelf.js";
 import {
   validateBody,
   validateParam,
@@ -73,6 +74,11 @@ router
    */
   .param("id", validateParam(UserIdParam))
   .route("/:id")
-  .patch(requireAuth, validateBody(UpdateUser), controller.updateOne);
+  .patch(
+    requireAuth,
+    requireSelf,
+    validateBody(UpdateUser),
+    controller.updateOne,
+  );
 
 export default router;
