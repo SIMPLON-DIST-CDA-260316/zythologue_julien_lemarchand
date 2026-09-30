@@ -20,7 +20,8 @@
     "db:init": "docker compose up -d --wait && pnpm db:reset",
     "db:psql": "docker compose exec postgres sh -c \"psql -U \\$POSTGRES_USER -d \\$POSTGRES_DB\"",
     "gen:mcd": "pwsh -NoProfile -File scripts/generate-diagrams.ps1",
-    "gen:mcd:bash": "bash scripts/generate-diagrams.sh"
+    "gen:mcd:bash": "bash scripts/generate-diagrams.sh",
+    "test:bruno": "cd bruno && bru run . --env Local -r"
   },
   "dependencies": {
     "argon2": "^0.45.1",
@@ -35,6 +36,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@usebruno/cli": "^4.2.0",
     "nodemon": "^3.1.10"
   }
 }
