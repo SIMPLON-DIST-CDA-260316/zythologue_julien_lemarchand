@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import { JWT_DURATION_MS } from "./auth.config.js";
 
 // =====================================================================
 // Mot de passe (argon2)
@@ -14,14 +15,12 @@ export const verifyPassword = async (hashedPassword, password) =>
 // Token JWT
 // =====================================================================
 
-const JWT_DURATION = "15m";
-
 export const generateToken = (id) => {
   // https://datatracker.ietf.org/doc/html/rfc7519
   const payload = { sub: String(id) };
 
   return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: JWT_DURATION,
+    expiresIn: JWT_DURATION_MS / 1000,
   });
 };
 
