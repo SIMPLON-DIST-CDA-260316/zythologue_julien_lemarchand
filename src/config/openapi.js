@@ -23,6 +23,7 @@ import {
   PhotoIdParam,
 } from "#features/photos/photos.schemas.js";
 import { NewUser, UserResponse } from "#features/users/users.schemas.js";
+import { LoginUser } from "#features/auth/auth.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
 /**
@@ -66,6 +67,7 @@ export default swaggerJsdoc({
         PhotoIdParam: toSchemaObject(PhotoIdParam),
         NewUser: toSchemaObject(NewUser),
         UserResponse: toSchemaObject(UserResponse),
+        LoginUser: toSchemaObject(LoginUser),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),
       },
@@ -75,6 +77,11 @@ export default swaggerJsdoc({
         NotFound: jsonResponse(
           "La ressource demandée n'existe pas",
           "ApiError",
+        ),
+        Unauthorized: jsonResponse(
+          "Email inconnu ou mot de passe incorrect — les deux causes sont indistinguables.",
+          "ApiError",
+          { error: "Invalid email or password" },
         ),
         Conflict: jsonResponse(
           "La ressource entre en conflit avec une ressource existante.",
@@ -97,5 +104,9 @@ export default swaggerJsdoc({
       },
     },
   },
-  apis: ["./src/features/beers/*"],
+  apis: [
+    "./src/features/beers/*",
+    "./src/features/auth/*",
+    "./src/features/users/*",
+  ],
 });
