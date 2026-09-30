@@ -4,6 +4,7 @@ import { ConflictError } from "#errors/ConflictError.js";
 import { UnsupportedMediaTypeError } from "#errors/UnsupportedMediaTypeError.js";
 import { InvalidCredentialsError } from "#errors/InvalidCredentialsError.js";
 import { UnauthorizedError } from "#errors/UnauthorizedError.js";
+import { ForbiddenError } from "#errors/ForbiddenError.js";
 import { RouteNotFoundError } from "#http/errors/RouteNotFoundError.js";
 import { ValidationError } from "#http/errors/ValidationError.js";
 import { HTTP_STATUS, isServerErrorStatus } from "#http/httpStatus.js";
@@ -17,7 +18,8 @@ const HTTP_STATUS_BY_ERROR = new Map()
   .set(ConflictError, HTTP_STATUS.CONFLICT)
   .set(UnsupportedMediaTypeError, HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE)
   .set(InvalidCredentialsError, HTTP_STATUS.UNAUTHORIZED)
-  .set(UnauthorizedError, HTTP_STATUS.UNAUTHORIZED);
+  .set(UnauthorizedError, HTTP_STATUS.UNAUTHORIZED)
+  .set(ForbiddenError, HTTP_STATUS.FORBIDDEN);
 
 /** Terminal, à monter en dernier dans l'app. */
 export default (error, req, res, next) => {
