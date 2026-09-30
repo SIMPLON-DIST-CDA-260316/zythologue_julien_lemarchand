@@ -20,9 +20,15 @@ export const UserFields = {
     .min(1)
     .max(255)
     .meta({ example: "Blonde légère et désaltérante." }),
+  FirstName: z.string().min(1).max(80),
+  LastName: z.string().min(1).max(80),
   CreatedAt,
   UpdatedAt,
 };
+
+// Params ------------------------------------------------------------
+// Un segment d'URL est toujours une string, d'où la coercition.
+export const UserIdParam = z.coerce.number().pipe(UserFields.Id);
 
 // ==========================================================================
 // DTOs — L'optionalité appartient au contrat de l'endpoint, pas au modèle.
@@ -41,7 +47,19 @@ export const NewUser = z.strictObject({
   password: Password,
 });
 
+export const UpdateUser = z
+  .strictObject({
+    email: UserFields.Email.optional(),
+    password: Password.optional(),
+    first_name: UserFields.FirstName.optional(),
+    last_name: UserFields.LastName.optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "au moins un champ requis",
+  });
+
 // - sortie ----------------------------------------------------
+
 export const User = z.strictObject({
   id: UserFields.Id,
   email: UserFields.Email,

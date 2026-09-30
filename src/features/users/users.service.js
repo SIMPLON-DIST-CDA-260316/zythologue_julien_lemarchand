@@ -1,5 +1,6 @@
 import repository from "./users.repository.js";
 import { ConflictError } from "#errors/ConflictError.js";
+import { ResourceNotFoundError } from "#errors/ResourceNotFoundError.js";
 import { PG_ERROR } from "#config/database.js";
 import { hashPassword } from "#features/auth/auth.lib.js";
 
@@ -20,6 +21,21 @@ export default {
     } catch (error) {
       throw toDomainError(error);
     }
+  },
+  updateOne: async (id, body) => {
+    const patch = { ...body };
+    if ("password" in patch) {
+      patch.hashed_password = await hashPassword(patch.password);
+      delete patch.password;
+    }
+    let user;
+    try {
+      user = await repository.updateOne(id, patch);
+    } catch (error) {
+      throw toDomainError(error);
+    }
+    if (user === null) throw new ResourceNotFoundError("User", id);
+    return user;
   },
   findByEmail: async ({ email }) => {
     try {

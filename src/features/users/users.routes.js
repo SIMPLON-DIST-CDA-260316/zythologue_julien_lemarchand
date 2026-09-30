@@ -1,7 +1,12 @@
 import { Router } from "express";
-import { NewUser } from "./users.schemas.js";
+import { NewUser, UserIdParam, UpdateUser } from "./users.schemas.js";
 import controller from "./users.controller.js";
-import { validateBody } from "#http/middlewares/validateRequest.js";
+import { requireAuth } from "#http/middlewares/requireAuth.js";
+import {
+  validateBody,
+  validateParam,
+} from "#http/middlewares/validateRequest.js";
+
 const router = Router();
 
 /**
@@ -52,5 +57,22 @@ router
    *         $ref: '#/components/responses/InternalServerError'
    */
   .post(validateBody(NewUser), controller.createOne);
+
+router
+  /**
+   * @openapi
+   * components:
+   *   parameters:
+   *     UserId:
+   *       in: path
+   *       name: userId
+   *       required: true
+   *       description: la clef primaire d'un user
+   *       schema:
+   *         $ref: '#/components/schemas/UserIdParam'
+   */
+  .param("userId", validateParam(UserIdParam))
+  .route("/:id")
+  .patch(requireAuth, validateBody(UpdateUser), controller.updateOne);
 
 export default router;
