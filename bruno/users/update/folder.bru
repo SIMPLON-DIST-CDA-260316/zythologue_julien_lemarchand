@@ -1,0 +1,13 @@
+meta {
+  name: update
+}
+
+vars:pre-request {
+  password: 1234567!
+}
+
+docs {
+  PATCH /users/:id — un user ne peut se patcher que lui-même (requireAuth +
+  requireSelf). Suite séquentielle : deux users créés puis connectés tour à
+  tour pour tester le cas nominal et les échecs (401, 403, 400).
+}

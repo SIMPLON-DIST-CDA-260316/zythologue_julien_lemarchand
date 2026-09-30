@@ -1,0 +1,21 @@
+meta {
+  name: Edge - champ inconnu (role)
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/users/{{userBId}}
+  body: json
+}
+
+body:json {
+  {
+    "role": "admin"
+  }
+}
+
+docs {
+  EDGE — B tente de s'auto-promouvoir via un champ hors schéma (strictObject
+  rejette `role`, absent de UpdateUser) → 400
+}

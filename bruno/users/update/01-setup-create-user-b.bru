@@ -1,0 +1,30 @@
+meta {
+  name: Setup - crée le user B
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.patch.b.{{tsB}}@example.com",
+    "password": "{{password}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("tsB", Date.now());
+}
+
+script:post-response {
+  bru.setVar("userBId", res.body.data.id);
+  bru.setVar("userBEmail", res.body.data.email);
+}
+
+docs {
+  setup — user B, celui qui va tenter de patcher A pour le test 403
+}

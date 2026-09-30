@@ -1,0 +1,20 @@
+meta {
+  name: Edge - B tente de patcher A
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/users/{{userAId}}
+  body: json
+}
+
+body:json {
+  {
+    "first_name": "Usurpé"
+  }
+}
+
+docs {
+  EDGE — B authentifié tente de patcher A (requireSelf) → 403
+}

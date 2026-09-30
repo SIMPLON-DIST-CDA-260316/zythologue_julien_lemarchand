@@ -1,0 +1,21 @@
+meta {
+  name: Edge - id non numérique
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/users/abc
+  body: json
+}
+
+body:json {
+  {
+    "first_name": "Peu importe"
+  }
+}
+
+docs {
+  EDGE — id non numérique, échoue à la validation du param avant même
+  requireAuth/requireSelf → 400
+}

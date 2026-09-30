@@ -1,0 +1,19 @@
+meta {
+  name: Edge - corps vide
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{baseUrl}}/users/{{userBId}}
+  body: json
+}
+
+body:json {
+  {}
+}
+
+docs {
+  EDGE — B patch sa propre ressource (passe requireSelf) mais avec un corps
+  vide → 400, "au moins un champ requis"
+}

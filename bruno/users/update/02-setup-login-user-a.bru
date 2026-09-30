@@ -1,0 +1,25 @@
+meta {
+  name: Setup - connexion en tant que user A
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+}
+
+body:json {
+  {
+    "email": "{{userAEmail}}",
+    "password": "{{password}}"
+  }
+}
+
+assert {
+  res.headers['set-cookie'][0]: contains token=
+}
+
+docs {
+  setup — pose le cookie de session de A pour les scénarios suivants
+}

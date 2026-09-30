@@ -1,0 +1,24 @@
+meta {
+  name: Edge - token invalide
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/users/{{userAId}}
+  body: json
+}
+
+headers {
+  Cookie: token=invalide
+}
+
+body:json {
+  {
+    "first_name": "Peu importe"
+  }
+}
+
+docs {
+  EDGE — cookie présent mais token invalide (échec verifyToken) → 401
+}

@@ -1,0 +1,20 @@
+meta {
+  name: Nominal - A patch son prénom
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/users/{{userAId}}
+  body: json
+}
+
+body:json {
+  {
+    "first_name": "Alice"
+  }
+}
+
+docs {
+  NOMINAL — A patch sa propre ressource → 200
+}
