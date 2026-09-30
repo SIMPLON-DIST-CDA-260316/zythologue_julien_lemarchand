@@ -19,6 +19,10 @@ body:json {
   }
 }
 
+script:pre-request {
+  bru.cookies.jar().clear();
+}
+
 assert {
   res.status: eq 401
 }
@@ -26,7 +30,10 @@ assert {
 docs {
   EDGE — cookie présent mais token invalide (échec verifyToken) → 401
 
-  Doit tourner avant tout login de la suite : le jar de cookies Bruno CLI
-  n'est pas écrasé par ce header, il fusionne — un cookie de session valide
-  déjà posé masquerait le token invalide et ferait passer requireAuth.
+  jar.clear() avant l'envoi : le header Cookie seul ne suffit pas, le jar de
+  cookies Bruno CLI fusionne plutôt que d'écraser — un cookie de session
+  valide déjà posé par un dossier précédent (ordre alphabétique de la
+  collection complète) masquerait le token invalide et ferait passer
+  requireAuth à tort. Robuste à l'ordre d'exécution, plus seulement à la
+  position dans ce dossier.
 }
