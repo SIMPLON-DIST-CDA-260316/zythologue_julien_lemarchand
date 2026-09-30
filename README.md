@@ -2,13 +2,15 @@
 
 API REST (Node.js / Express) pour un catalogue de bières artisanales, bâtie sur la base de données modélisée en Merise la semaine précédente.
 
-> 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL, Docker) : voir [`db/README.md`](db/README.md).
-> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](ARCHITECTURE.md).
+> 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL, Docker) : voir [`db/README.md`](db/README.md).\
+> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](ARCHITECTURE.md).\
+> 🔐 **Authentification & autorisation** (inscription, connexion, JWT, middlewares) : voir [`AUTH.md`](AUTH.md).\
 > 🤝 **Contribuer** (commits, nommage, vérifications) : voir [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## Focus de la semaine
+## Fonctionnalités
 
-Mise en place des **endpoints API** exposant les données du modèle en JSON, sur la base PostgreSQL existante.
+- **Bières** — endpoints CRUD exposant le modèle en JSON, sur la base PostgreSQL existante.
+- **Comptes utilisateur·ice** — inscription et connexion (email + mot de passe), JWT en cookie httpOnly, autorisation par middleware. Détails : [`AUTH.md`](AUTH.md).
 
 ## Lancer
 
