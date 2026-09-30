@@ -1,0 +1,28 @@
+meta {
+  name: Restore - reconnexion
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.fixe@example.com",
+    "password": "1234567!"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.headers['set-cookie'][0]: contains token=
+}
+
+docs {
+  Restaure une session valide après le test 00 qui a vidé le jar — sans ça,
+  tout dossier authentifié qui suivrait dans un run complet de la collection
+  (ex: beers/update, plus loin dans l'ordre alphabétique) échouerait.
+}

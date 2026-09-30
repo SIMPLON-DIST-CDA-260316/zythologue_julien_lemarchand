@@ -1,0 +1,25 @@
+meta {
+  name: Edge - sans session
+  type: http
+  seq: 0
+}
+
+get {
+  url: {{baseUrl}}/beers
+  body: none
+}
+
+script:pre-request {
+  const jar = bru.cookies.jar();
+  jar.clear();
+}
+
+assert {
+  res.status: eq 401
+}
+
+docs {
+  EDGE — jar de cookies vidé avant la requête, aucune session → 401. Prouve
+  que router.use(requireAuth) protège le routeur /beers en amont de toute
+  route.
+}

@@ -1,0 +1,14 @@
+meta {
+  name: unauthenticated
+}
+
+docs {
+  Preuve que router.use(requireAuth) protège tout le routeur /beers
+  (src/features/beers/beers.routes.js) — un seul garde, donc un seul test
+  suffit, peu importe la route/verbe ciblé.
+
+  Ce dossier vide volontairement le jar de cookies Bruno pour simuler une
+  requête sans session, puis restaure une session valide en sortie. Isolé
+  ici plutôt que dans beers/list (ou ailleurs) pour ne pas polluer les
+  scénarios authentifiés des autres dossiers avec cette manipulation de jar.
+}
