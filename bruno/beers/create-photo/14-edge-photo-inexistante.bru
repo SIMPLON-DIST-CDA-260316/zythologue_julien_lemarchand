@@ -1,0 +1,18 @@
+meta {
+  name: Edge - photo inexistante
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{baseUrl}}/beers/{{tempId}}/photos/999999
+  body: none
+}
+
+assert {
+  res.status: eq 404
+}
+
+docs {
+  EDGE — photoId inexistant sur une bière existante → 404
+}

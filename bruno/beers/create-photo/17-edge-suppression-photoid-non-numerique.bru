@@ -1,0 +1,18 @@
+meta {
+  name: Edge - suppression, photoId non numérique
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{baseUrl}}/beers/{{tempId}}/photos/abc
+  body: none
+}
+
+assert {
+  res.status: eq 400
+}
+
+docs {
+  EDGE — photoId non numérique → 400
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Edge - suppression d'une photo inexistante
+  type: http
+  seq: 16
+}
+
+delete {
+  url: {{baseUrl}}/beers/{{tempId}}/photos/999999
+  body: none
+}
+
+assert {
+  res.status: eq 404
+}
+
+docs {
+  EDGE — photoId inexistant (déjà supprimé ou jamais créé) → 404
+}
