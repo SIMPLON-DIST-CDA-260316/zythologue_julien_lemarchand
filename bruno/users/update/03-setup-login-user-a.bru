@@ -1,7 +1,7 @@
 meta {
   name: Setup - connexion en tant que user A
   type: http
-  seq: 2
+  seq: 3
 }
 
 post {
@@ -17,6 +17,7 @@ body:json {
 }
 
 assert {
+  res.status: eq 200
   res.headers['set-cookie'][0]: contains token=
 }
 

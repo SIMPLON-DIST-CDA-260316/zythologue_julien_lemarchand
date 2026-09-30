@@ -25,6 +25,10 @@ script:post-response {
   bru.setVar("userBEmail", res.body.data.email);
 }
 
+assert {
+  res.status: eq 201
+}
+
 docs {
   setup — user B, celui qui va tenter de patcher A pour le test 403
 }

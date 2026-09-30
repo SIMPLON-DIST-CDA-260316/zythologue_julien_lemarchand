@@ -17,6 +17,7 @@ body:json {
 }
 
 assert {
+  res.status: eq 200
   res.headers['set-cookie'][0]: contains token=
 }
 

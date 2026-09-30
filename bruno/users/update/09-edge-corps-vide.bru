@@ -13,6 +13,10 @@ body:json {
   {}
 }
 
+assert {
+  res.status: eq 400
+}
+
 docs {
   EDGE — B patch sa propre ressource (passe requireSelf) mais avec un corps
   vide → 400, "au moins un champ requis"

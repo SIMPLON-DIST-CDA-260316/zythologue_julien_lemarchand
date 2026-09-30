@@ -1,7 +1,7 @@
 meta {
   name: Edge - token invalide
   type: http
-  seq: 5
+  seq: 2
 }
 
 patch {
@@ -19,6 +19,14 @@ body:json {
   }
 }
 
+assert {
+  res.status: eq 401
+}
+
 docs {
   EDGE — cookie présent mais token invalide (échec verifyToken) → 401
+
+  Doit tourner avant tout login de la suite : le jar de cookies Bruno CLI
+  n'est pas écrasé par ce header, il fusionne — un cookie de session valide
+  déjà posé masquerait le token invalide et ferait passer requireAuth.
 }
