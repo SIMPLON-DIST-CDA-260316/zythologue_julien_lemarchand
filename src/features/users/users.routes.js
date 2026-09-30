@@ -74,6 +74,58 @@ router
    */
   .param("id", validateParam(UserIdParam))
   .route("/:id")
+  /**
+   * @openapi
+   * /users/{id}:
+   *   patch:
+   *     operationId: updateUser
+   *     tags: [Users]
+   *     summary: met à jour un utilisateur par son ID
+   *     description: >
+   *       Mise à jour partielle, réservée au propriétaire du compte —
+   *       l'ID de session doit correspondre à l'ID de la ressource, sinon 403.
+   *       Au moins un champ est requis.
+   *     security:
+   *       - cookieAuth: []
+   *     parameters:
+   *       - $ref: '#/components/parameters/UserId'
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/UpdateUser'
+   *           examples:
+   *             renommage:
+   *               summary: un seul champ — les autres colonnes sont laissées intactes
+   *               value:
+   *                 first_name: Camille
+   *     responses:
+   *       200:
+   *         description: L'utilisateur mis à jour
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/UserResponse'
+   *       400:
+   *         description: >
+   *           L'ID fourni n'est pas un entier positif, ou le corps ne respecte
+   *           pas le schéma
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
+   *       403:
+   *         $ref: '#/components/responses/Forbidden'
+   *       404:
+   *         $ref: '#/components/responses/NotFound'
+   *       409:
+   *         $ref: '#/components/responses/Conflict'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   .patch(
     requireAuth,
     requireSelf,

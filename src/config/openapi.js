@@ -22,7 +22,12 @@ import {
   PhotoResponse,
   PhotoIdParam,
 } from "#features/photos/photos.schemas.js";
-import { NewUser, UserResponse } from "#features/users/users.schemas.js";
+import {
+  NewUser,
+  UpdateUser,
+  UserIdParam,
+  UserResponse,
+} from "#features/users/users.schemas.js";
 import { Login } from "#features/auth/auth.schemas.js";
 import { ApiError, ApiValidationError } from "#http/apiResponse.js";
 
@@ -66,10 +71,20 @@ export default swaggerJsdoc({
         PhotoResponse: toSchemaObject(PhotoResponse),
         PhotoIdParam: toSchemaObject(PhotoIdParam),
         NewUser: toSchemaObject(NewUser),
+        UpdateUser: toSchemaObject(UpdateUser),
+        UserIdParam: toSchemaObject(UserIdParam),
         UserResponse: toSchemaObject(UserResponse),
         Login: toSchemaObject(Login),
         ApiError: toSchemaObject(ApiError),
         ApiValidationError: toSchemaObject(ApiValidationError),
+      },
+      securitySchemes: {
+        cookieAuth: {
+          type: "apiKey",
+          in: "cookie",
+          name: "token",
+          description: "JWT de session posé par POST /auth/login.",
+        },
       },
       // Définies une fois, référencées par toutes les routes : le contrat
       // d'erreur ne peut pas dériver d'une opération à l'autre.
@@ -82,6 +97,16 @@ export default swaggerJsdoc({
           "Email inconnu ou mot de passe incorrect — les deux causes sont indistinguables.",
           "ApiError",
           { error: "Invalid email or password" },
+        ),
+        Unauthenticated: jsonResponse(
+          "Cookie de session (`token`) absent, invalide ou expiré.",
+          "ApiError",
+          { error: "Unauthorized" },
+        ),
+        Forbidden: jsonResponse(
+          "Authentifié, mais pas autorisé sur cette ressource.",
+          "ApiError",
+          { error: "Forbidden" },
         ),
         Conflict: jsonResponse(
           "La ressource entre en conflit avec une ressource existante.",

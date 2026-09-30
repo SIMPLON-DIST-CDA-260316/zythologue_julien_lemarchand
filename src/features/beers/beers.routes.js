@@ -43,6 +43,8 @@ router
    *       Renvoie la représentation nue de chaque bière. Composition, points de
    *       vente et statistiques d'avis ne sont servis que par `GET /beers/{id}`.
    *       Ni filtre ni pagination à ce stade : la collection est renvoyée entière.
+   *     security:
+   *       - cookieAuth: []
    *     responses:
    *       200:
    *         description: Liste de toutes les bières
@@ -50,6 +52,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/BeerListResponse'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       500:
    *         $ref: '#/components/responses/InternalServerError'
    */
@@ -85,6 +89,8 @@ router
    *                 description: Ambrée maltée, finale légèrement caramélisée.
    *                 alcohol_content: 6.8
    *                 brewery_id: 2
+   *     security:
+   *       - cookieAuth: []
    *     responses:
    *       201:
    *         description: La bière a été créée
@@ -98,6 +104,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       409:
    *         $ref: '#/components/responses/Conflict'
    *       422:
@@ -134,6 +142,8 @@ router
    *       brasserie, ingrédients, catégories, photos, points de vente et
    *       statistiques d'avis. `rating_stats` vaut `null` tant qu'aucun avis
    *       n'a été posté.
+   *     security:
+   *       - cookieAuth: []
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *     responses:
@@ -149,6 +159,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       500:
@@ -182,6 +194,8 @@ router
    *               summary: null efface la colonne, contrairement à son absence
    *               value:
    *                 description: null
+   *     security:
+   *       - cookieAuth: []
    *     responses:
    *       200:
    *         description: La bière mise à jour
@@ -197,6 +211,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       409:
@@ -218,6 +234,8 @@ router
    *       Suppression en cascade : les avis, catégorisations, compositions,
    *       favoris, illustrations et mises en vente rattachés à la bière
    *       disparaissent avec elle. Réponse sans corps.
+   *     security:
+   *       - cookieAuth: []
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *     responses:
@@ -229,6 +247,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       500:
@@ -267,6 +287,8 @@ router
    *               caption:
    *                 $ref: '#/components/schemas/NewPhoto/properties/caption'
    *                 description: légende optionnelle
+   *     security:
+   *       - cookieAuth: []
    *     responses:
    *       201:
    *         description: La photo a été ajoutée
@@ -280,6 +302,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       415:
@@ -319,6 +343,8 @@ router
    *     description: >
    *       404 si la photo n'existe pas, ou si elle existe mais appartient à
    *       une autre bière — les deux cas restent indistinguables côté client.
+   *     security:
+   *       - cookieAuth: []
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *       - $ref: '#/components/parameters/PhotoId'
@@ -335,6 +361,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       500:
@@ -352,6 +380,8 @@ router
    *       404 si la photo n'existe pas, ou si elle existe mais appartient à
    *       une autre bière — les deux cas restent indistinguables côté client.
    *       Réponse sans corps.
+   *     security:
+   *       - cookieAuth: []
    *     parameters:
    *       - $ref: '#/components/parameters/BeerId'
    *       - $ref: '#/components/parameters/PhotoId'
@@ -364,6 +394,8 @@ router
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ApiValidationError'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
    *       404:
    *         $ref: '#/components/responses/NotFound'
    *       500:
