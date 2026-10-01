@@ -100,7 +100,7 @@ export default swaggerJsdoc({
           { error: "Invalid email or password" },
         ),
         Unauthenticated: jsonResponse(
-          "Cookie de session (`token`) absent, invalide ou expiré.",
+          `Cookie de session (\`${AUTH_COOKIE_NAME}\`) absent, invalide ou expiré.`,
           "ApiError",
           { error: "Unauthorized" },
         ),

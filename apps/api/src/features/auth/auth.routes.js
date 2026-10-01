@@ -24,7 +24,7 @@ const router = Router();
  *       Vérifie l'email et le mot de passe. Les deux causes d'échec — email
  *       inconnu ou mot de passe incorrect — renvoient la même erreur 401,
  *       sans distinction possible côté client. En cas de succès, le JWT est
- *       posé en cookie httpOnly (`token`) ; la réponse n'a pas de corps.
+ *       posé en cookie httpOnly (`access_token`) ; la réponse n'a pas de corps.
  *     requestBody:
  *       required: true
  *       content:
@@ -42,7 +42,7 @@ const router = Router();
  *           aucun corps dans la réponse.
  *         headers:
  *           Set-Cookie:
- *             description: JWT de session (`token`), httpOnly, expire après 1h
+ *             description: JWT de session (`access_token`), httpOnly, expire après 15 min
  *             schema:
  *               type: string
  *       400:
