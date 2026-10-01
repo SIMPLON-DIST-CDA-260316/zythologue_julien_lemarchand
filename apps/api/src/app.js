@@ -2,6 +2,7 @@ import express from "express";
 import logger from "morgan";
 import swaggerUi from "swagger-ui-express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import beersRoutes from "#features/beers/beers.routes.js";
 import usersRoutes from "#features/users/users.routes.js";
 import authRoutes from "#features/auth/auth.routes.js";
@@ -12,6 +13,13 @@ import errorHandler from "#http/middlewares/errorHandler.js";
 
 export default () =>
   express()
+    // En premier, pour répondre aux preflight OPTIONS
+    .use(
+      cors({
+        origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+        credentials: true,
+      }),
+    )
     .use(express.json())
     .use(cookieParser())
     .use(logger("dev"))
