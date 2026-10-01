@@ -42,15 +42,19 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    # Bind mount : le fichier hôte est la source de vérité, pas la couche image.
-    # Le rechargement à chaud repose sur le polling de nodemon (cf. package.json),
-    # car inotify n'est pas propagé au conteneur sous Docker Desktop Windows.
+    # Uploads = données écrites par l'API : bind mount pour les garder sur l'hôte.
     volumes:
-      - ./apps/api/src:/app/apps/api/src
-      - ./apps/api/server.js:/app/apps/api/server.js
-      - ./apps/api/public:/app/apps/api/public
+      - ./apps/api/public/uploads:/app/apps/api/public/uploads
+    # Code : sync (cf. client), actif seulement avec `docker compose up --watch`.
     develop:
       watch:
+        - action: sync
+          path: ./apps/api
+          target: /app/apps/api
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - public/uploads/
         - action: rebuild
           path: ./pnpm-lock.yaml
 
@@ -64,15 +68,16 @@ services:
       - "${CLIENT_PORT:-5173}:5173"
     depends_on:
       - api
-    # Montages ciblés plutôt que tout apps/client : monter le dossier entier
-    # masquerait le node_modules de l'image (binaires Linux) par celui de l'hôte.
-    volumes:
-      - ./apps/client/src:/app/apps/client/src
-      - ./apps/client/public:/app/apps/client/public
-      - ./apps/client/index.html:/app/apps/client/index.html
-      - ./apps/client/vite.config.ts:/app/apps/client/vite.config.ts
+    # Lancer avec `docker compose up --watch` : sans --watch, rien n'est synchronisé.
+    # sync copie dans le conteneur, où inotify fonctionne (pas de polling).
     develop:
       watch:
+        - action: sync
+          path: ./apps/client
+          target: /app/apps/client
+          initial_sync: true
+          ignore:
+            - node_modules/
         - action: rebuild
           path: ./pnpm-lock.yaml
 
