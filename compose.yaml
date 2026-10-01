@@ -69,6 +69,8 @@ services:
       dockerfile: apps/client/Dockerfile
     container_name: zythologue-client
     restart: unless-stopped
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:${PORT:-3000}}
     ports:
       - "${CLIENT_PORT:-5173}:5173"
     depends_on:
