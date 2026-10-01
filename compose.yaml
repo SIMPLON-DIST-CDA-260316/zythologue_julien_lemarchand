@@ -55,8 +55,13 @@ services:
           ignore:
             - node_modules/
             - public/uploads/
+            - package.json
+        # pnpm écrit le lockfile puis package.json : ce dernier doit aussi
+        # déclencher un rebuild, sinon un build lancé entre les deux échoue.
         - action: rebuild
           path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./apps/api/package.json
 
   client:
     build:
@@ -78,8 +83,11 @@ services:
           initial_sync: true
           ignore:
             - node_modules/
+            - package.json
         - action: rebuild
           path: ./pnpm-lock.yaml
+        - action: rebuild
+          path: ./apps/client/package.json
 
   adminer:
     image: adminer
