@@ -3,5 +3,9 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  // Lu par la CLI shadcn pour résoudre l'alias
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  }
 }
