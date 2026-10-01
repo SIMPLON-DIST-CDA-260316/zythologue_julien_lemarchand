@@ -24,6 +24,7 @@ services:
   api:
     build:
       context: .
+      dockerfile: apps/api/Dockerfile
     container_name: zythologue-api
     restart: unless-stopped
     # PORT n'est pas injecté : dans l'image le serveur écoute toujours 3000.
@@ -44,9 +45,9 @@ services:
     # Le rechargement à chaud repose sur le polling de nodemon (cf. package.json),
     # car inotify n'est pas propagé au conteneur sous Docker Desktop Windows.
     volumes:
-      - ./src:/app/src
-      - ./server.js:/app/server.js
-      - ./public:/app/public
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/server.js:/app/apps/api/server.js
+      - ./apps/api/public:/app/apps/api/public
     develop:
       watch:
         - action: rebuild

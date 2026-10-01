@@ -2,18 +2,11 @@
   "name": "zythologue",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
-  "description": "Raccourcis pnpm pour gérer l'environnement Docker PostgreSQL du brief Zythologue.",
-  "imports": {
-    "#features/*": "./src/features/*",
-    "#shared/*": "./src/shared/*",
-    "#config/*": "./src/config/*",
-    "#http/*": "./src/http/*",
-    "#errors/*": "./src/errors/*"
-  },
+  "packageManager": "pnpm@10.30.1",
+  "description": "Monorepo pnpm du brief Zythologue : apps/api (Express) + apps/client (à venir).",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --legacy-watch --watch src --watch server.js --exec \"node --env-file-if-exists=.env server.js\"",
-    "start": "NODE_ENV=production node --env-file-if-exists=.env server.js",
+    "dev": "pnpm --filter api dev",
+    "start": "pnpm --filter api start",
     "db:schema": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U \\$POSTGRES_USER -d \\$POSTGRES_DB -f /docker-entrypoint-initdb.d/01_create_schema.sql\"",
     "db:seed": "docker compose exec -T postgres sh -c \"psql -v ON_ERROR_STOP=1 -U \\$POSTGRES_USER -d \\$POSTGRES_DB -f /docker-entrypoint-initdb.d/02_seed.sql\"",
     "db:reset": "pnpm db:schema && pnpm db:seed",
@@ -21,22 +14,6 @@
     "db:psql": "docker compose exec postgres sh -c \"psql -U \\$POSTGRES_USER -d \\$POSTGRES_DB\"",
     "gen:mcd": "pwsh -NoProfile -File scripts/generate-diagrams.ps1",
     "gen:mcd:bash": "bash scripts/generate-diagrams.sh",
-    "test:bruno": "cd bruno && bru run . --env Local -r"
-  },
-  "dependencies": {
-    "argon2": "^0.45.1",
-    "cookie-parser": "^1.4.7",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "morgan": "^1.11.0",
-    "multer": "^2.2.0",
-    "pg": "^8.22.0",
-    "swagger-jsdoc": "^6.3.0",
-    "swagger-ui-express": "^5.0.1",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@usebruno/cli": "^4.2.0",
-    "nodemon": "^3.1.10"
+    "test:bruno": "pnpm --filter api test:bruno"
   }
 }

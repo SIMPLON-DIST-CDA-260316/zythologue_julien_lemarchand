@@ -1,6 +1,6 @@
 # Contribuer
 
-Pour la structure du code, voir [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Pour la structure du code, voir [`ARCHITECTURE.md`](apps/api/ARCHITECTURE.md).
 Pour lancer le projet, voir [`README.md`](README.md).
 
 ## Commits
@@ -28,7 +28,7 @@ même conversation.
 
 ## Convention de nommage des fichiers
 
-Dans `src/features/<ressource>/` :
+Dans `apps/api/src/features/<ressource>/` :
 
 | Fichier | Rôle |
 |---|---|
@@ -46,7 +46,7 @@ En attendant :
 
 - L'app démarre : `docker compose up -d --build api` (ou `pnpm dev` hors
   conteneur), logs sans erreur.
-- Si un endpoint est ajouté/modifié : le dossier `bruno/<ressource>/<endpoint>/`
+- Si un endpoint est ajouté/modifié : le dossier `apps/api/bruno/<ressource>/<endpoint>/`
   correspondant est mis à jour avec les nouveaux cas (collection Bruno,
   fichiers `.bru`).
 - Si un schéma zod change : la doc `/docs` reflète le changement (générée

@@ -1,6 +1,9 @@
 # Architecture
 
-Comment le code est organisé — pour "comment lancer le projet", voir [`README.md`](README.md).
+Comment le code est organisé — pour "comment lancer le projet", voir [`README.md`](../../README.md).
+
+Monorepo pnpm : l'API vit dans `apps/api/` (package `api`). Les chemins
+ci-dessous sont relatifs à `apps/api/`.
 
 ## Arborescence de `src/`
 
@@ -31,7 +34,7 @@ pas parce qu'un endpoint les attend. Seul `beers` est monté dans `app.js`.
 
 `src/` ne contient que du code chargé au build/runtime de l'app. Rien qui vit
 en dehors de ce contrat (collection Bruno de dev, docs, config Docker...) n'y
-a sa place — voir `bruno/`, `docs/`, racine du repo.
+a sa place — voir `bruno/`, `docs/`, `Dockerfile`, racine du repo.
 
 ## Une feature = une ressource
 

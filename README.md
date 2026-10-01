@@ -3,14 +3,14 @@
 API REST (Node.js / Express) pour un catalogue de bières artisanales, bâtie sur la base de données modélisée en Merise la semaine précédente.
 
 > 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL, Docker) : voir [`db/README.md`](db/README.md).\
-> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](ARCHITECTURE.md).\
-> 🔐 **Authentification & autorisation** (inscription, connexion, JWT, middlewares) : voir [`AUTH.md`](AUTH.md).\
+> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](apps/api/ARCHITECTURE.md).\
+> 🔐 **Authentification & autorisation** (inscription, connexion, JWT, middlewares) : voir [`AUTH.md`](apps/api/AUTH.md).\
 > 🤝 **Contribuer** (commits, nommage, vérifications) : voir [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Fonctionnalités
 
 - **Bières** — endpoints CRUD exposant le modèle en JSON, sur la base PostgreSQL existante.
-- **Comptes utilisateur·ice** — inscription et connexion (email + mot de passe), JWT en cookie httpOnly, autorisation par middleware. Détails : [`AUTH.md`](AUTH.md).
+- **Comptes utilisateur·ice** — inscription et connexion (email + mot de passe), JWT en cookie httpOnly, autorisation par middleware. Détails : [`AUTH.md`](apps/api/AUTH.md).
 
 ## Lancer
 
@@ -21,7 +21,7 @@ docker compose watch    # PostgreSQL + API, rechargement à chaud
 
 API sur `http://localhost:3000`, Swagger sur `/docs`.
 
-`docker compose watch` tourne au premier plan (Ctrl+C pour arrêter). `src/` et `server.js` sont montés en bind mount : le fichier de l'hôte est directement lu par le conteneur, sans étape de copie. Un `pnpm-lock.yaml` modifié reconstruit l'image.
+`docker compose watch` tourne au premier plan (Ctrl+C pour arrêter). `apps/api/src/` et `apps/api/server.js` sont montés en bind mount : le fichier de l'hôte est directement lu par le conteneur, sans étape de copie. Un `pnpm-lock.yaml` modifié reconstruit l'image.
 
 API hors conteneur (débogueur attaché) :
 

@@ -3,7 +3,7 @@
 .pnpm-store
 .vscode
 docs
-node_modules
+**/node_modules
 .dockerignore
 .env
 .env.example
@@ -11,6 +11,8 @@ node_modules
 .gitignore
 compose.yaml
 *.http
-Dockerfile
+**/Dockerfile
 README.md
 skills-lock.json
+apps/api/docs
+apps/api/bruno

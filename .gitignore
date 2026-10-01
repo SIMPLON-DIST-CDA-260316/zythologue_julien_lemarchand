@@ -1,10 +1,6 @@
 # Environnement local
 .env
 
-# Sorties générées (Mocodo)
-docs/generated/
-docs/diagrams/*.excalidraw
-
 # Outillage / éditeur
 .vscode/
 skills-lock.json
@@ -13,5 +9,3 @@ node_modules/
 
 # Store pnpm local (artefact bind mount)
 .pnpm-store/
-
-public/uploads/*
