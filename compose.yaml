@@ -53,6 +53,28 @@ services:
         - action: rebuild
           path: ./pnpm-lock.yaml
 
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+    container_name: zythologue-client
+    restart: unless-stopped
+    ports:
+      - "${CLIENT_PORT:-5173}:5173"
+    depends_on:
+      - api
+    # Montages ciblés plutôt que tout apps/client : monter le dossier entier
+    # masquerait le node_modules de l'image (binaires Linux) par celui de l'hôte.
+    volumes:
+      - ./apps/client/src:/app/apps/client/src
+      - ./apps/client/public:/app/apps/client/public
+      - ./apps/client/index.html:/app/apps/client/index.html
+      - ./apps/client/vite.config.ts:/app/apps/client/vite.config.ts
+    develop:
+      watch:
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+
   adminer:
     image: adminer
     restart: always
