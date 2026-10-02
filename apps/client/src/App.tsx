@@ -3,7 +3,7 @@ import { RouterProvider } from 'react-router/dom'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import DashboardPage from '@/pages/dashboard/DashboardPage'
-import LoginPage from '@/pages/login/LoginPage'
+import { LoginPage } from '@/pages/login'
 
 // Créé une seule fois, hors du rendu React.
 const router = createBrowserRouter([
