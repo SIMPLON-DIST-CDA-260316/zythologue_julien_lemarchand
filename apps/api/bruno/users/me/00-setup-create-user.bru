@@ -1,0 +1,34 @@
+meta {
+  name: Setup - crée le user
+  type: http
+  seq: 0
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "test.me.{{ts}}@example.com",
+    "password": "{{password}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("ts", Date.now());
+}
+
+script:post-response {
+  bru.setVar("meId", res.body.data.id);
+  bru.setVar("meEmail", res.body.data.email);
+}
+
+assert {
+  res.status: eq 201
+}
+
+docs {
+  setup — user dédié à ce dossier, indépendant des autres
+}

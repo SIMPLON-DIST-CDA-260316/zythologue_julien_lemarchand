@@ -1,0 +1,13 @@
+meta {
+  name: me
+}
+
+vars:pre-request {
+  password: 1234567!
+}
+
+docs {
+  GET /users/me — renvoie l'utilisateur de la session (requireAuth). Suite
+  séquentielle : un user créé puis connecté pour le cas nominal, puis le jar
+  vidé pour le 401.
+}

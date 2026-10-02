@@ -22,6 +22,8 @@ export const UserFields = {
     .meta({ example: "Blonde légère et désaltérante." }),
   FirstName: z.string().min(1).max(80),
   LastName: z.string().min(1).max(80),
+  Role: z.enum(["customer", "brewer", "admin"]).meta({ example: "customer" }),
+  PhotoId: Id.nullable(),
   CreatedAt,
   UpdatedAt,
 };
@@ -60,9 +62,13 @@ export const UpdateUser = z
 
 // - sortie ----------------------------------------------------
 
-export const User = z.strictObject({
+export const SafeUser = z.strictObject({
   id: UserFields.Id,
   email: UserFields.Email,
+  last_name: UserFields.LastName.nullable(),
+  first_name: UserFields.FirstName.nullable(),
+  role: UserFields.Role,
+  photo_id: UserFields.PhotoId,
   created_at: UserFields.CreatedAt,
   updated_at: UserFields.UpdatedAt,
 });
@@ -72,4 +78,4 @@ export const User = z.strictObject({
 // - réponses --------------------------------------------------
 // Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
 // la ressource nue, réutilisable telle quelle dans une autre enveloppe.
-export const UserResponse = ApiResponse(User);
+export const UserResponse = ApiResponse(SafeUser);

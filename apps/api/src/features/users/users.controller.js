@@ -1,7 +1,10 @@
 import service from "./users.service.js";
 import { HTTP_STATUS } from "#http/httpStatus.js";
+import { pick } from "#http/apiResponse.js";
+import { SafeUser } from "./users.schemas.js";
 
 export default {
+  findMe: (req, res) => res.sendItem(pick(SafeUser, req.user)),
   createOne: async (req, res) =>
     res
       .status(HTTP_STATUS.CREATED)

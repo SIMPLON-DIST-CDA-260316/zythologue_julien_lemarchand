@@ -26,6 +26,10 @@ export const ApiListResponse = (schema) =>
     }),
   });
 
+/** Ne garde de `row` que les clés déclarées par `schema`. */
+export const pick = (schema, row) =>
+  Object.fromEntries(Object.keys(schema.shape).map((key) => [key, row[key]]));
+
 /** Échec : `{ error }`. Émis par `errorHandler`, seul producteur de cette forme. */
 export const ApiError = z.strictObject({ error: z.string() });
 
