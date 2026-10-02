@@ -12,8 +12,8 @@
     "db:reset": "pnpm db:schema && pnpm db:seed",
     "db:init": "docker compose up -d --wait && pnpm db:reset",
     "db:psql": "docker compose exec postgres sh -c \"psql -U \\$POSTGRES_USER -d \\$POSTGRES_DB\"",
-    "gen:mcd": "pwsh -NoProfile -File scripts/generate-diagrams.ps1",
-    "gen:mcd:bash": "bash scripts/generate-diagrams.sh",
+    "gen:mcd": "pwsh -NoProfile -File db/scripts/generate-diagrams.ps1",
+    "gen:mcd:bash": "bash db/scripts/generate-diagrams.sh",
     "test:bruno": "pnpm --filter api test:bruno"
   }
 }

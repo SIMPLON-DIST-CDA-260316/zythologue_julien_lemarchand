@@ -1,6 +1,6 @@
 # Genere les 3 niveaux depuis la source unique typee modeles/zytho.mcd :
 # MCD.svg (conceptuel, sans types) | MLD.svg (relationnel, sans types) | MPD (.dbml + .sql)
-# Usage (PowerShell, depuis la racine) : .\scripts\generate-diagrams.ps1 [-Arrange]
+# Usage (PowerShell, depuis la racine) : .\db\scripts\generate-diagrams.ps1 [-Arrange]
 # -Arrange : re-agence d'abord la disposition de la source (algo genetique, gere le graphe non-planaire de PHOTO)
 param([switch]$Arrange)
 $ErrorActionPreference = "Stop"
