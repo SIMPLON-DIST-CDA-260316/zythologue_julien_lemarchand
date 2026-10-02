@@ -62,7 +62,6 @@ export const UpdateUser = z
 
 // - sortie ----------------------------------------------------
 
-// Seules ces clés sortent vers le client (voir `pick`).
 export const SafeUser = z.strictObject({
   id: UserFields.Id,
   email: UserFields.Email,

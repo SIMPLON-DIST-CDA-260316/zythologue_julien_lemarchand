@@ -4,7 +4,6 @@ import { pick } from "#http/apiResponse.js";
 import { SafeUser } from "./users.schemas.js";
 
 export default {
-  // `req.user` est déjà chargé par requireAuth.
   findMe: (req, res) => res.sendItem(pick(SafeUser, req.user)),
   createOne: async (req, res) =>
     res

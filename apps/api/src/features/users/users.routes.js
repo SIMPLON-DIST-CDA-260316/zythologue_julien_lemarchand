@@ -59,8 +59,6 @@ router
    */
   .post(validateBody(NewUser), controller.createOne);
 
-// Déclarée avant `/:id` : Express teste les routes dans l'ordre, un futur
-// `GET /:id` capturerait sinon `/me`.
 router
   .route("/me")
   /**
