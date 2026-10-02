@@ -56,9 +56,11 @@ export function LoginForm({
       await login(credentials)
       navigate("/")
     } catch (err) {
-      setSubmitError((err as Error).message)
       if (err instanceof ApiError && err.status === 401) {
+        setSubmitError("Email ou mot de passe incorrect")
         setFieldErrors({ email: [], password: [] })
+      } else {
+        setSubmitError("Connexion impossible, réessayez plus tard")
       }
     }
   }
