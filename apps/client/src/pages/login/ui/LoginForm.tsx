@@ -69,8 +69,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login with your email</CardDescription>
+          <CardTitle className="text-xl">Connexion</CardTitle>
+          <CardDescription>Connectez-vous avec votre email</CardDescription>
         </CardHeader>
         <CardContent>
           {/* noValidate : sinon la validation native bloque l'envoi avant Zod. */}
@@ -89,7 +89,7 @@ export function LoginForm({
                 <FieldError>{fieldErrors.email?.[0]}</FieldError>
               </Field>
               <Field data-invalid={!!fieldErrors.password}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                 <Input
                   id="password"
                   name="password"
@@ -98,14 +98,14 @@ export function LoginForm({
                   aria-invalid={!!fieldErrors.password}
                 />
                 <FieldDescription>
-                  At least 8 characters, including a number and a special
-                  character.
+                  Au moins 8 caractères, dont un chiffre et un caractère
+                  spécial.
                 </FieldDescription>
                 <FieldError>{fieldErrors.password?.[0]}</FieldError>
               </Field>
               <Field>
                 <FieldError>{submitError}</FieldError>
-                <Button type="submit">Login</Button>
+                <Button type="submit">Se connecter</Button>
               </Field>
             </FieldGroup>
           </form>

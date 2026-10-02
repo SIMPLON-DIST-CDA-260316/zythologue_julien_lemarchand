@@ -1,3 +1,5 @@
+import { Link } from "react-router"
+
 import { LoginForm } from "./LoginForm"
 
 export default function LoginPage() {
@@ -5,6 +7,12 @@ export default function LoginPage() {
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
         <LoginForm />
+        <p className="text-center text-sm text-muted-foreground">
+          Pas encore de compte&nbsp;?{" "}
+          <Link to="/register" className="underline underline-offset-4">
+            Créer un compte
+          </Link>
+        </p>
       </div>
     </div>
   )
