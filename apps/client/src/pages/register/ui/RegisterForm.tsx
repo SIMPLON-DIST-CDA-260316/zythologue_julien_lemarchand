@@ -45,7 +45,7 @@ export function RegisterForm({
     const {
       success,
       error,
-      data: values,
+      data: newUser,
     } = registerSchema.safeParse(Object.fromEntries(form))
     if (!success) {
       setFieldErrors(z.flattenError(error).fieldErrors)
@@ -55,7 +55,7 @@ export function RegisterForm({
 
     setPending(true)
     try {
-      await register(values)
+      await register(newUser)
       toast.success("Compte créé, vous pouvez vous connecter")
       navigate("/login")
     } catch (err) {
