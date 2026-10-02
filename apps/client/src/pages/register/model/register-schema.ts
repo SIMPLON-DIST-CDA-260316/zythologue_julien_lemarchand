@@ -2,9 +2,9 @@ import { z } from "zod"
 
 import { emailSchema, passwordSchema } from "@/entities/user"
 
-export const loginSchema = z.object({
+export const registerSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
 })
 
-export type LoginValues = z.infer<typeof loginSchema>
+export type RegisterValues = z.infer<typeof registerSchema>
