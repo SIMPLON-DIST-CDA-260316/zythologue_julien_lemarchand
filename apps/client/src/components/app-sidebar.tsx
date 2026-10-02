@@ -13,17 +13,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, BeerIcon, FactoryIcon, StoreIcon, MessageSquareIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, TagIcon, WheatIcon, HeartIcon } from "lucide-react"
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Julien Lemarchand",
+    email: "julien@zythologue.fr",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Tableau de bord",
       url: "#",
       icon: (
         <LayoutDashboardIcon
@@ -31,34 +31,34 @@ const data = {
       ),
     },
     {
-      title: "Lifecycle",
+      title: "Bières",
       url: "#",
       icon: (
-        <ListIcon
+        <BeerIcon
         />
       ),
     },
     {
-      title: "Analytics",
+      title: "Brasseries",
       url: "#",
       icon: (
-        <ChartBarIcon
+        <FactoryIcon
         />
       ),
     },
     {
-      title: "Projects",
+      title: "Points de vente",
       url: "#",
       icon: (
-        <FolderIcon
+        <StoreIcon
         />
       ),
     },
     {
-      title: "Team",
+      title: "Avis",
       url: "#",
       icon: (
-        <UsersIcon
+        <MessageSquareIcon
         />
       ),
     },
@@ -122,7 +122,7 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
+      title: "Paramètres",
       url: "#",
       icon: (
         <Settings2Icon
@@ -130,7 +130,7 @@ const data = {
       ),
     },
     {
-      title: "Get Help",
+      title: "Aide",
       url: "#",
       icon: (
         <CircleHelpIcon
@@ -138,7 +138,7 @@ const data = {
       ),
     },
     {
-      title: "Search",
+      title: "Recherche",
       url: "#",
       icon: (
         <SearchIcon
@@ -148,26 +148,26 @@ const data = {
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "Catégories",
       url: "#",
       icon: (
-        <DatabaseIcon
+        <TagIcon
         />
       ),
     },
     {
-      name: "Reports",
+      name: "Ingrédients",
       url: "#",
       icon: (
-        <FileChartColumnIcon
+        <WheatIcon
         />
       ),
     },
     {
-      name: "Word Assistant",
+      name: "Mes favoris",
       url: "#",
       icon: (
-        <FileIcon
+        <HeartIcon
         />
       ),
     },
@@ -183,8 +183,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               render={<a href="#" />}
             >
-              <CommandIcon className="size-5!" />
-              <span className="text-base font-semibold">Acme Inc.</span>
+              <BeerIcon className="size-5!" />
+              <span className="text-base font-semibold">Zythologue</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
