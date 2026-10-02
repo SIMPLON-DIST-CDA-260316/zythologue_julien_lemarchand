@@ -31,28 +31,32 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
-  const [error, setError] = useState<string>()
+  const [submitError, setSubmitError] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     // Sans ça, le navigateur recharge la page en soumettant le formulaire.
     event.preventDefault()
-    setError(undefined)
+    setSubmitError(undefined)
 
     const form = new FormData(event.currentTarget)
 
-    const result = loginSchema.safeParse(Object.fromEntries(form))
-    if (!result.success) {
-      setFieldErrors(z.flattenError(result.error).fieldErrors)
+    const {
+      success,
+      error,
+      data: credentials,
+    } = loginSchema.safeParse(Object.fromEntries(form))
+    if (!success) {
+      setFieldErrors(z.flattenError(error).fieldErrors)
       return
     }
     setFieldErrors({})
 
     try {
-      await login(result.data)
+      await login(credentials)
       navigate("/")
     } catch (err) {
-      setError((err as Error).message)
+      setSubmitError((err as Error).message)
       if (err instanceof ApiError && err.status === 401) {
         setFieldErrors({ email: [], password: [] })
       }
@@ -98,7 +102,7 @@ export function LoginForm({
                 <FieldError>{fieldErrors.password?.[0]}</FieldError>
               </Field>
               <Field>
-                <FieldError>{error}</FieldError>
+                <FieldError>{submitError}</FieldError>
                 <Button type="submit">Login</Button>
               </Field>
             </FieldGroup>
