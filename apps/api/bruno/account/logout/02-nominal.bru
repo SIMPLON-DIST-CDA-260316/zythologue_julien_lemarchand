@@ -1,0 +1,20 @@
+meta {
+  name: Nominal
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/logout
+  body: none
+}
+
+assert {
+  res.status: eq 204
+  res.headers['set-cookie'][0]: contains access_token=;
+  res.headers['set-cookie'][0]: contains Expires=Thu, 01 Jan 1970
+}
+
+docs {
+  NOMINAL — cookie de session vidé et expiré → 204
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Restore - reconnexion
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+}
+
+body:json {
+  {
+    "email": "{{testEmail}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.headers['set-cookie'][0]: contains token=
+}
+
+docs {
+  Restaure une session valide après le logout — sans ça, les dossiers
+  authentifiés qui suivent dans un run complet (ex: beers/) échoueraient.
+}
