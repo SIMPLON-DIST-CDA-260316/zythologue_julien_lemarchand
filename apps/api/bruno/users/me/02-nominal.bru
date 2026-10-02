@@ -1,0 +1,21 @@
+meta {
+  name: Nominal - renvoie l'utilisateur connecté
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/users/me
+  body: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.id: eq {{meId}}
+  res.body.data.email: eq {{meEmail}}
+  res.body.data.hashed_password: isUndefined
+}
+
+docs {
+  NOMINAL — la session identifie l'utilisateur → 200, sans son mot de passe
+}

@@ -1,0 +1,22 @@
+meta {
+  name: Edge - sans session
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/users/me
+  body: none
+}
+
+script:pre-request {
+  bru.cookies.jar().clear();
+}
+
+assert {
+  res.status: eq 401
+}
+
+docs {
+  EDGE — jar de cookies vidé avant la requête, aucune session → 401
+}

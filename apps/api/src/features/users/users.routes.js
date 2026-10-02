@@ -59,6 +59,37 @@ router
    */
   .post(validateBody(NewUser), controller.createOne);
 
+// Déclarée avant `/:id` : Express teste les routes dans l'ordre, un futur
+// `GET /:id` capturerait sinon `/me`.
+router
+  .route("/me")
+  /**
+   * @openapi
+   * /users/me:
+   *   get:
+   *     operationId: getMe
+   *     tags: [Users]
+   *     summary: renvoie l'utilisateur connecté
+   *     description: >
+   *       Identifie l'utilisateur à partir du cookie de session. Le JWT étant
+   *       en cookie httpOnly, c'est le seul moyen pour le client de savoir
+   *       qui est connecté.
+   *     security:
+   *       - cookieAuth: []
+   *     responses:
+   *       200:
+   *         description: L'utilisateur connecté, sans son mot de passe
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/UserResponse'
+   *       401:
+   *         $ref: '#/components/responses/Unauthenticated'
+   *       500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
+  .get(requireAuth, controller.findMe);
+
 router
   /**
    * @openapi
