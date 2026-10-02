@@ -47,7 +47,7 @@ sequenceDiagram
     S->>+Lib: generateToken(user.id)
     Lib-->>-S: JWT (sub=String(id), exp=15m)
     S-->>-C: token
-    C->>C: res.cookie(AUTH_COOKIE_NAME, token, {httpOnly, secure, sameSite: strict, maxAge: 15m})
+    C->>C: res.cookie(AUTH_COOKIE_NAME, token, {httpOnly, secure, sameSite: strict, maxAge: 15m, path: "/"})
     C-->>-U: 200 OK
 ```
 

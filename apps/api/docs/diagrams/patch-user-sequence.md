@@ -49,8 +49,8 @@ sequenceDiagram
     S->>+Repo: findOne(id)
     Repo->>+DB: SELECT ... WHERE id = $1
     DB-->>-Repo: row | undefined
-    Repo-->>-S: user | undefined
-    S-->>-AUTH: user | undefined
+    Repo-->>-S: user | null
+    S-->>-AUTH: user | null
 
     break user introuvable (compte supprimé après émission du token)
         AUTH-->>U: 401 UnauthorizedError
