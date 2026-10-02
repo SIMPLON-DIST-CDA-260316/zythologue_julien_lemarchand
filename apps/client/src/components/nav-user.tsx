@@ -19,6 +19,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { useNavigate } from "react-router"
+import { toast } from "sonner"
+
+import { logout } from "@/features/logout"
 
 export function NavUser({
   user,
@@ -30,6 +34,17 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    try {
+      await logout()
+      navigate("/login")
+    } catch {
+      toast.error("Déconnexion impossible, réessayez plus tard")
+    }
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -92,7 +107,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon
               />
               Se déconnecter
