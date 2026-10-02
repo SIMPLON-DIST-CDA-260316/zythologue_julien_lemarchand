@@ -1,0 +1,18 @@
+meta {
+  name: Edge - /users/me après logout
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/users/me
+  body: none
+}
+
+assert {
+  res.status: eq 401
+}
+
+docs {
+  EDGE — le cookie a été effacé par le logout, plus de session → 401
+}

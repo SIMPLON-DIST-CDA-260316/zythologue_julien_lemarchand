@@ -1,0 +1,8 @@
+meta {
+  name: logout
+}
+
+docs {
+  POST /auth/logout — efface le cookie de session. Suite séquentielle : login,
+  logout, puis appel authentifié qui doit renvoyer 401.
+}
