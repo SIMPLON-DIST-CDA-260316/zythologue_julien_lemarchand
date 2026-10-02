@@ -19,6 +19,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { ApiError } from "@/shared/api"
 
 import { login } from "../api/login"
 import { loginSchema, type LoginValues } from "../model/login-schema"
@@ -52,6 +53,9 @@ export function LoginForm({
       navigate("/")
     } catch (err) {
       setError((err as Error).message)
+      if (err instanceof ApiError && err.status === 401) {
+        setFieldErrors({ email: [], password: [] })
+      }
     }
   }
 
