@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Genere les 3 niveaux depuis la source unique typee modeles/zytho.mcd :
 #   MCD.svg (conceptuel, sans types) | MLD.svg (relationnel, sans types) | MPD (.dbml + .sql)
-# Usage : bash scripts/generate-diagrams.sh [--arrange]   (depuis la racine du projet)
+# Usage : bash db/scripts/generate-diagrams.sh [--arrange]   (depuis la racine du projet)
 #   --arrange : re-agence d'abord la disposition de la source (algo genetique, gere le graphe non-planaire de PHOTO)
 set -euo pipefail
 
