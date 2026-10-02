@@ -13,13 +13,17 @@ src/
 ├── config/           # wiring infra/env — lit process.env, aucune valeur en dur
 ├── errors/           # classes d'erreur métier, transverses aux features
 ├── features/         # une ressource = un dossier, toutes ses couches collocées
-│   ├── beers/        # seule ressource complète, routes montées dans app.js
-│   ├── addresses/    # les six autres : *.schemas.js seul, pas encore exposées
+│   ├── beers/        # ressources exposées, routes montées dans app.js
+│   ├── users/
+│   ├── auth/         # connexion/déconnexion : pas de table, + auth.lib.js (hash, JWT)
+│   ├── photos/       # *.schemas.js + repository, appelé par le service de beers
+│   ├── upload/       # middleware multer + service fichiers, utilisé par beers
+│   ├── addresses/    # *.schemas.js seul, pas encore exposées
 │   ├── breweries/
 │   ├── categories/
 │   ├── ingredients/
-│   ├── outlets/
-│   └── photos/
+│   └── outlets/
+├── shared/           # schémas zod communs à plusieurs ressources (Id, dates)
 └── http/             # tout ce qui touche au cycle req/res
     ├── apiResponse.js   # forme des réponses (enveloppe)
     ├── httpStatus.js    # codes HTTP nommés
@@ -27,10 +31,11 @@ src/
     └── middlewares/     # middlewares Express réutilisés par plusieurs features
 ```
 
-Une feature n'a pas à naître complète. Six d'entre elles n'ont qu'un
+Une feature n'a pas à naître complète. Cinq d'entre elles n'ont qu'un
 `*.schemas.js` réduit au bloc Model : leurs briques de champ existent parce
 qu'une autre ressource les référence (`BreweryFields.Id` dans un DTO de bière),
-pas parce qu'un endpoint les attend. Seul `beers` est monté dans `app.js`.
+pas parce qu'un endpoint les attend. `app.js` monte `/beers`, `/users` et
+`/auth`.
 
 `src/` ne contient que du code chargé au build/runtime de l'app. Rien qui vit
 en dehors de ce contrat (collection Bruno de dev, docs, config Docker...) n'y
@@ -108,11 +113,14 @@ les lignes rendues par `pg` — jamais dans la logique.
 vivent ailleurs et doivent rester alignés sur ce qu'il décrit :
 
 - Succès unique : `{ data }`
-- Succès collection : `{ data, meta: { total } }`
+- Succès collection : `{ data, meta: { total, page, size } }`
 - Les fabriques (`ApiResponse`, `ApiListResponse`) alimentent la spec OpenAPI ;
   les contrôleurs appellent `res.sendItem`/`res.sendCollection` (attachés par
   `attachResponseHelpers`), jamais de `res.json({...})` à la main — les deux
   chemins doivent rester alignés sur la même forme.
+- `pick(schema, row)` ne garde d'une ligne que les clés déclarées par un schéma
+  de sortie : `GET /users/me` renvoie `pick(SafeUser, req.user)`, sans
+  `hashed_password`.
 
 ## Erreurs
 
@@ -126,7 +134,7 @@ Une classe d'erreur vit selon ce qu'elle décrit, pas selon qui la lève :
 
 | Dossier         | Ce qu'elle décrit                                    | Classes                                                           |
 | --------------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
-| `#errors/`      | une règle du **domaine**, indépendante du transport  | `ResourceNotFoundError`, `ConflictError`, `InvalidReferenceError` |
+| `#errors/`      | une règle du **domaine**, indépendante du transport  | `ResourceNotFoundError`, `ConflictError`, `InvalidReferenceError`, `InvalidCredentialsError`, `UnauthorizedError`, `ForbiddenError`, `UnsupportedMediaTypeError` |
 | `#http/errors/` | une règle du **protocole**, sans existence hors HTTP | `ValidationError`, `RouteNotFoundError`                           |
 
 Un doublon de bière est un conflit métier : il resterait un conflit derrière une
@@ -143,8 +151,11 @@ table est un imprévu, donc un 500 :
 | --------------------------------------------- | ------ |
 | `ResourceNotFoundError`, `RouteNotFoundError` | 404    |
 | `ValidationError`                             | 400    |
-| `InvalidReferenceError`                       | 422    |
+| `InvalidCredentialsError`, `UnauthorizedError` | 401 |
+| `ForbiddenError`                              | 403    |
 | `ConflictError`                               | 409    |
+| `UnsupportedMediaTypeError`                   | 415    |
+| `InvalidReferenceError`                       | 422    |
 | _(non répertoriée)_                           | 500    |
 
 Le partage 400 / 422 tient à ce qui est en cause. Un corps malformé, c'est la
@@ -186,9 +197,9 @@ sur les corps de requête.
 Convention appliquée à tout `src/` :
 
 - **Même dossier (même feature)** → import relatif (`./beers.controller.js`).
-- **Dossier différent** (autre feature, `config/`, `errors/`, `http/`)
+- **Dossier différent** (autre feature, `shared/`, `config/`, `errors/`, `http/`)
   → alias déclaré dans le champ `imports` de `package.json` :
-  `#features/*`, `#config/*`, `#http/*`, `#errors/*`.
+  `#features/*`, `#shared/*`, `#config/*`, `#http/*`, `#errors/*`.
 
 Un alias pointe une racine, pas chaque sous-dossier : les middlewares vivant
 sous `src/http/middlewares/`, ils s'importent via `#http/middlewares/…` — il n'y
@@ -199,7 +210,18 @@ Alias natifs Node (spec ESM, préfixe `#` imposé), pas de bundler ni de
 
 ## `bruno/`
 
-Collection [Bruno](https://www.usebruno.com/) — requêtes manuelles contre un
-serveur vivant, un dossier par endpoint, un fichier `.bru` par scénario
-(NOMINAL/EDGE). Aucune assertion, jamais importé par le code : outillage de
-dev (usage GUI), pas une suite de tests automatisée.
+Collection [Bruno](https://www.usebruno.com/) — tests d'API contre un serveur
+vivant, jamais importés par le code. Un dossier par endpoint
+(`beers/create/`, `users/me/`…, l'authentification sous `account/`), un
+fichier `.bru` par scénario, numéroté dans l'ordre d'exécution : étapes de
+préparation (`01-setup-login`), cas `nominal` et `edge`, remise en état
+(`04-restore-session`). Chaque requête porte ses assertions (statut, corps,
+cookies).
+
+- `pnpm test:bruno` (`bru run . --env Local -r`) joue toute la collection ;
+  elle reste utilisable à la main dans l'application Bruno.
+- `environments/Local.bru` définit l'URL de l'API et le compte de test
+  (`{{testEmail}}`, `{{testPassword}}`), utilisés par toutes les requêtes.
+- Le cookie de session est partagé entre les requêtes d'un même run : un test
+  qui se déconnecte doit rétablir la session pour les suivants.
+- `fixtures/` contient les fichiers envoyés par les tests d'upload.

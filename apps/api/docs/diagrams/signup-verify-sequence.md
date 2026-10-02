@@ -1,4 +1,4 @@
-# Séquence — inscription + vérification de compte (cas nominal)
+# Séquence — inscription + vérification de compte (non implémenté)
 
 Flux `POST /users` puis `GET /auth/verify?token=...`, cas nominal uniquement
 (pas de gestion d'erreur : token invalide/expiré/déjà utilisé).

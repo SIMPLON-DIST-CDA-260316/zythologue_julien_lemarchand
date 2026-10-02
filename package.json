@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.30.1",
-  "description": "Monorepo pnpm du brief Zythologue : apps/api (Express) + apps/client (à venir).",
+  "description": "Monorepo pnpm du brief Zythologue : apps/api (Express) + apps/client (React).",
   "scripts": {
     "dev": "pnpm --filter api dev",
     "start": "pnpm --filter api start",
