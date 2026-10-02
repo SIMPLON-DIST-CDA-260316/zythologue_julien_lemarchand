@@ -1,1 +1,1 @@
-export { apiFetch } from './client'
+export { ApiError, apiFetch } from './client'
