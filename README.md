@@ -1,27 +1,34 @@
-# Zythologue — API
+# Zythologue
 
-API REST (Node.js / Express) pour un catalogue de bières artisanales, bâtie sur la base de données modélisée en Merise la semaine précédente.
+Catalogue de bières artisanales : une API REST (Node.js / Express) sur la base de données modélisée en Merise, et un dashboard d'administration (React).
 
-> 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL, Docker) : voir [`db/README.md`](db/README.md).\
-> 🏗️ **Architecture du code** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](apps/api/ARCHITECTURE.md).\
-> 🔐 **Authentification & autorisation** (inscription, connexion, JWT, middlewares) : voir [`AUTH.md`](apps/api/AUTH.md).\
-> 🤝 **Contribuer** (commits, nommage, vérifications) : voir [`CONTRIBUTING.md`](CONTRIBUTING.md).
+> 🗃️ **Modélisation & base de données** (MCD / MLD / MPD, schéma SQL) : voir [`db/README.md`](db/README.md).\
+> 🏗️ **Architecture de l'API** (structure de `src/`, conventions) : voir [`ARCHITECTURE.md`](apps/api/ARCHITECTURE.md).\
+> 🔐 **Authentification & autorisation** (inscription, connexion, déconnexion, JWT, middlewares) : voir [`AUTH.md`](apps/api/AUTH.md).\
+> 🖥️ **Client** (stack, routes, arborescence FSD) : voir [`apps/client/README.md`](apps/client/README.md).\
+> 🤝 **Contribuer** (flux Git, commits, nommage, vérifications) : voir [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Fonctionnalités
 
-- **Bières** — endpoints CRUD exposant le modèle en JSON, sur la base PostgreSQL existante.
-- **Comptes utilisateur·ice** — inscription et connexion (email + mot de passe), JWT en cookie httpOnly, autorisation par middleware. Détails : [`AUTH.md`](apps/api/AUTH.md).
+- **Bières** — CRUD sur la base PostgreSQL, et photos (upload, lecture, suppression).
+- **Comptes utilisateur·ice** — inscription, connexion et déconnexion (JWT en cookie httpOnly), profil de l'utilisateur·ice connecté·e (`GET /users/me`), modification de son propre compte. Détails : [`AUTH.md`](apps/api/AUTH.md).
+- **Dashboard** — pages d'inscription et de connexion, tableau de bord, déconnexion depuis le menu utilisateur.
 
 ## Lancer
 
 ```bash
-cp .env.example .env    # paramètres locaux (ignorés par Git)
-docker compose watch    # PostgreSQL + API, rechargement à chaud
+cp .env.example .env          # paramètres locaux (ignorés par Git)
+docker compose up --watch     # PostgreSQL, API, client, Adminer
 ```
 
-API sur `http://localhost:3000`, Swagger sur `/docs`.
+| Service | URL                          |
+| ------- | ---------------------------- |
+| Client  | <http://localhost:5173>      |
+| API     | <http://localhost:3000>      |
+| Swagger | <http://localhost:3000/docs> |
+| Adminer | <http://localhost:8080>      |
 
-`docker compose watch` tourne au premier plan (Ctrl+C pour arrêter). `apps/api/src/` et `apps/api/server.js` sont montés en bind mount : le fichier de l'hôte est directement lu par le conteneur, sans étape de copie. Un `pnpm-lock.yaml` modifié reconstruit l'image.
+`docker compose up --watch` tourne au premier plan (Ctrl+C pour arrêter). Le mode watch copie (`sync`) le code de `apps/api` et `apps/client` dans les conteneurs à chaque modification, où nodemon et Vite rechargent à chaud. Un `pnpm-lock.yaml` ou un `package.json` modifié reconstruit l'image. Sans `--watch`, rien n'est synchronisé.
 
 API hors conteneur (débogueur attaché) :
 
@@ -40,23 +47,12 @@ pnpm db:reset           # schéma + jeu de données
 pnpm db:psql            # console psql
 ```
 
-## Rechargement à chaud : pourquoi nodemon
+## Tests
 
-Sous Docker Desktop Windows, les événements inotify ne traversent pas le montage
-(limitation de l'implémentation CIFS dans le noyau Linux). Conséquence mesurée sur ce
-projet : `node --watch` ne redémarre **jamais** sur un fichier modifié depuis l'hôte, et
-il n'expose aucune option de polling (`--watch-path` change *ce qui* est surveillé, pas
-*comment*).
+Les requêtes [Bruno](https://www.usebruno.com) de `apps/api/bruno/` testent l'API (statuts, corps, cookies) contre le serveur local :
 
-Le script `dev` utilise donc nodemon avec `--legacy-watch`, qui active le polling de
-chokidar. C'est le polling qui est nécessaire, pas nodemon en soi : la seule API node
-qui polle est `fs.watchFile`, jamais accessible via le flag `--watch`.
+```bash
+pnpm test:bruno
+```
 
-> ⚠️ L'approche précédente (`compose watch` en `action: sync`, sans bind mount) est un
-> piège : le sync remplace le fichier par un nouvel inode, donc le watch inotify de node
-> reste accroché à l'inode orphelin et ne voit plus rien
-> ([docker/compose#11090](https://github.com/docker/compose/issues/11090)). Pire, les
-> fichiers synchronisés vivent dans la couche writable du conteneur : tout `recreate` les
-> écrase et fait resurgir le code figé dans l'image
-> ([docker/compose#11102](https://github.com/docker/compose/issues/11102)). Le bind mount
-> supprime les deux problèmes en faisant de l'hôte la source de vérité.
+Le compte de test utilisé par les requêtes est défini dans `apps/api/bruno/environments/Local.bru`.
