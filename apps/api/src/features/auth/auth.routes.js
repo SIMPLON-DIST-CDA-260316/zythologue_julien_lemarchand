@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login } from "./auth.controller.js";
+import { login, logout } from "./auth.controller.js";
 import { validateBody } from "#http/middlewares/validateRequest.js";
 import { Login } from "./auth.schemas.js";
 const router = Router();
@@ -57,5 +57,28 @@ const router = Router();
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.post("/login", validateBody(Login), login);
+
+/**
+ * @openapi
+ * /auth/logout:
+ *   post:
+ *     operationId: logout
+ *     tags: [Auth]
+ *     summary: déconnecte l'utilisateur
+ *     description: >
+ *       Efface le cookie de session (`access_token`). Le cookie étant httpOnly,
+ *       seul le serveur peut le supprimer. Répond 204 même sans session.
+ *     responses:
+ *       204:
+ *         description: Cookie de session effacé, aucun corps dans la réponse.
+ *         headers:
+ *           Set-Cookie:
+ *             description: "`access_token` vide, expiré"
+ *             schema:
+ *               type: string
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.post("/logout", logout);
 
 export default router;

@@ -15,3 +15,8 @@ export const login = async (req, res) => {
 
   res.cookie(AUTH_COOKIE_NAME, token, cookieOptions).status(HTTP_STATUS.OK).end();
 };
+
+// Mêmes options qu'à la pose, sinon le navigateur ne reconnaît pas le cookie.
+export const logout = (req, res) => {
+  res.clearCookie(AUTH_COOKIE_NAME, cookieOptions).status(HTTP_STATUS.NO_CONTENT).end();
+};
