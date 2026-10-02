@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useNavigate } from "react-router"
 import { z } from "zod"
 
-import { apiFetch } from "@/shared/api"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
+import { login } from "../api/login"
 import { loginSchema, type LoginValues } from "../model/login-schema"
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>
@@ -47,11 +47,7 @@ export function LoginForm({
     setFieldErrors({})
 
     try {
-      await apiFetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(result.data),
-      })
+      await login(result.data)
       navigate("/")
     } catch (err) {
       setError((err as Error).message)
