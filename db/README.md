@@ -61,12 +61,12 @@ Sorties produites depuis la source typée :
 
 ## Lancer le projet
 
-PostgreSQL est fourni via Docker (image PostgreSQL 18, volume persistant).
+PostgreSQL est fourni via Docker (image PostgreSQL 18, volume persistant). Pour lancer toute la stack (API, client, Adminer), voir le [README racine](../README.md).
 
 ```bash
 cp .env.example .env      # paramètres locaux (ignorés par Git)
-docker compose up -d      # démarre PostgreSQL en arrière-plan
-docker ps                 # vérifier que le conteneur tourne
+docker compose up -d postgres   # démarre PostgreSQL seul, en arrière-plan
+docker ps                       # vérifier que le conteneur tourne
 ```
 
 Arrêter / redémarrer / réinitialiser :
