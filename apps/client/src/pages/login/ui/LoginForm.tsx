@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useNavigate } from "react-router"
 import { z } from "zod"
 
 import { cn } from "@/shared/lib/utils"
@@ -30,7 +29,6 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const navigate = useNavigate()
   const login = useLogin()
   const [submitError, setSubmitError] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -55,7 +53,6 @@ export function LoginForm({
 
     try {
       await login(credentials)
-      navigate("/")
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setSubmitError("Email ou mot de passe incorrect")

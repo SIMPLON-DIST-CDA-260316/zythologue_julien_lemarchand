@@ -19,7 +19,6 @@ import {
   useSidebar,
 } from "@/shared/ui/sidebar"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
-import { useNavigate } from "react-router"
 import { toast } from "sonner"
 
 import { useLogout } from "@/features/logout"
@@ -34,13 +33,11 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const navigate = useNavigate()
   const logout = useLogout()
 
   async function handleLogout() {
     try {
       await logout()
-      navigate("/login")
     } catch {
       toast.error("Déconnexion impossible, réessayez plus tard")
     }
