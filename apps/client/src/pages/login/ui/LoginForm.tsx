@@ -1,3 +1,4 @@
+import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { z } from "zod"
 
@@ -32,6 +33,7 @@ export function LoginForm({
   const login = useLogin()
   const [submitError, setSubmitError] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     // Sans ça, le navigateur recharge la page en soumettant le formulaire.
@@ -51,6 +53,7 @@ export function LoginForm({
     }
     setFieldErrors({})
 
+    setIsSubmitting(true)
     try {
       await login(credentials)
     } catch (err) {
@@ -60,6 +63,8 @@ export function LoginForm({
       } else {
         setSubmitError("Connexion impossible, réessayez plus tard")
       }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -103,7 +108,10 @@ export function LoginForm({
               </Field>
               <Field>
                 <FieldError>{submitError}</FieldError>
-                <Button type="submit">Se connecter</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2Icon className="animate-spin" />}
+                  {isSubmitting ? "Connexion…" : "Se connecter"}
+                </Button>
               </Field>
             </FieldGroup>
           </form>
