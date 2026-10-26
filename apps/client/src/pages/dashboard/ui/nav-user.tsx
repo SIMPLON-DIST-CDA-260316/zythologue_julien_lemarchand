@@ -22,7 +22,7 @@ import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, Lo
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 
-import { logout } from "@/features/logout"
+import { useLogout } from "@/features/logout"
 
 export function NavUser({
   user,
@@ -35,6 +35,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
+  const logout = useLogout()
 
   async function handleLogout() {
     try {

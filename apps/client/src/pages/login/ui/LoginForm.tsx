@@ -21,8 +21,8 @@ import {
 import { Input } from "@/shared/ui/input"
 import { ApiError } from "@/shared/api"
 
-import { login } from "../api/login"
 import { loginSchema, type LoginValues } from "../model/login-schema"
+import { useLogin } from "../model/use-login"
 
 type FieldErrors = Partial<Record<keyof LoginValues, string[]>>
 
@@ -31,6 +31,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
+  const login = useLogin()
   const [submitError, setSubmitError] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
