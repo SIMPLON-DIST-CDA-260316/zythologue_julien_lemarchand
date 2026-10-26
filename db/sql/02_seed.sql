@@ -127,7 +127,8 @@ VALUES ('Eau', false),
   ('Coriandre', false);
 -- =====================================================================
 --  Comptes (1 admin, 2 brasseurs, 3 clients)
---  Mot de passe = hash bcrypt factice (même valeur partout pour le seed).
+--  Mot de passe de dev commun à tous les comptes (README, « Comptes de
+--  test ») : vrai hash argon2, pour pouvoir se connecter. Jamais en prod.
 -- =====================================================================
 INSERT INTO account (
     email,
@@ -141,7 +142,7 @@ VALUES (
     'admin@zytho.test',
     'Durand',
     'Sophie',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'admin',
     NULL
   ),
@@ -149,7 +150,7 @@ VALUES (
     'brasseur1@zytho.test',
     'Lefebvre',
     'Antoine',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'brewer',
     NULL
   ),
@@ -157,7 +158,7 @@ VALUES (
     'brasseur2@zytho.test',
     'Moreau',
     'Camille',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'brewer',
     NULL
   ),
@@ -165,7 +166,7 @@ VALUES (
     'marie@zytho.test',
     'Petit',
     'Marie',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'customer',
     (
       SELECT id
@@ -177,7 +178,7 @@ VALUES (
     'lucas@zytho.test',
     'Bernard',
     'Lucas',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'customer',
     NULL
   ),
@@ -185,7 +186,7 @@ VALUES (
     'nadia@zytho.test',
     'Garcia',
     'Nadia',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'customer',
     NULL
   );
@@ -970,7 +971,7 @@ VALUES (
     'thomas@zytho.test',
     'Bauer',
     'Thomas',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'customer',
     NULL
   ),
@@ -978,7 +979,7 @@ VALUES (
     'eva@zytho.test',
     'Novak',
     'Eva',
-    '$2b$10$seedseedseedseedseedseO0pVxJ3y9Qz8wq5h6tK0aB1cD2eF3g',
+    '$argon2id$v=19$m=65536,p=4,t=3$hWwbT2Qr27eBF7wCt8aZUw$lb5xDbjaiHTdYw1IsTRVi+ngjOv+x5TQgBadqGcW64k',
     'customer',
     NULL
   );
