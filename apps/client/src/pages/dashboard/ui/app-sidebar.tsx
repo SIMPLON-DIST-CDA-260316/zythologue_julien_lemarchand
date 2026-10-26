@@ -16,11 +16,6 @@ import {
 import { LayoutDashboardIcon, BeerIcon, FactoryIcon, StoreIcon, MessageSquareIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, TagIcon, WheatIcon, HeartIcon } from "lucide-react"
 
 const data = {
-  user: {
-    name: "Julien Lemarchand",
-    email: "julien@zythologue.fr",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Tableau de bord",
@@ -195,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )
