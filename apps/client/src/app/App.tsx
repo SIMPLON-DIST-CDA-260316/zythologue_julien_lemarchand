@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
+import { AuthProvider } from '@/entities/user'
 import { DashboardPage } from '@/pages/dashboard'
 import { LoginPage } from '@/pages/login'
 import { NotFoundPage } from '@/pages/not-found'
@@ -17,10 +18,12 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <TooltipProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TooltipProvider>
+    </AuthProvider>
   )
 }
 
