@@ -7,12 +7,22 @@ import { NotFoundPage } from '@/pages/not-found'
 import { RegisterPage } from '@/pages/register'
 import { Toaster } from '@/shared/ui/sonner'
 import { TooltipProvider } from '@/shared/ui/tooltip'
+import { RequireAuth } from './routes/RequireAuth'
+import { RequireGuest } from './routes/RequireGuest'
 
 // Créé une seule fois, hors du rendu React.
 const router = createBrowserRouter([
-  { path: '/', Component: DashboardPage },
-  { path: '/login', Component: LoginPage },
-  { path: '/register', Component: RegisterPage },
+  {
+    Component: RequireAuth,
+    children: [{ path: '/', Component: DashboardPage }],
+  },
+  {
+    Component: RequireGuest,
+    children: [
+      { path: '/login', Component: LoginPage },
+      { path: '/register', Component: RegisterPage },
+    ],
+  },
   { path: '*', Component: NotFoundPage },
 ])
 
