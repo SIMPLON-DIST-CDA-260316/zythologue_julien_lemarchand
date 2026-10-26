@@ -47,6 +47,16 @@ pnpm db:reset           # schéma + jeu de données
 pnpm db:psql            # console psql
 ```
 
+### Comptes de test
+
+Le jeu de données crée ces comptes, tous avec le mot de passe de dev `Zytho123!` (jamais en production) :
+
+| Email | Rôle |
+|---|---|
+| `admin@zytho.test` | admin |
+| `brasseur1@zytho.test`, `brasseur2@zytho.test` | brewer |
+| `marie@zytho.test`, `lucas@zytho.test`, `nadia@zytho.test`, `thomas@zytho.test`, `eva@zytho.test` | customer |
+
 ## Tests
 
 Les requêtes [Bruno](https://www.usebruno.com) de `apps/api/bruno/` testent l'API (statuts, corps, cookies) contre le serveur local :
@@ -55,4 +65,4 @@ Les requêtes [Bruno](https://www.usebruno.com) de `apps/api/bruno/` testent l'A
 pnpm test:bruno
 ```
 
-Le compte de test utilisé par les requêtes est défini dans `apps/api/bruno/environments/Local.bru`.
+Les requêtes utilisent leur propre compte, `bruno@zytho.test` (même mot de passe), défini dans `apps/api/bruno/environments/Local.bru` : la collection le crée elle-même, il n'est pas dans le jeu de données.
