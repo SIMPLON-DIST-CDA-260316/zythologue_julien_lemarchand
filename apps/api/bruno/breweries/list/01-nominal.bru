@@ -1,0 +1,35 @@
+meta {
+  name: Nominal - toutes les brasseries
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/breweries
+  body: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isArray
+  res.body.data.length: gt 0
+  res.body.meta: isUndefined
+}
+
+tests {
+  test("chaque brasserie n'a que id et name", function () {
+    for (const brewery of res.body.data) {
+      expect(Object.keys(brewery)).to.have.members(["id", "name"]);
+    }
+  });
+
+  test("les brasseries sont triées par nom", function () {
+    const names = res.body.data.map((brewery) => brewery.name);
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    expect(names).to.deep.equal(sorted);
+  });
+}
+
+docs {
+  NOMINAL — toutes les brasseries, triées par nom → 200, { data: [{ id, name }] }
+}

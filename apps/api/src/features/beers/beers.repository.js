@@ -115,17 +115,21 @@ export default {
     }] = await Promise.all([
       pool.query(
         `SELECT
-        id,
-        name,
-        description,
-        -- sans ce cast, NUMERIC sort en string
-        alcohol_content::float AS alcohol_content,
-        created_at,
-             updated_at,
-             brewery_id
-           FROM beer
-           ORDER BY id
-           LIMIT $1 OFFSET $2;`,
+           b.id,
+           b.name,
+           b.description,
+           -- sans ce cast, NUMERIC sort en string
+           b.alcohol_content::float AS alcohol_content,
+           b.created_at,
+           b.updated_at,
+           jsonb_build_object(
+             'id', br.id,
+             'name', br.name
+           ) AS brewery
+         FROM beer b
+         JOIN brewery br ON br.id = b.brewery_id
+         ORDER BY b.id
+         LIMIT $1 OFFSET $2;`,
         [limit, offset],
       ),
       pool.query(`SELECT COUNT(*)::int AS count FROM beer;`),

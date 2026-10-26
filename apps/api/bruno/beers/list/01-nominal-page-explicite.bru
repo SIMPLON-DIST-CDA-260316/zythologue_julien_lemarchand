@@ -13,6 +13,13 @@ params:query {
   page: 1
 }
 
+assert {
+  res.status: eq 200
+  res.body.data[0].brewery.id: isNumber
+  res.body.data[0].brewery.name: isString
+  res.body.data[0].brewery_id: isUndefined
+}
+
 docs {
   NOMINAL — page explicite → 200, { data: [...], meta: { total } }
 }

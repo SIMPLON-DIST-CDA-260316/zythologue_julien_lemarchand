@@ -4,6 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import beersRoutes from "#features/beers/beers.routes.js";
+import breweriesRoutes from "#features/breweries/breweries.routes.js";
 import usersRoutes from "#features/users/users.routes.js";
 import authRoutes from "#features/auth/auth.routes.js";
 import swaggerDocument from "#config/openapi.js";
@@ -26,6 +27,7 @@ export default () =>
     .use(attachResponseHelpers)
     .use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
     .use("/beers", beersRoutes)
+    .use("/breweries", breweriesRoutes)
     .use("/users", usersRoutes)
     .use("/auth", authRoutes)
     .use(express.static("public"))
