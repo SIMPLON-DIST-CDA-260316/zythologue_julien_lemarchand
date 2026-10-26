@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { BreweryFields } from "#features/breweries/breweries.schemas.js";
+import { BreweryFields, Brewery } from "#features/breweries/breweries.schemas.js";
 import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
 import { Category } from "#features/categories/categories.schemas.js";
 import { Photo } from "#features/photos/photos.schemas.js";
@@ -88,6 +88,19 @@ export const Beer = z.strictObject({
   brewery_id: BeerFields.BreweryId,
 });
 
+// - sortie, liste ---------------------------------------------
+// La brasserie avec son nom, à la place de `brewery_id`, pour l'afficher sans
+// requête de plus.
+export const BeerListItem = z.strictObject({
+  id: BeerFields.Id,
+  name: BeerFields.Name,
+  description: BeerFields.Description,
+  alcohol_content: BeerFields.AlcoholContent,
+  created_at: BeerFields.CreatedAt,
+  updated_at: BeerFields.UpdatedAt,
+  brewery: Brewery,
+});
+
 // - sortie, détail --------------------------------------------
 
 // `null` tant qu'aucun avis n'a été posté, cf. le `CASE WHEN rs.count = 0`
@@ -110,10 +123,7 @@ export const BeerDetails = z
     name: BeerFields.Name,
     description: BeerFields.Description,
     alcohol_content: BeerFields.AlcoholContent,
-    brewery: z.strictObject({
-      id: BreweryFields.Id,
-      name: BreweryFields.Name,
-    }),
+    brewery: Brewery,
     ingredients: z.array(Ingredient),
     categories: z.array(Category),
     photos: z.array(Photo),
@@ -128,5 +138,5 @@ export const BeerDetails = z
 // Ce que le handler sérialise, enveloppe comprise. Les DTO ci-dessus restent
 // la ressource nue, réutilisable telle quelle dans une autre enveloppe.
 export const BeerResponse = ApiResponse(Beer);
-export const BeerListResponse = ApiListResponse(Beer);
+export const BeerListResponse = ApiListResponse(BeerListItem);
 export const BeerDetailsResponse = ApiResponse(BeerDetails);

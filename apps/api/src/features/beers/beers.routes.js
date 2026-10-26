@@ -40,14 +40,14 @@ router
    *     tags: [Beers]
    *     summary: récupère toutes les bières
    *     description: >
-   *       Renvoie la représentation nue de chaque bière. Composition, points de
-   *       vente et statistiques d'avis ne sont servis que par `GET /beers/{id}`.
-   *       Ni filtre ni pagination à ce stade : la collection est renvoyée entière.
+   *       Renvoie chaque bière avec sa brasserie (id et nom), page par page.
+   *       Composition, points de vente et statistiques d'avis ne sont servis
+   *       que par `GET /beers/{id}`.
    *     security:
    *       - cookieAuth: []
    *     responses:
    *       200:
-   *         description: Liste de toutes les bières
+   *         description: Une page de bières
    *         content:
    *           application/json:
    *             schema:

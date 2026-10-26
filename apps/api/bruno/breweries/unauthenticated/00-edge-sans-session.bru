@@ -1,0 +1,23 @@
+meta {
+  name: Edge - sans session
+  type: http
+  seq: 0
+}
+
+get {
+  url: {{baseUrl}}/breweries
+  body: none
+}
+
+script:pre-request {
+  const jar = bru.cookies.jar();
+  jar.clear();
+}
+
+assert {
+  res.status: eq 401
+}
+
+docs {
+  EDGE — jar de cookies vidé avant la requête, aucune session → 401.
+}
