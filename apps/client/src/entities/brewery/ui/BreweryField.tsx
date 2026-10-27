@@ -9,7 +9,7 @@ import {
 
 import { useBreweries } from "../model/use-breweries"
 
-export function BreweryField({ error }: { error?: string }) {
+export function BreweryField({ errorMessage }: { errorMessage?: string }) {
   const breweriesQuery = useBreweries()
   const items =
     breweriesQuery.status === "success"
@@ -20,14 +20,14 @@ export function BreweryField({ error }: { error?: string }) {
       : []
 
   return (
-    <Field data-invalid={!!error}>
+    <Field data-invalid={!!errorMessage}>
       <FieldLabel htmlFor="brewery_id">Brasserie</FieldLabel>
       <Select
         name="brewery_id"
         items={items}
         disabled={breweriesQuery.status !== "success"}
       >
-        <SelectTrigger id="brewery_id" aria-invalid={!!error}>
+        <SelectTrigger id="brewery_id" aria-invalid={!!errorMessage}>
           <SelectValue
             placeholder={
               breweriesQuery.status === "loading"
@@ -47,7 +47,7 @@ export function BreweryField({ error }: { error?: string }) {
       <FieldError>
         {breweriesQuery.status === "error"
           ? "Impossible de charger les brasseries."
-          : error}
+          : errorMessage}
       </FieldError>
     </Field>
   )

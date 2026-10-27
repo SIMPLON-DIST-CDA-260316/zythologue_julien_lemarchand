@@ -65,7 +65,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
           <FieldError>{fieldErrors.name?.[0]}</FieldError>
         </Field>
 
-        <BreweryField error={fieldErrors.brewery_id?.[0]} />
+        <BreweryField errorMessage={fieldErrors.brewery_id?.[0]} />
 
         <Field data-invalid={!!fieldErrors.alcohol_content}>
           <FieldLabel htmlFor="alcohol_content">Degré (facultatif)</FieldLabel>
