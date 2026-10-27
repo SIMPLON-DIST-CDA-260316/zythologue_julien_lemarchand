@@ -20,12 +20,11 @@ import {
   createBeerSchema,
   type CreateBeerValues,
 } from "../model/create-beer-schema"
-import { useBreweries, type BreweriesQuery } from "../model/use-breweries"
+import { useBreweries } from "../model/use-breweries"
 
 type FieldErrors = Partial<Record<keyof CreateBeerValues, string[]>>
 
 export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
-  const breweriesQuery = useBreweries()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitError, setSubmitError] = useState<string>()
   const [pending, setPending] = useState(false)
@@ -78,10 +77,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
           <FieldError>{fieldErrors.name?.[0]}</FieldError>
         </Field>
 
-        <BreweryField
-          breweriesQuery={breweriesQuery}
-          error={fieldErrors.brewery_id?.[0]}
-        />
+        <BreweryField error={fieldErrors.brewery_id?.[0]} />
 
         <Field data-invalid={!!fieldErrors.alcohol_content}>
           <FieldLabel htmlFor="alcohol_content">Degré (facultatif)</FieldLabel>
@@ -104,10 +100,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
 
         <Field>
           <FieldError>{submitError}</FieldError>
-          <Button
-            type="submit"
-            disabled={pending || breweriesQuery.status !== "success"}
-          >
+          <Button type="submit" disabled={pending}>
             {pending ? "Ajout…" : "Ajouter"}
           </Button>
         </Field>
@@ -116,13 +109,8 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
   )
 }
 
-function BreweryField({
-  breweriesQuery,
-  error,
-}: {
-  breweriesQuery: BreweriesQuery
-  error?: string
-}) {
+function BreweryField({ error }: { error?: string }) {
+  const breweriesQuery = useBreweries()
   const items =
     breweriesQuery.status === "success"
       ? breweriesQuery.breweries.map((brewery) => ({

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { getBreweries, type Brewery } from "@/entities/brewery"
 
-export type BreweriesQuery =
+type BreweriesQuery =
   | { status: "loading" }
   | { status: "error" }
   | { status: "success"; breweries: Brewery[] }
