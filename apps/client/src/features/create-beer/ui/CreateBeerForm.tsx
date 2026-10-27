@@ -3,24 +3,17 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { createBeer } from "@/entities/beer"
+import { BreweryField } from "@/entities/brewery"
 import { ApiError } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/select"
 import { Textarea } from "@/shared/ui/textarea"
 
 import {
   createBeerSchema,
   type CreateBeerValues,
 } from "../model/create-beer-schema"
-import { useBreweries } from "../model/use-breweries"
 
 type FieldErrors = Partial<Record<keyof CreateBeerValues, string[]>>
 
@@ -106,49 +99,5 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
         </Field>
       </FieldGroup>
     </form>
-  )
-}
-
-function BreweryField({ error }: { error?: string }) {
-  const breweriesQuery = useBreweries()
-  const items =
-    breweriesQuery.status === "success"
-      ? breweriesQuery.breweries.map((brewery) => ({
-          value: brewery.id,
-          label: brewery.name,
-        }))
-      : []
-
-  return (
-    <Field data-invalid={!!error}>
-      <FieldLabel htmlFor="brewery_id">Brasserie</FieldLabel>
-      <Select
-        name="brewery_id"
-        items={items}
-        disabled={breweriesQuery.status !== "success"}
-      >
-        <SelectTrigger id="brewery_id" aria-invalid={!!error}>
-          <SelectValue
-            placeholder={
-              breweriesQuery.status === "loading"
-                ? "Chargement…"
-                : "Choisissez une brasserie"
-            }
-          />
-        </SelectTrigger>
-        <SelectContent>
-          {items.map((item) => (
-            <SelectItem key={item.value} value={item.value}>
-              {item.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FieldError>
-        {breweriesQuery.status === "error"
-          ? "Impossible de charger les brasseries."
-          : error}
-      </FieldError>
-    </Field>
   )
 }

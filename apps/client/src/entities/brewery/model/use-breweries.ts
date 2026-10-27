@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { getBreweries, type Brewery } from "@/entities/brewery"
+import { getBreweries } from "../api/get-breweries"
+import type { Brewery } from "./brewery"
 
 type BreweriesQuery =
   | { status: "loading" }
