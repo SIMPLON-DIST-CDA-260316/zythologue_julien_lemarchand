@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router"
 
-import { formatAlcoholContent } from "@/entities/beer"
+import { formatAlcoholContent, type Beer } from "@/entities/beer"
+import type { ApiListResponse } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
 import {
@@ -51,68 +52,74 @@ export default function BeersPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {beersQuery.status === "loading"
-            ? Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={3}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))
-            : beersQuery.response.data.map((beer) => (
-                <TableRow key={beer.id}>
-                  <TableCell className="font-medium">{beer.name}</TableCell>
-                  <TableCell>{beer.brewery.name}</TableCell>
-                  <TableCell>
-                    {beer.alcohol_content === null ? (
-                      <span className="text-muted-foreground">Non renseigné</span>
-                    ) : (
-                      formatAlcoholContent(beer.alcohol_content)
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+          {beersQuery.status === "loading" ? (
+            <LoadingRows />
+          ) : (
+            beersQuery.response.data.map((beer) => <BeerRow key={beer.id} beer={beer} />)
+          )}
         </TableBody>
       </Table>
 
       {beersQuery.status === "success" && (
-        <Pagination
-          page={pageNumber}
-          totalPages={Math.ceil(beersQuery.response.meta.total / beersQuery.response.meta.size)}
-          onPageChange={goToPage}
-        />
+        <Pagination meta={beersQuery.response.meta} onPageChange={goToPage} />
       )}
     </div>
   )
 }
 
+function LoadingRows() {
+  return Array.from({ length: 5 }, (_, i) => (
+    <TableRow key={i}>
+      <TableCell colSpan={3}>
+        <Skeleton className="h-5 w-full" />
+      </TableCell>
+    </TableRow>
+  ))
+}
+
+function BeerRow({ beer }: { beer: Beer }) {
+  return (
+    <TableRow>
+      <TableCell className="font-medium">{beer.name}</TableCell>
+      <TableCell>{beer.brewery.name}</TableCell>
+      <TableCell>
+        {beer.alcohol_content === null ? (
+          <span className="text-muted-foreground">Non renseigné</span>
+        ) : (
+          formatAlcoholContent(beer.alcohol_content)
+        )}
+      </TableCell>
+    </TableRow>
+  )
+}
+
 function Pagination({
-  page,
-  totalPages,
+  meta,
   onPageChange,
 }: {
-  page: number
-  totalPages: number
+  meta: ApiListResponse<unknown>["meta"]
   onPageChange: (page: number) => void
 }) {
+  const totalPages = Math.ceil(meta.total / meta.size)
+
   return (
     <div className="flex items-center justify-end gap-2">
       <span className="text-sm text-muted-foreground">
-        Page {page} sur {totalPages}
+        Page {meta.page} sur {totalPages}
       </span>
       <Button
         variant="outline"
         size="sm"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
+        disabled={meta.page <= 1}
+        onClick={() => onPageChange(meta.page - 1)}
       >
         Précédent
       </Button>
       <Button
         variant="outline"
         size="sm"
-        disabled={page >= totalPages}
-        onClick={() => onPageChange(page + 1)}
+        disabled={meta.page >= totalPages}
+        onClick={() => onPageChange(meta.page + 1)}
       >
         Suivant
       </Button>
