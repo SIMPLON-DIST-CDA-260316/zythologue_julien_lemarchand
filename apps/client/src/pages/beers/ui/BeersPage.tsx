@@ -32,7 +32,7 @@ export default function BeersPage() {
     )
   }
 
-  if (result.status === "success" && result.beerPage.meta.total === 0) {
+  if (result.status === "success" && result.response.meta.total === 0) {
     return (
       <p className="px-4 py-6 text-sm text-muted-foreground lg:px-6">
         Aucune bière pour le moment.
@@ -59,7 +59,7 @@ export default function BeersPage() {
                   </TableCell>
                 </TableRow>
               ))
-            : result.beerPage.data.map((beer) => (
+            : result.response.data.map((beer) => (
                 <TableRow key={beer.id}>
                   <TableCell className="font-medium">{beer.name}</TableCell>
                   <TableCell>{beer.brewery.name}</TableCell>
@@ -78,7 +78,7 @@ export default function BeersPage() {
       {result.status === "success" && (
         <Pagination
           page={page}
-          totalPages={Math.ceil(result.beerPage.meta.total / result.beerPage.meta.size)}
+          totalPages={Math.ceil(result.response.meta.total / result.response.meta.size)}
           onPageChange={goToPage}
         />
       )}

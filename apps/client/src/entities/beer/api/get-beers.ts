@@ -1,13 +1,11 @@
-import { apiFetch } from "@/shared/api"
+import { apiFetch, type ApiListResponse } from "@/shared/api"
 
 import type { Beer } from "../model/beer"
 
-export type BeerPage = {
-  data: Beer[]
-  meta: { total: number; page: number; size: number }
-}
-
-export async function getBeers(page: number, signal?: AbortSignal): Promise<BeerPage> {
+export async function getBeers(
+  page: number,
+  signal?: AbortSignal,
+): Promise<ApiListResponse<Beer>> {
   const res = await apiFetch(`/beers?page=${page}`, { signal })
   return res.json()
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 
-import { getBeers, type BeerPage } from "@/entities/beer"
+import { getBeers, type Beer } from "@/entities/beer"
+import type { ApiListResponse } from "@/shared/api"
 
 type Result =
-  | { page: number; status: "success"; beerPage: BeerPage }
+  | { page: number; status: "success"; response: ApiListResponse<Beer> }
   | { page: number; status: "error" }
 
 export function useBeers(page: number) {
@@ -15,7 +16,7 @@ export function useBeers(page: number) {
     const controller = new AbortController()
 
     getBeers(page, controller.signal)
-      .then((beerPage) => setResult({ page, status: "success", beerPage }))
+      .then((response) => setResult({ page, status: "success", response }))
       .catch(() => {
         if (!controller.signal.aborted) setResult({ page, status: "error" })
       })

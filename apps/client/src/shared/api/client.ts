@@ -1,6 +1,14 @@
 // URL de l'API vue par le navigateur (pas le nom de service Docker `api`).
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
+// Enveloppes de réponse, mêmes noms que côté API (`apiResponse.js`).
+export type ApiResponse<T> = { data: T }
+
+export type ApiListResponse<T> = {
+  data: T[]
+  meta: { total: number; page: number; size: number }
+}
+
 export class ApiError extends Error {
   readonly status: number
 
