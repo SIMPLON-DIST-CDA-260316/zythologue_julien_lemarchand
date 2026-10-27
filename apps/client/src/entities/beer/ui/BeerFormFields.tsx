@@ -3,9 +3,16 @@ import { Field, FieldError, FieldLabel } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
 
+import type { Beer } from "../model/beer"
 import type { BeerFormErrors } from "../model/beer-form-schema"
 
-export function BeerFormFields({ fieldErrors }: { fieldErrors: BeerFormErrors }) {
+export function BeerFormFields({
+  beer,
+  fieldErrors,
+}: {
+  beer?: Beer
+  fieldErrors: BeerFormErrors
+}) {
   return (
     <>
       <Field data-invalid={!!fieldErrors.name}>
@@ -13,6 +20,7 @@ export function BeerFormFields({ fieldErrors }: { fieldErrors: BeerFormErrors })
         <Input
           id="name"
           name="name"
+          defaultValue={beer?.name}
           maxLength={120}
           required
           aria-invalid={!!fieldErrors.name}
@@ -20,13 +28,17 @@ export function BeerFormFields({ fieldErrors }: { fieldErrors: BeerFormErrors })
         <FieldError>{fieldErrors.name}</FieldError>
       </Field>
 
-      <BreweryField errorMessage={fieldErrors.brewery_id} />
+      <BreweryField
+        defaultValue={beer?.brewery.id}
+        errorMessage={fieldErrors.brewery_id}
+      />
 
       <Field data-invalid={!!fieldErrors.alcohol_content}>
         <FieldLabel htmlFor="alcohol_content">Degré (facultatif)</FieldLabel>
         <Input
           id="alcohol_content"
           name="alcohol_content"
+          defaultValue={beer?.alcohol_content ?? undefined}
           type="number"
           step="0.01"
           min="0"
@@ -38,7 +50,11 @@ export function BeerFormFields({ fieldErrors }: { fieldErrors: BeerFormErrors })
 
       <Field>
         <FieldLabel htmlFor="description">Description (facultatif)</FieldLabel>
-        <Textarea id="description" name="description" />
+        <Textarea
+          id="description"
+          name="description"
+          defaultValue={beer?.description ?? undefined}
+        />
       </Field>
     </>
   )
