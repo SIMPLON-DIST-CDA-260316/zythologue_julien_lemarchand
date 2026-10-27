@@ -1,0 +1,29 @@
+import { useEffect, useState } from "react"
+
+import { getBeers, type BeerPage } from "@/entities/beer"
+
+type Result =
+  | { page: number; status: "success"; beerPage: BeerPage }
+  | { page: number; status: "error" }
+
+export function useBeers(page: number) {
+  const [result, setResult] = useState<Result | null>(null)
+
+  useEffect(() => {
+    // Sans ça, la réponse d'une page quittée peut arriver après la suivante
+    // et l'écraser.
+    const controller = new AbortController()
+
+    getBeers(page, controller.signal)
+      .then((beerPage) => setResult({ page, status: "success", beerPage }))
+      .catch(() => {
+        if (!controller.signal.aborted) setResult({ page, status: "error" })
+      })
+
+    return () => controller.abort()
+  }, [page])
+
+  // `result` est encore celui de la page précédente tant que la nouvelle charge.
+  if (result?.page !== page) return { status: "loading" } as const
+  return result
+}

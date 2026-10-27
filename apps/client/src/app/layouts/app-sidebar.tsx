@@ -19,7 +19,7 @@ const data = {
   navMain: [
     {
       title: "Tableau de bord",
-      url: "#",
+      url: "/",
       icon: (
         <LayoutDashboardIcon
         />
@@ -27,7 +27,7 @@ const data = {
     },
     {
       title: "Bières",
-      url: "#",
+      url: "/beers",
       icon: (
         <BeerIcon
         />
