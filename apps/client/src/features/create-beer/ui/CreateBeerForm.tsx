@@ -2,7 +2,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { z } from "zod"
 
-import { createBeer } from "@/entities/beer"
+import { beerFormSchema, createBeer, type BeerFormValues } from "@/entities/beer"
 import { BreweryField } from "@/entities/brewery"
 import { ApiError } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
@@ -10,12 +10,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
 
-import {
-  createBeerSchema,
-  type CreateBeerValues,
-} from "../model/create-beer-schema"
-
-type FieldErrors = Partial<Record<keyof CreateBeerValues, string[]>>
+type FieldErrors = Partial<Record<keyof BeerFormValues, string[]>>
 
 export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -32,7 +27,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
       success,
       error,
       data: newBeer,
-    } = createBeerSchema.safeParse(Object.fromEntries(form))
+    } = beerFormSchema.safeParse(Object.fromEntries(form))
     if (!success) {
       setFieldErrors(z.flattenError(error).fieldErrors)
       return

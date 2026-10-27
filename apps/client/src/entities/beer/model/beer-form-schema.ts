@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const createBeerSchema = z.object({
+export const beerFormSchema = z.object({
   name: z
     .string()
     .trim()
@@ -26,4 +26,4 @@ export const createBeerSchema = z.object({
     .positive("Choisissez une brasserie"),
 })
 
-export type CreateBeerValues = z.infer<typeof createBeerSchema>
+export type BeerFormValues = z.infer<typeof beerFormSchema>
