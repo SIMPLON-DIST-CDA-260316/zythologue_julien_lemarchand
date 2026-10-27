@@ -1,9 +1,18 @@
+import { EllipsisIcon } from "lucide-react"
+import { useState } from "react"
 import { useSearchParams } from "react-router"
 
 import { formatAlcoholContent, type Beer } from "@/entities/beer"
 import { CreateBeerDialog } from "@/features/create-beer"
+import { EditBeerDialog } from "@/features/edit-beer"
 import type { ApiListResponse } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu"
 import { Skeleton } from "@/shared/ui/skeleton"
 import {
   Table,
@@ -72,13 +81,18 @@ function BeerList({
             <TableHead>Nom</TableHead>
             <TableHead>Brasserie</TableHead>
             <TableHead>Degré</TableHead>
+            <TableHead>
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {beersQuery.status === "loading" ? (
             <LoadingRows />
           ) : (
-            beersQuery.response.data.map((beer) => <BeerRow key={beer.id} beer={beer} />)
+            beersQuery.response.data.map((beer) => (
+              <BeerRow key={beer.id} beer={beer} onUpdated={beersQuery.reload} />
+            ))
           )}
         </TableBody>
       </Table>
@@ -93,14 +107,14 @@ function BeerList({
 function LoadingRows() {
   return Array.from({ length: PAGE_SIZE }, (_, i) => (
     <TableRow key={i}>
-      <TableCell colSpan={3}>
+      <TableCell colSpan={4}>
         <Skeleton className="h-5 w-full" />
       </TableCell>
     </TableRow>
   ))
 }
 
-function BeerRow({ beer }: { beer: Beer }) {
+function BeerRow({ beer, onUpdated }: { beer: Beer; onUpdated: () => void }) {
   return (
     <TableRow>
       <TableCell className="font-medium">{beer.name}</TableCell>
@@ -112,7 +126,43 @@ function BeerRow({ beer }: { beer: Beer }) {
           formatAlcoholContent(beer.alcohol_content)
         )}
       </TableCell>
+      <TableCell className="text-right">
+        <BeerActions beer={beer} onUpdated={onUpdated} />
+      </TableCell>
     </TableRow>
+  )
+}
+
+function BeerActions({ beer, onUpdated }: { beer: Beer; onUpdated: () => void }) {
+  const [editing, setEditing] = useState(false)
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={`Actions pour ${beer.name}`}
+            />
+          }
+        >
+          <EllipsisIcon />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => setEditing(true)}>
+            Modifier
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <EditBeerDialog
+        beer={beer}
+        open={editing}
+        onOpenChange={setEditing}
+        onUpdated={onUpdated}
+      />
+    </>
   )
 }
 
