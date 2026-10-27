@@ -40,7 +40,8 @@ router
    *     tags: [Beers]
    *     summary: récupère toutes les bières
    *     description: >
-   *       Renvoie chaque bière avec sa brasserie (id et nom), page par page.
+   *       Renvoie chaque bière avec sa brasserie (id et nom), page par page,
+   *       de la plus récente à la plus ancienne.
    *       Composition, points de vente et statistiques d'avis ne sont servis
    *       que par `GET /beers/{id}`.
    *     security:
