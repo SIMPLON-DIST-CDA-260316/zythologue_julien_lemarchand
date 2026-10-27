@@ -1,6 +1,6 @@
 # Zythologue — client
 
-Dashboard d'administration de Zythologue : inscription, connexion, déconnexion, tableau de bord.
+Dashboard d'administration de Zythologue : inscription, connexion, déconnexion, tableau de bord, liste des bières.
 
 ## Stack
 
@@ -33,27 +33,28 @@ pnpm --filter client dev
 | Chemin      | Page                          |
 | ----------- | ----------------------------- |
 | `/`         | tableau de bord               |
+| `/beers`    | liste des bières (`?page=`)   |
 | `/login`    | connexion                     |
 | `/register` | inscription                   |
 | `*`         | page introuvable              |
 
-Les routes sont déclarées dans `src/App.tsx`.
+Les routes sont déclarées dans `src/app/App.tsx`. Les pages connectées partagent le cadre `AppLayout` (sidebar et en-tête), dont le titre vient du `handle` de la route.
 
 ## Arborescence
 
 Le code suit [Feature-Sliced Design](https://feature-sliced.design/docs/get-started/overview). Les [couches](https://feature-sliced.design/docs/reference/layers) présentes, de la plus haute à la plus basse :
 
-1. `app/` : routeur (`App.tsx`), point d'entrée (`main.tsx`), styles globaux
-2. `pages/` : un dossier par page (dashboard, login, register, not-found)
+1. `app/` : routeur (`App.tsx`), gardes de routes (`routes/`), cadre des pages connectées (`layouts/`), point d'entrée (`main.tsx`), styles globaux
+2. `pages/` : un dossier par page (dashboard, beers, login, register, not-found)
 3. `features/` : actions utilisateur réutilisables (logout)
-4. `entities/` : objets métier (user : schémas email et mot de passe)
-5. `shared/` : code sans métier — `api/` (apiFetch, ApiError), `ui/` (composants shadcn), `lib/` (utilitaires)
+4. `entities/` : objets métier (user : session et schémas email et mot de passe ; beer : type et appel `GET /beers`)
+5. `shared/` : code sans métier — `api/` (apiFetch, ApiError, enveloppes `ApiResponse` et `ApiListResponse`), `ui/` (composants shadcn), `lib/` (utilitaires)
 
 Une couche n'importe que les couches situées en dessous : `pages` peut importer `features`, jamais l'inverse.
 
 Chaque [slice se découpe en segments](https://feature-sliced.design/docs/reference/slices-segments) `ui/` (composants), `model/` (schémas, données) et `api/` (appels réseau), et n'expose que ce que son `index.ts` exporte ([public API](https://feature-sliced.design/docs/reference/public-api)). On importe donc `@/pages/login`, jamais `@/pages/login/ui/LoginForm`. À l'intérieur d'un slice, les imports sont relatifs.
 
-Pas de couche `widgets/` : un bloc propre à une page reste dans la page (les composants du dashboard sont dans `pages/dashboard/ui/`). On ne descend un bloc d'une couche que lorsqu'une deuxième page en a besoin.
+Pas de couche `widgets/` : un bloc propre à une page reste dans la page (les composants du dashboard sont dans `pages/dashboard/ui/`). On ne descend un bloc d'une couche que lorsqu'une deuxième page en a besoin. La sidebar, partagée par plusieurs pages et dépendante de `entities` et `features`, est dans `app/layouts/`, comme le recommande le [guide FSD des layouts](https://feature-sliced.design/docs/guides/examples/page-layout).
 
 `components.json` installe les composants shadcn dans `shared/ui/` (`pnpm exec shadcn add <composant>`). `shared/ui/` n'a pas d'`index.ts` : on importe chaque composant par son fichier, `@/shared/ui/button`.
 
