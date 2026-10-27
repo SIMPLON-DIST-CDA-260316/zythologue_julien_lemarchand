@@ -48,7 +48,7 @@ Le code suit [Feature-Sliced Design](https://feature-sliced.design/docs/get-star
 2. `pages/` : un dossier par page (dashboard, beers, login, register, not-found)
 3. `features/` : actions utilisateur réutilisables (logout)
 4. `entities/` : objets métier (user : session et schémas email et mot de passe ; beer : type et appel `GET /beers`)
-5. `shared/` : code sans métier — `api/` (apiFetch, ApiError), `ui/` (composants shadcn), `lib/` (utilitaires)
+5. `shared/` : code sans métier — `api/` (apiFetch, ApiError, enveloppes `ApiResponse` et `ApiListResponse`), `ui/` (composants shadcn), `lib/` (utilitaires)
 
 Une couche n'importe que les couches situées en dessous : `pages` peut importer `features`, jamais l'inverse.
 
