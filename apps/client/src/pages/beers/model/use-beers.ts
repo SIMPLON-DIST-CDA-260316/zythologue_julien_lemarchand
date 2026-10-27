@@ -3,12 +3,12 @@ import { useEffect, useState } from "react"
 import { getBeers, type Beer } from "@/entities/beer"
 import type { ApiListResponse } from "@/shared/api"
 
-type Result =
+type FetchResult =
   | { pageNumber: number; status: "success"; response: ApiListResponse<Beer> }
   | { pageNumber: number; status: "error" }
 
 export function useBeers(pageNumber: number) {
-  const [result, setResult] = useState<Result | null>(null)
+  const [lastResult, setLastResult] = useState<FetchResult | null>(null)
 
   useEffect(() => {
     // Sans ça, la réponse d'une page quittée peut arriver après la suivante
@@ -16,15 +16,14 @@ export function useBeers(pageNumber: number) {
     const controller = new AbortController()
 
     getBeers(pageNumber, controller.signal)
-      .then((response) => setResult({ pageNumber, status: "success", response }))
+      .then((response) => setLastResult({ pageNumber, status: "success", response }))
       .catch(() => {
-        if (!controller.signal.aborted) setResult({ pageNumber, status: "error" })
+        if (!controller.signal.aborted) setLastResult({ pageNumber, status: "error" })
       })
 
     return () => controller.abort()
   }, [pageNumber])
 
-  // `result` est encore celui de la page précédente tant que la nouvelle charge.
-  if (result?.pageNumber !== pageNumber) return { status: "loading" } as const
-  return result
+  if (lastResult?.pageNumber !== pageNumber) return { status: "loading" } as const
+  return lastResult
 }

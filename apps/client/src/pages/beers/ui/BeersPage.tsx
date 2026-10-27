@@ -18,13 +18,13 @@ export default function BeersPage() {
   // Dans l'URL plutôt qu'en state : F5 et « précédent » gardent la page.
   const [searchParams, setSearchParams] = useSearchParams()
   const pageNumber = Number(searchParams.get("page")) || 1
-  const result = useBeers(pageNumber)
+  const beersQuery = useBeers(pageNumber)
 
   function goToPage(target: number) {
     setSearchParams({ page: String(target) })
   }
 
-  if (result.status === "error") {
+  if (beersQuery.status === "error") {
     return (
       <p className="px-4 py-6 text-sm text-destructive lg:px-6">
         Impossible de charger les bières. Réessayez plus tard.
@@ -32,7 +32,7 @@ export default function BeersPage() {
     )
   }
 
-  if (result.status === "success" && result.response.meta.total === 0) {
+  if (beersQuery.status === "success" && beersQuery.response.meta.total === 0) {
     return (
       <p className="px-4 py-6 text-sm text-muted-foreground lg:px-6">
         Aucune bière pour le moment.
@@ -51,7 +51,7 @@ export default function BeersPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {result.status === "loading"
+          {beersQuery.status === "loading"
             ? Array.from({ length: 5 }, (_, i) => (
                 <TableRow key={i}>
                   <TableCell colSpan={3}>
@@ -59,7 +59,7 @@ export default function BeersPage() {
                   </TableCell>
                 </TableRow>
               ))
-            : result.response.data.map((beer) => (
+            : beersQuery.response.data.map((beer) => (
                 <TableRow key={beer.id}>
                   <TableCell className="font-medium">{beer.name}</TableCell>
                   <TableCell>{beer.brewery.name}</TableCell>
@@ -75,10 +75,10 @@ export default function BeersPage() {
         </TableBody>
       </Table>
 
-      {result.status === "success" && (
+      {beersQuery.status === "success" && (
         <Pagination
           page={pageNumber}
-          totalPages={Math.ceil(result.response.meta.total / result.response.meta.size)}
+          totalPages={Math.ceil(beersQuery.response.meta.total / beersQuery.response.meta.size)}
           onPageChange={goToPage}
         />
       )}
