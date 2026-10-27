@@ -27,3 +27,5 @@ export const beerFormSchema = z.object({
 })
 
 export type BeerFormValues = z.infer<typeof beerFormSchema>
+
+export type BeerFormErrors = Partial<Record<keyof BeerFormValues, string>>

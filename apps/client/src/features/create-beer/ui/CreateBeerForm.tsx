@@ -1,19 +1,19 @@
 import { useState } from "react"
 import { toast } from "sonner"
 
-import { beerFormSchema, createBeer, type BeerFormValues } from "@/entities/beer"
-import { BreweryField } from "@/entities/brewery"
+import {
+  BeerFormFields,
+  beerFormSchema,
+  createBeer,
+  type BeerFormErrors,
+} from "@/entities/beer"
 import { ApiError } from "@/shared/api"
 import { firstFieldErrors } from "@/shared/lib/first-field-errors"
 import { Button } from "@/shared/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field"
-import { Input } from "@/shared/ui/input"
-import { Textarea } from "@/shared/ui/textarea"
-
-type FieldErrors = Partial<Record<keyof BeerFormValues, string>>
+import { Field, FieldError, FieldGroup } from "@/shared/ui/field"
 
 export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [fieldErrors, setFieldErrors] = useState<BeerFormErrors>({})
   const [submitError, setSubmitError] = useState<string>()
   const [pending, setPending] = useState(false)
 
@@ -53,38 +53,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
   return (
     <form onSubmit={handleSubmit} noValidate>
       <FieldGroup>
-        <Field data-invalid={!!fieldErrors.name}>
-          <FieldLabel htmlFor="name">Nom</FieldLabel>
-          <Input
-            id="name"
-            name="name"
-            maxLength={120}
-            required
-            aria-invalid={!!fieldErrors.name}
-          />
-          <FieldError>{fieldErrors.name}</FieldError>
-        </Field>
-
-        <BreweryField errorMessage={fieldErrors.brewery_id} />
-
-        <Field data-invalid={!!fieldErrors.alcohol_content}>
-          <FieldLabel htmlFor="alcohol_content">Degré (facultatif)</FieldLabel>
-          <Input
-            id="alcohol_content"
-            name="alcohol_content"
-            type="number"
-            step="0.01"
-            min="0"
-            max="99.99"
-            aria-invalid={!!fieldErrors.alcohol_content}
-          />
-          <FieldError>{fieldErrors.alcohol_content}</FieldError>
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="description">Description (facultatif)</FieldLabel>
-          <Textarea id="description" name="description" />
-        </Field>
+        <BeerFormFields fieldErrors={fieldErrors} />
 
         <Field>
           <FieldError>{submitError}</FieldError>
