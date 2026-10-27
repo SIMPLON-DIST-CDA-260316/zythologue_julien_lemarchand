@@ -9,7 +9,13 @@ import {
 
 import { useBreweries } from "../model/use-breweries"
 
-export function BreweryField({ errorMessage }: { errorMessage?: string }) {
+export function BreweryField({
+  defaultValue,
+  errorMessage,
+}: {
+  defaultValue?: number
+  errorMessage?: string
+}) {
   const breweriesQuery = useBreweries()
   const items =
     breweriesQuery.status === "success"
@@ -25,6 +31,7 @@ export function BreweryField({ errorMessage }: { errorMessage?: string }) {
       <Select
         name="brewery_id"
         items={items}
+        defaultValue={defaultValue}
         disabled={breweriesQuery.status !== "success"}
       >
         <SelectTrigger id="brewery_id" aria-invalid={!!errorMessage}>
