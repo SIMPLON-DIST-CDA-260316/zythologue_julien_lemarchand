@@ -66,7 +66,10 @@ Dans `apps/client/src/<couche>/<slice>/` (voir le [README client](apps/client/RE
 | `api/` | appels à l'API, via `apiFetch` (`login.ts`) |
 | `index.ts` | public API du slice : seul point d'import depuis l'extérieur |
 
-Les composants shadcn (`shared/ui/`) gardent le nom kebab-case que génère le CLI.
+Un fichier qui exporte un composant React est en PascalCase, quel que soit son
+segment (`model/AuthProvider.tsx`, `app/layouts/AppSidebar.tsx`). Les autres
+sont en kebab-case (`use-beers.ts`, `login-schema.ts`). Seuls les composants
+shadcn (`shared/ui/`) gardent le kebab-case que génère le CLI.
 
 ## Vérifier avant de committer
 

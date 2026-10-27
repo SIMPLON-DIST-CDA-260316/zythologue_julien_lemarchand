@@ -1,6 +1,6 @@
-import { ChartAreaInteractive } from "./chart-area-interactive"
-import { DataTable } from "./data-table"
-import { SectionCards } from "./section-cards"
+import { ChartAreaInteractive } from "./ChartAreaInteractive"
+import { DataTable } from "./DataTable"
+import { SectionCards } from "./SectionCards"
 
 import data from "../model/data.json"
 

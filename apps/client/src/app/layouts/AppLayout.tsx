@@ -2,8 +2,8 @@ import { Outlet, useMatches } from "react-router"
 
 import { SidebarInset, SidebarProvider } from "@/shared/ui/sidebar"
 
-import { AppSidebar } from "./app-sidebar"
-import { SiteHeader } from "./site-header"
+import { AppSidebar } from "./AppSidebar"
+import { SiteHeader } from "./SiteHeader"
 
 export type RouteHandle = { title: string }
 
