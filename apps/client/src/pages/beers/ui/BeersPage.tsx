@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router"
 
 import { formatAlcoholContent, type Beer } from "@/entities/beer"
+import { CreateBeerDialog } from "@/features/create-beer"
 import type { ApiListResponse } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
 import { Skeleton } from "@/shared/ui/skeleton"
@@ -25,9 +26,31 @@ export default function BeersPage() {
     setSearchParams({ page: String(target) })
   }
 
+  function handleCreated() {
+    if (pageNumber === 1) beersQuery.reload()
+    else goToPage(1)
+  }
+
+  return (
+    <div className="flex flex-col gap-4 px-4 py-6 lg:px-6">
+      <div className="flex justify-end">
+        <CreateBeerDialog onCreated={handleCreated} />
+      </div>
+      <BeerList beersQuery={beersQuery} onPageChange={goToPage} />
+    </div>
+  )
+}
+
+function BeerList({
+  beersQuery,
+  onPageChange,
+}: {
+  beersQuery: ReturnType<typeof useBeers>
+  onPageChange: (page: number) => void
+}) {
   if (beersQuery.status === "error") {
     return (
-      <p className="px-4 py-6 text-sm text-destructive lg:px-6">
+      <p className="text-sm text-destructive">
         Impossible de charger les bières. Réessayez plus tard.
       </p>
     )
@@ -35,14 +58,14 @@ export default function BeersPage() {
 
   if (beersQuery.status === "success" && beersQuery.response.meta.total === 0) {
     return (
-      <p className="px-4 py-6 text-sm text-muted-foreground lg:px-6">
+      <p className="text-sm text-muted-foreground">
         Aucune bière pour le moment.
       </p>
     )
   }
 
   return (
-    <div className="flex flex-col gap-4 px-4 py-6 lg:px-6">
+    <>
       <Table>
         <TableHeader>
           <TableRow>
@@ -61,9 +84,9 @@ export default function BeersPage() {
       </Table>
 
       {beersQuery.status === "success" && (
-        <Pagination meta={beersQuery.response.meta} onPageChange={goToPage} />
+        <Pagination meta={beersQuery.response.meta} onPageChange={onPageChange} />
       )}
-    </div>
+    </>
   )
 }
 

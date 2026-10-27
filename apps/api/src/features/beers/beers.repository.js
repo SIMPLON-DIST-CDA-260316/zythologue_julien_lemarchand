@@ -128,7 +128,9 @@ export default {
            ) AS brewery
          FROM beer b
          JOIN brewery br ON br.id = b.brewery_id
-         ORDER BY b.id
+         -- id départage les created_at égaux (le seed insère par lots) :
+         -- sans ordre total, OFFSET peut sauter ou répéter une bière.
+         ORDER BY b.created_at DESC, b.id DESC
          LIMIT $1 OFFSET $2;`,
         [limit, offset],
       ),

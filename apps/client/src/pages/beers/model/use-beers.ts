@@ -13,6 +13,8 @@ type FetchResult =
 
 export function useBeers(pageNumber: number) {
   const [lastResult, setLastResult] = useState<FetchResult | null>(null)
+  // Sa valeur ne compte pas : chaque changement relance l'effet.
+  const [reloadTrigger, setReloadTrigger] = useState(0)
 
   useEffect(() => {
     // Sans ça, la réponse d'une page quittée peut arriver après la suivante
@@ -26,8 +28,10 @@ export function useBeers(pageNumber: number) {
       })
 
     return () => controller.abort()
-  }, [pageNumber])
+  }, [pageNumber, reloadTrigger])
 
-  if (lastResult?.pageNumber !== pageNumber) return { status: "loading" } as const
-  return lastResult
+  const reload = () => setReloadTrigger((trigger) => trigger + 1)
+
+  if (lastResult?.pageNumber !== pageNumber) return { status: "loading", reload } as const
+  return { ...lastResult, reload }
 }
