@@ -1,16 +1,16 @@
 import { useState } from "react"
 import { toast } from "sonner"
-import { z } from "zod"
 
 import { beerFormSchema, createBeer, type BeerFormValues } from "@/entities/beer"
 import { BreweryField } from "@/entities/brewery"
 import { ApiError } from "@/shared/api"
+import { firstFieldErrors } from "@/shared/lib/first-field-errors"
 import { Button } from "@/shared/ui/button"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
 import { Textarea } from "@/shared/ui/textarea"
 
-type FieldErrors = Partial<Record<keyof BeerFormValues, string[]>>
+type FieldErrors = Partial<Record<keyof BeerFormValues, string>>
 
 export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -29,7 +29,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
       data: newBeer,
     } = beerFormSchema.safeParse(Object.fromEntries(form))
     if (!success) {
-      setFieldErrors(z.flattenError(error).fieldErrors)
+      setFieldErrors(firstFieldErrors(error))
       return
     }
     setFieldErrors({})
@@ -41,7 +41,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
       onCreated()
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setFieldErrors({ name: ["Cette brasserie a déjà une bière de ce nom"] })
+        setFieldErrors({ name: "Cette brasserie a déjà une bière de ce nom" })
       } else {
         setSubmitError("Création impossible, réessayez plus tard")
       }
@@ -62,10 +62,10 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
             required
             aria-invalid={!!fieldErrors.name}
           />
-          <FieldError>{fieldErrors.name?.[0]}</FieldError>
+          <FieldError>{fieldErrors.name}</FieldError>
         </Field>
 
-        <BreweryField errorMessage={fieldErrors.brewery_id?.[0]} />
+        <BreweryField errorMessage={fieldErrors.brewery_id} />
 
         <Field data-invalid={!!fieldErrors.alcohol_content}>
           <FieldLabel htmlFor="alcohol_content">Degré (facultatif)</FieldLabel>
@@ -78,7 +78,7 @@ export function CreateBeerForm({ onCreated }: { onCreated: () => void }) {
             max="99.99"
             aria-invalid={!!fieldErrors.alcohol_content}
           />
-          <FieldError>{fieldErrors.alcohol_content?.[0]}</FieldError>
+          <FieldError>{fieldErrors.alcohol_content}</FieldError>
         </Field>
 
         <Field>

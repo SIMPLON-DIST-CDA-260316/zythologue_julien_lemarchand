@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
-import { z } from "zod"
 
+import { firstFieldErrors } from "@/shared/lib/first-field-errors"
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/shared/ui/button"
 import {
@@ -25,7 +25,7 @@ import { ApiError } from "@/shared/api"
 import { register } from "../api/register"
 import { registerSchema, type RegisterValues } from "../model/register-schema"
 
-type FieldErrors = Partial<Record<keyof RegisterValues, string[]>>
+type FieldErrors = Partial<Record<keyof RegisterValues, string>>
 
 export function RegisterForm({
   className,
@@ -48,7 +48,7 @@ export function RegisterForm({
       data: newUser,
     } = registerSchema.safeParse(Object.fromEntries(form))
     if (!success) {
-      setFieldErrors(z.flattenError(error).fieldErrors)
+      setFieldErrors(firstFieldErrors(error))
       return
     }
     setFieldErrors({})
@@ -60,7 +60,7 @@ export function RegisterForm({
       navigate("/login")
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
-        setFieldErrors({ email: ["Cet email est déjà utilisé"] })
+        setFieldErrors({ email: "Cet email est déjà utilisé" })
       } else {
         setSubmitError("Inscription impossible, réessayez plus tard")
       }
@@ -89,7 +89,7 @@ export function RegisterForm({
                   required
                   aria-invalid={!!fieldErrors.email}
                 />
-                <FieldError>{fieldErrors.email?.[0]}</FieldError>
+                <FieldError>{fieldErrors.email}</FieldError>
               </Field>
               <Field data-invalid={!!fieldErrors.password}>
                 <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
@@ -104,7 +104,7 @@ export function RegisterForm({
                   Au moins 8 caractères, dont un chiffre et un caractère
                   spécial.
                 </FieldDescription>
-                <FieldError>{fieldErrors.password?.[0]}</FieldError>
+                <FieldError>{fieldErrors.password}</FieldError>
               </Field>
               <Field>
                 <FieldError>{submitError}</FieldError>
