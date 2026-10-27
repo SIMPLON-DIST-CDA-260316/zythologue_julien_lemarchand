@@ -17,8 +17,8 @@ import { useBeers } from "../model/use-beers"
 export default function BeersPage() {
   // Dans l'URL plutôt qu'en state : F5 et « précédent » gardent la page.
   const [searchParams, setSearchParams] = useSearchParams()
-  const page = Number(searchParams.get("page")) || 1
-  const result = useBeers(page)
+  const pageNumber = Number(searchParams.get("page")) || 1
+  const result = useBeers(pageNumber)
 
   function goToPage(target: number) {
     setSearchParams({ page: String(target) })
@@ -77,7 +77,7 @@ export default function BeersPage() {
 
       {result.status === "success" && (
         <Pagination
-          page={page}
+          page={pageNumber}
           totalPages={Math.ceil(result.response.meta.total / result.response.meta.size)}
           onPageChange={goToPage}
         />

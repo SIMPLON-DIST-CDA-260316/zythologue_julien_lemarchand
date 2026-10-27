@@ -3,9 +3,9 @@ import { apiFetch, type ApiListResponse } from "@/shared/api"
 import type { Beer } from "../model/beer"
 
 export async function getBeers(
-  page: number,
+  pageNumber: number,
   signal?: AbortSignal,
 ): Promise<ApiListResponse<Beer>> {
-  const res = await apiFetch(`/beers?page=${page}`, { signal })
+  const res = await apiFetch(`/beers?page=${pageNumber}`, { signal })
   return res.json()
 }
