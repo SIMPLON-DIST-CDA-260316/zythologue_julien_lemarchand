@@ -9,6 +9,13 @@ export type Beer = {
   brewery: { id: number; name: string }
 }
 
+export type NewBeer = {
+  name: string
+  description?: string
+  alcohol_content?: number
+  brewery_id: number
+}
+
 const percentFormat = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 })
 
 export function formatAlcoholContent(alcoholContent: number) {
