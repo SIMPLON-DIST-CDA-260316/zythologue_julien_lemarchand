@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/shared/ui/table"
 
-import { useBeers } from "../model/use-beers"
+import { PAGE_SIZE, useBeers } from "../model/use-beers"
 
 export default function BeersPage() {
   // Dans l'URL plutôt qu'en state : F5 et « précédent » gardent la page.
@@ -68,7 +68,7 @@ export default function BeersPage() {
 }
 
 function LoadingRows() {
-  return Array.from({ length: 5 }, (_, i) => (
+  return Array.from({ length: PAGE_SIZE }, (_, i) => (
     <TableRow key={i}>
       <TableCell colSpan={3}>
         <Skeleton className="h-5 w-full" />

@@ -3,6 +3,10 @@ import { useEffect, useState } from "react"
 import { getBeers, type Beer } from "@/entities/beer"
 import type { ApiListResponse } from "@/shared/api"
 
+// Fixée ici plutôt que laissée au défaut de l'API : le squelette de
+// chargement doit avoir autant de lignes que la page qui arrive.
+export const PAGE_SIZE = 12
+
 type FetchResult =
   | { pageNumber: number; status: "success"; response: ApiListResponse<Beer> }
   | { pageNumber: number; status: "error" }
@@ -15,7 +19,7 @@ export function useBeers(pageNumber: number) {
     // et l'écraser.
     const controller = new AbortController()
 
-    getBeers(pageNumber, controller.signal)
+    getBeers({ pageNumber, pageSize: PAGE_SIZE }, controller.signal)
       .then((response) => setLastResult({ pageNumber, status: "success", response }))
       .catch(() => {
         if (!controller.signal.aborted) setLastResult({ pageNumber, status: "error" })
