@@ -11,8 +11,12 @@ import { ApiResponse } from "#http/apiResponse.js";
 // `nullable` se déclare ici, c'est une propriété de la colonne.
 export const UserFields = {
   Id: Id.meta({ example: 1 }),
+  // Pas `z.email().trim()` : le format y est contrôlé avant le trim.
   Email: z
-    .email({ pattern: z.regexes.rfc5322Email }) // https://www.rfc-editor.org/info/rfc5322/
+    .string()
+    .trim()
+    .toLowerCase()
+    .pipe(z.email({ pattern: z.regexes.rfc5322Email })) // https://www.rfc-editor.org/info/rfc5322/
     .describe("unique par utilisateur, la comparaison ignore la casse")
     .meta({ example: "user@domain.com" }),
   HashedPassword: z

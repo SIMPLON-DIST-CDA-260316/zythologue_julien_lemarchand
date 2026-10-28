@@ -50,6 +50,9 @@ sequenceDiagram
 - Validation stricte du body : le schéma `NewUser` (Zod) n'accepte que
   `email` et `password` — toute clé en plus ou en moins est rejetée avant
   d'atteindre le controller.
+- `validateBody` normalise aussi l'email (espaces retirés, minuscules) :
+  `Bruno@zytho.test` et `bruno@zytho.test` désignent le même compte, et la
+  contrainte `UNIQUE` les traite comme un doublon (409).
 - Le mot de passe est haché (Argon2, `auth.lib.js`) à chaque création,
   sans condition — sur `PATCH /users/:id`, le hash n'a lieu que si le
   mot de passe fait partie des champs modifiés.

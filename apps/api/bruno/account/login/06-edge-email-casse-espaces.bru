@@ -1,0 +1,37 @@
+meta {
+  name: edge - email en majuscules et entouré d'espaces
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "{{emailVariant}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("emailVariant", `  ${bru.getEnvVar("testEmail").toUpperCase()} `);
+}
+
+assert {
+  res.status: eq 200
+  res.headers['set-cookie'][0]: contains token=
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  EDGE — l'email est normalisé (espaces retirés, minuscules) avant la
+  recherche : la casse tapée ne bloque pas la connexion
+}
