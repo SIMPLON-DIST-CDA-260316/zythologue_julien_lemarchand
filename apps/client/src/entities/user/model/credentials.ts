@@ -1,9 +1,15 @@
 import { z } from "zod"
 
-export const emailSchema = z.email({
-  pattern: z.regexes.rfc5322Email,
-  error: "Adresse email invalide",
-})
+export const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .pipe(
+    z.email({
+      pattern: z.regexes.rfc5322Email,
+      error: "Adresse email invalide",
+    }),
+  )
 
 // Règles reprises du schéma `Password` de l'API (users.schemas.js).
 export const passwordSchema = z

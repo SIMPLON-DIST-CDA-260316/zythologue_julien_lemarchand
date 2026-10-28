@@ -50,10 +50,12 @@ sequenceDiagram
 ## Notes
 
 - Chaque participant porte sa couche FSD. `registerSchema` reste dans la page
-  `register` mais assemble `emailSchema` et `passwordSchema` de l'entité
-  `user`, partagés avec le login. `apiFetch` (`shared/api`) n'est pas
-  dessiné : `register` s'en sert et il lève une `ApiError` si la réponse
-  n'est pas `ok`.
+  `register` mais assemble `emailSchema`, partagé avec le login, et
+  `passwordSchema`, propre à l'inscription, de l'entité `user`. `apiFetch`
+  (`shared/api`) n'est pas dessiné : `register` s'en sert et il lève une
+  `ApiError` si la réponse n'est pas `ok`.
+- L'email est normalisé (espaces retirés, minuscules) dès le `safeParse`,
+  comme côté API.
 - La barre d'activation de `RegisterForm` correspond à `pending` : le bouton
   reste désactivé de l'appel jusqu'au `finally`.
 - Pas de connexion automatique : `POST /users` ne pose pas de cookie.

@@ -53,6 +53,9 @@ sequenceDiagram
 
 ## Notes
 
+- `validateBody(Login)` normalise l'email (espaces retirés, minuscules)
+  avant `findByEmail` : la casse tapée ne bloque pas la connexion. Le mot
+  de passe n'est que non vide, ses règles de format valent pour la création.
 - Le mot de passe est vérifié avec Argon2 (`verifyPassword`, `auth.lib.js`)
   contre le hash stocké en base — jamais de comparaison en clair.
 - Le JWT (`generateToken`, payload `{ sub: id }`) expire après 15 minutes ;

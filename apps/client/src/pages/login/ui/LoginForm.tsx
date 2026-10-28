@@ -13,7 +13,6 @@ import {
 } from "@/shared/ui/card"
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -102,10 +101,6 @@ export function LoginForm({
                   required
                   aria-invalid={!!fieldErrors.password || credentialsRejected}
                 />
-                <FieldDescription>
-                  Au moins 8 caractères, dont un chiffre et un caractère
-                  spécial.
-                </FieldDescription>
                 <FieldError>{fieldErrors.password}</FieldError>
               </Field>
               <Field>

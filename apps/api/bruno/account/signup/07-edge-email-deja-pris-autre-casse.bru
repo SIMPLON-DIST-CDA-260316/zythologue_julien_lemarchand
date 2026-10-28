@@ -1,0 +1,30 @@
+meta {
+  name: Edge - email déjà pris, autre casse
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+}
+
+body:json {
+  {
+    "email": "{{emailVariant}}",
+    "password": "{{testPassword}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("emailVariant", bru.getEnvVar("testEmail").toUpperCase());
+}
+
+assert {
+  res.status: eq 409
+}
+
+docs {
+  EDGE — même email que 01-nominal-email-fixe en majuscules → 409, pas de
+  second compte
+}
