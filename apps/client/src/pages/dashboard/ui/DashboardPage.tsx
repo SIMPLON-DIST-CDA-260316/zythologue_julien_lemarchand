@@ -1,8 +1,5 @@
 import { ChartAreaInteractive } from "./ChartAreaInteractive"
-import { DataTable } from "./DataTable"
 import { SectionCards } from "./SectionCards"
-
-import data from "../model/data.json"
 
 // Page du block shadcn dashboard-01 : la CLI ne la génère pas pour Vite
 // (pas de routage par fichiers), elle est recopiée depuis le registre.
@@ -15,7 +12,6 @@ export default function DashboardPage() {
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive />
           </div>
-          <DataTable data={data} />
         </div>
       </div>
     </div>
