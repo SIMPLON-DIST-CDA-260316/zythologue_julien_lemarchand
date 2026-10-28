@@ -2,7 +2,7 @@
 
 Du menu « ⋯ » d'une ligne à la liste rechargée :
 
-- [`BeersPage.tsx`](../../src/pages/beers/ui/BeersPage.tsx) (`BeerActions`)
+- [`BeerActions.tsx`](../../src/pages/beers/ui/BeerActions.tsx)
 - [`EditBeerDialog.tsx`](../../src/features/edit-beer/ui/EditBeerDialog.tsx)
 - [`EditBeerForm.tsx`](../../src/features/edit-beer/ui/EditBeerForm.tsx)
 - [`get-changed-fields.ts`](../../src/features/edit-beer/model/get-changed-fields.ts)
@@ -79,8 +79,9 @@ sequenceDiagram
   au schéma mais oublié ici ne compile pas.
 - C'est `BeerActions` qui tient `open` : le menu se démonte en se fermant, il
   ne peut pas porter le `DialogTrigger`.
-- Chaque participant porte sa couche FSD. Non dessinés : `BeerRow`, qui ne
-  fait que transmettre `onUpdated` de `BeersPage` à `BeerActions`,
+- Chaque participant porte sa couche FSD. Non dessinés : `getBeerColumns`
+  (`columns.tsx`), qui transmet `onUpdated` de `BeersPage` à `BeerActions`
+  dans la cellule d'actions,
   `BeerFormFields`, qui affiche les champs, et `apiFetch` (`shared/api`), dont
   `updateBeer` se sert et qui lève une `ApiError` si la réponse n'est pas `ok`.
 - Le rechargement suit la [séquence de liste](list-beers-sequence.md).

@@ -1,3 +1,4 @@
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/shared/ui/button"
@@ -21,7 +22,10 @@ export function CreateBeerDialog({ onCreated }: { onCreated: () => void }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>Ajouter une bière</DialogTrigger>
+      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+        <PlusIcon data-icon="inline-start" />
+        Ajouter une bière
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Ajouter une bière</DialogTitle>

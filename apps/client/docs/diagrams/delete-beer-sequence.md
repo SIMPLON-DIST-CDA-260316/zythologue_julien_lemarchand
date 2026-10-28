@@ -2,7 +2,8 @@
 
 Du menu « ⋯ » d'une ligne à la liste rechargée :
 
-- [`BeersPage.tsx`](../../src/pages/beers/ui/BeersPage.tsx) (`BeerActions`, `handleDeleted`)
+- [`BeersPage.tsx`](../../src/pages/beers/ui/BeersPage.tsx) (`handleDeleted`)
+- [`BeerActions.tsx`](../../src/pages/beers/ui/BeerActions.tsx)
 - [`DeleteBeerDialog.tsx`](../../src/features/delete-beer/ui/DeleteBeerDialog.tsx)
 - [`delete-beer.ts`](../../src/entities/beer/api/delete-beer.ts)
 
@@ -66,8 +67,9 @@ sequenceDiagram
   dernière page afficherait une page vide.
 - Côté API, la suppression part en cascade : avis, favoris, photos,
   compositions, catégorisations et mises en vente liés à la bière.
-- Chaque participant porte sa couche FSD. Non dessinés : `BeerRow`, qui ne
-  fait que transmettre `onDeleted` de `BeersPage` à `BeerActions`, et
+- Chaque participant porte sa couche FSD. Non dessinés : `getBeerColumns`
+  (`columns.tsx`), qui transmet `onDeleted` de `BeersPage` à `BeerActions`
+  dans la cellule d'actions, et
   `apiFetch` (`shared/api`), dont `deleteBeer` se sert et qui lève une
   `ApiError` si la réponse n'est pas `ok`.
 - Le rechargement suit la [séquence de liste](list-beers-sequence.md).

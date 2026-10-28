@@ -1,8 +1,9 @@
 # Séquence — liste des bières côté client (livré)
 
-De l'URL `/beers?page=N` au tableau paginé :
+De l'URL `/beers?page=N&size=S` au tableau paginé :
 
 - [`BeersPage.tsx`](../../src/pages/beers/ui/BeersPage.tsx)
+- [`columns.tsx`](../../src/pages/beers/ui/columns.tsx)
 - [`use-beers.ts`](../../src/pages/beers/model/use-beers.ts)
 - [`get-beers.ts`](../../src/entities/beer/api/get-beers.ts)
 
@@ -15,14 +16,14 @@ sequenceDiagram
     participant A as getBeers (entity beer)
     participant API as API
 
-    U->>P: ouvre /beers?page=N
-    P->>P: pageNumber lu dans l'URL (1 par défaut)
-    P->>H: useBeers(pageNumber)
+    U->>P: ouvre /beers?page=N&size=S
+    P->>P: page et taille lues dans l'URL (1 et 12 par défaut)
+    P->>H: useBeers(pageNumber, pageSize)
     H-->>P: status loading
-    P-->>U: 12 lignes squelette
+    P-->>U: S lignes squelette
 
-    H->>+A: getBeers({ pageNumber, pageSize: 12 }, signal)
-    A->>API: GET /beers?page=N&size=12 (cookie envoyé par le navigateur)
+    H->>+A: getBeers({ pageNumber, pageSize }, signal)
+    A->>API: GET /beers?page=N&size=S (cookie envoyé par le navigateur)
 
     break API injoignable, 401 ou 500
         API-->>A: erreur
@@ -41,9 +42,9 @@ sequenceDiagram
         P-->>U: tableau Nom / Brasserie / Degré / ⋯ et pagination
     end
 
-    U->>P: clic « Suivant »
-    P->>P: setSearchParams({ page: N + 1 })
-    Note over P,API: nouveau pageNumber, l'effet de useBeers annule la requête en cours et relance le chargement
+    U->>P: clic ⏮ ◀ ▶ ⏭ ou choix « Bières par page »
+    P->>P: TanStack calcule la pagination, setSearchParams({ page, size })
+    Note over P,API: nouvelle page ou taille, l'effet de useBeers annule la requête en cours et relance le chargement
 ```
 
 ## Notes
@@ -51,8 +52,16 @@ sequenceDiagram
 - La barre d'activation de `getBeers` montre l'attente de la réponse.
   `useBeers` n'en a pas : l'effet lance la requête et se termine aussitôt,
   la réponse revient plus tard par un `setLastResult`.
-- La page est dans l'URL et non dans un state : F5 et « précédent » la
-  conservent.
+- La page et la taille sont dans l'URL et non dans un state : F5 et
+  « précédent » les conservent. Une taille hors de `PAGE_SIZES` (12, 24, 48)
+  revient à 12.
+- Le tableau est un Data Table TanStack non dessiné : `useTable` reçoit les
+  colonnes de `getBeerColumns` et la pagination lue dans l'URL. Avec
+  `manualPagination`, il ne redécoupe pas la page reçue, et `rowCount:
+  meta.total` lui donne le nombre de pages. Un clic passe par
+  `onPaginationChange`, qui écrit dans l'URL.
+- Changer la taille recalcule la page pour garder visible la première bière
+  affichée : de la page 2 en 12, on passe à la page 1 en 24.
 - `useBeers` passe un `AbortController` à `getBeers` : la réponse d'une page
   quittée ne peut pas écraser celle de la page suivante.
 - `reload()` relance la même requête sans changer de page. La
