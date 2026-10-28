@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router"
 
 import { formatAlcoholContent, type Beer } from "@/entities/beer"
 import { CreateBeerDialog } from "@/features/create-beer"
+import { DeleteBeerDialog } from "@/features/delete-beer"
 import { EditBeerDialog } from "@/features/edit-beer"
 import type { ApiListResponse } from "@/shared/api"
 import { Button } from "@/shared/ui/button"
@@ -40,12 +41,23 @@ export default function BeersPage() {
     else goToPage(1)
   }
 
+  function handleDeleted() {
+    const wasLastOnPage =
+      beersQuery.status === "success" && beersQuery.response.data.length === 1
+    if (wasLastOnPage && pageNumber > 1) goToPage(pageNumber - 1)
+    else beersQuery.reload()
+  }
+
   return (
     <div className="flex flex-col gap-4 px-4 py-6 lg:px-6">
       <div className="flex justify-end">
         <CreateBeerDialog onCreated={handleCreated} />
       </div>
-      <BeerList beersQuery={beersQuery} onPageChange={goToPage} />
+      <BeerList
+        beersQuery={beersQuery}
+        onPageChange={goToPage}
+        onBeerDeleted={handleDeleted}
+      />
     </div>
   )
 }
@@ -53,9 +65,11 @@ export default function BeersPage() {
 function BeerList({
   beersQuery,
   onPageChange,
+  onBeerDeleted,
 }: {
   beersQuery: ReturnType<typeof useBeers>
   onPageChange: (page: number) => void
+  onBeerDeleted: () => void
 }) {
   if (beersQuery.status === "error") {
     return (
@@ -91,7 +105,12 @@ function BeerList({
             <LoadingRows />
           ) : (
             beersQuery.response.data.map((beer) => (
-              <BeerRow key={beer.id} beer={beer} onUpdated={beersQuery.reload} />
+              <BeerRow
+                key={beer.id}
+                beer={beer}
+                onUpdated={beersQuery.reload}
+                onDeleted={onBeerDeleted}
+              />
             ))
           )}
         </TableBody>
@@ -114,7 +133,13 @@ function LoadingRows() {
   ))
 }
 
-function BeerRow({ beer, onUpdated }: { beer: Beer; onUpdated: () => void }) {
+type BeerRowProps = {
+  beer: Beer
+  onUpdated: () => void
+  onDeleted: () => void
+}
+
+function BeerRow({ beer, onUpdated, onDeleted }: BeerRowProps) {
   return (
     <TableRow>
       <TableCell className="font-medium">{beer.name}</TableCell>
@@ -127,14 +152,15 @@ function BeerRow({ beer, onUpdated }: { beer: Beer; onUpdated: () => void }) {
         )}
       </TableCell>
       <TableCell className="text-right">
-        <BeerActions beer={beer} onUpdated={onUpdated} />
+        <BeerActions beer={beer} onUpdated={onUpdated} onDeleted={onDeleted} />
       </TableCell>
     </TableRow>
   )
 }
 
-function BeerActions({ beer, onUpdated }: { beer: Beer; onUpdated: () => void }) {
+function BeerActions({ beer, onUpdated, onDeleted }: BeerRowProps) {
   const [editing, setEditing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   return (
     <>
@@ -154,6 +180,9 @@ function BeerActions({ beer, onUpdated }: { beer: Beer; onUpdated: () => void })
           <DropdownMenuItem onClick={() => setEditing(true)}>
             Modifier
           </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onClick={() => setDeleting(true)}>
+            Supprimer
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <EditBeerDialog
@@ -161,6 +190,12 @@ function BeerActions({ beer, onUpdated }: { beer: Beer; onUpdated: () => void })
         open={editing}
         onOpenChange={setEditing}
         onUpdated={onUpdated}
+      />
+      <DeleteBeerDialog
+        beer={beer}
+        open={deleting}
+        onOpenChange={setDeleting}
+        onDeleted={onDeleted}
       />
     </>
   )
