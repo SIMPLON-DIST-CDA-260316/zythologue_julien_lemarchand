@@ -1,7 +1,7 @@
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
-import { z } from "zod"
 
+import { firstFieldErrors } from "@/shared/lib/first-field-errors"
 import { cn } from "@/shared/lib/utils"
 import { Button } from "@/shared/ui/button"
 import {
@@ -24,7 +24,7 @@ import { ApiError } from "@/shared/api"
 import { loginSchema, type LoginValues } from "../model/login-schema"
 import { useLogin } from "../model/use-login"
 
-type FieldErrors = Partial<Record<keyof LoginValues, string[]>>
+type FieldErrors = Partial<Record<keyof LoginValues, string>>
 
 export function LoginForm({
   className,
@@ -33,12 +33,14 @@ export function LoginForm({
   const login = useLogin()
   const [submitError, setSubmitError] = useState<string>()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [credentialsRejected, setCredentialsRejected] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     // Sans ça, le navigateur recharge la page en soumettant le formulaire.
     event.preventDefault()
     setSubmitError(undefined)
+    setCredentialsRejected(false)
 
     const form = new FormData(event.currentTarget)
 
@@ -48,7 +50,7 @@ export function LoginForm({
       data: credentials,
     } = loginSchema.safeParse(Object.fromEntries(form))
     if (!success) {
-      setFieldErrors(z.flattenError(error).fieldErrors)
+      setFieldErrors(firstFieldErrors(error))
       return
     }
     setFieldErrors({})
@@ -59,7 +61,7 @@ export function LoginForm({
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         setSubmitError("Email ou mot de passe incorrect")
-        setFieldErrors({ email: [], password: [] })
+        setCredentialsRejected(true)
       } else {
         setSubmitError("Connexion impossible, réessayez plus tard")
       }
@@ -79,7 +81,7 @@ export function LoginForm({
           {/* noValidate : sinon la validation native bloque l'envoi avant Zod. */}
           <form onSubmit={handleSubmit} noValidate>
             <FieldGroup>
-              <Field data-invalid={!!fieldErrors.email}>
+              <Field data-invalid={!!fieldErrors.email || credentialsRejected}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
@@ -87,24 +89,24 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   required
-                  aria-invalid={!!fieldErrors.email}
+                  aria-invalid={!!fieldErrors.email || credentialsRejected}
                 />
-                <FieldError>{fieldErrors.email?.[0]}</FieldError>
+                <FieldError>{fieldErrors.email}</FieldError>
               </Field>
-              <Field data-invalid={!!fieldErrors.password}>
+              <Field data-invalid={!!fieldErrors.password || credentialsRejected}>
                 <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   required
-                  aria-invalid={!!fieldErrors.password}
+                  aria-invalid={!!fieldErrors.password || credentialsRejected}
                 />
                 <FieldDescription>
                   Au moins 8 caractères, dont un chiffre et un caractère
                   spécial.
                 </FieldDescription>
-                <FieldError>{fieldErrors.password?.[0]}</FieldError>
+                <FieldError>{fieldErrors.password}</FieldError>
               </Field>
               <Field>
                 <FieldError>{submitError}</FieldError>

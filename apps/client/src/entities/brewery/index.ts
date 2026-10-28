@@ -1,2 +1,1 @@
-export { getBreweries } from "./api/get-breweries"
-export type { Brewery } from "./model/brewery"
+export { BreweryField } from "./ui/BreweryField"

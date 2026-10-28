@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const createBeerSchema = z.object({
+export const beerFormSchema = z.object({
   name: z
     .string()
     .trim()
@@ -9,16 +9,16 @@ export const createBeerSchema = z.object({
   description: z
     .string()
     .trim()
-    .transform((value) => value || undefined),
+    .transform((value) => value || null),
   alcohol_content: z
     .string()
-    .transform((value) => (value === "" ? undefined : Number(value)))
+    .transform((value) => (value === "" ? null : Number(value)))
     .pipe(
       z
         .number("Degré invalide")
         .min(0, "Le degré ne peut pas être négatif")
         .max(99.99, "99,99 % maximum")
-        .optional(),
+        .nullable(),
     ),
   brewery_id: z.coerce
     .number("Choisissez une brasserie")
@@ -26,4 +26,6 @@ export const createBeerSchema = z.object({
     .positive("Choisissez une brasserie"),
 })
 
-export type CreateBeerValues = z.infer<typeof createBeerSchema>
+export type BeerFormValues = z.infer<typeof beerFormSchema>
+
+export type BeerFormErrors = Partial<Record<keyof BeerFormValues, string>>

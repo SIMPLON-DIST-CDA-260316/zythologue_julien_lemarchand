@@ -1,4 +1,11 @@
 export { createBeer } from './api/create-beer'
 export { getBeers } from './api/get-beers'
+export { updateBeer } from './api/update-beer'
 export { formatAlcoholContent } from './model/beer'
 export type { Beer, NewBeer } from './model/beer'
+export {
+  beerFormSchema,
+  type BeerFormErrors,
+  type BeerFormValues,
+} from './model/beer-form-schema'
+export { BeerFormFields } from './ui/BeerFormFields'

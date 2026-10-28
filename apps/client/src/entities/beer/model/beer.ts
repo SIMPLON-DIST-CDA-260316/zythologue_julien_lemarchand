@@ -11,8 +11,8 @@ export type Beer = {
 
 export type NewBeer = {
   name: string
-  description?: string
-  alcohol_content?: number
+  description?: string | null
+  alcohol_content?: number | null
   brewery_id: number
 }
 
