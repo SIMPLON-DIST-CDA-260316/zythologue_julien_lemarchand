@@ -1,4 +1,4 @@
-# Séquence — liste des bières côté client
+# Séquence — liste des bières côté client (livré)
 
 De l'URL `/beers?page=N` au tableau paginé :
 
@@ -21,7 +21,7 @@ sequenceDiagram
     H-->>P: status loading
     P-->>U: 12 lignes squelette
 
-    H->>A: getBeers({ pageNumber, pageSize: 12 }, signal)
+    H->>+A: getBeers({ pageNumber, pageSize: 12 }, signal)
     A->>API: GET /beers?page=N&size=12 (cookie envoyé par le navigateur)
 
     break API injoignable, 401 ou 500
@@ -32,7 +32,7 @@ sequenceDiagram
     end
 
     API-->>A: 200 { data: Beer[], meta: { total, page, size } }
-    A-->>H: response
+    A-->>-H: response
     H-->>P: status success
 
     alt meta.total = 0
@@ -48,6 +48,9 @@ sequenceDiagram
 
 ## Notes
 
+- La barre d'activation de `getBeers` montre l'attente de la réponse.
+  `useBeers` n'en a pas : l'effet lance la requête et se termine aussitôt,
+  la réponse revient plus tard par un `setLastResult`.
 - La page est dans l'URL et non dans un state : F5 et « précédent » la
   conservent.
 - `useBeers` passe un `AbortController` à `getBeers` : la réponse d'une page

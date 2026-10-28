@@ -1,4 +1,4 @@
-# Séquence — création d'une bière côté client
+# Séquence — création d'une bière côté client (livré)
 
 Du bouton « Ajouter une bière » à la liste rechargée :
 
@@ -41,7 +41,8 @@ sequenceDiagram
         F-->>U: erreurs sous les champs
     end
 
-    F->>A: createBeer(newBeer)
+    activate F
+    F->>+A: createBeer(newBeer)
     A->>API: POST /beers { name, brewery_id, alcohol_content, description }
 
     break nom déjà pris dans la brasserie
@@ -57,7 +58,7 @@ sequenceDiagram
     end
 
     API-->>A: 201 { data: beer }
-    A-->>F: ok
+    A-->>-F: ok
     F-->>U: toast « Bière ajoutée »
     F->>D: onCreated()
     D->>D: ferme le dialog
@@ -68,11 +69,15 @@ sequenceDiagram
     else autre page
         P->>P: goToPage(1)
     end
+    deactivate F
     Note over P,API: GET /beers?page=1 (séquence de liste)
 ```
 
 ## Notes
 
+- Les barres d'activation montrent qui attend la réponse. Celle de
+  `CreateBeerForm` correspond à `pending` : le bouton reste désactivé
+  (« Ajout… ») de l'appel jusqu'au `finally`, une fois le callback du parent appelé. Le `GET` de rechargement part ensuite, depuis l'effet de `useBeers`.
 - La liste est triée de la plus récente à la plus ancienne : on revient en
   page 1, où la nouvelle bière apparaît en tête. Le rechargement suit la
   [séquence de liste](list-beers-sequence.md).

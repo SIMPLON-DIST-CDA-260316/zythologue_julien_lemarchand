@@ -1,4 +1,4 @@
-# Séquence — suppression d'une bière côté client
+# Séquence — suppression d'une bière côté client (livré)
 
 Du menu « ⋯ » d'une ligne à la liste rechargée :
 
@@ -27,7 +27,8 @@ sequenceDiagram
     end
 
     U->>D: clic « Supprimer »
-    D->>A: deleteBeer(beer.id)
+    activate D
+    D->>+A: deleteBeer(beer.id)
     A->>API: DELETE /beers/:id
 
     break erreur (401, 404, 500, API injoignable)
@@ -37,7 +38,7 @@ sequenceDiagram
     end
 
     API-->>A: 204
-    A-->>D: ok
+    A-->>-D: ok
     D-->>U: toast « Bière supprimée »
     D->>R: onOpenChange(false)
     D->>P: onDeleted() = handleDeleted()
@@ -49,10 +50,14 @@ sequenceDiagram
         P->>P: reload()
         Note over P,API: GET /beers?page=N
     end
+    deactivate D
 ```
 
 ## Notes
 
+- Les barres d'activation montrent qui attend la réponse. Celle de
+  `DeleteBeerDialog` correspond à `pending` : le bouton reste désactivé
+  (« Suppression… ») de l'appel jusqu'au `finally`, une fois le callback du parent appelé. Le `GET` de rechargement part ensuite, depuis l'effet de `useBeers`.
 - `AlertDialog` plutôt que `Dialog` : rôle `alertdialog`, et un clic à
   l'extérieur ne le ferme pas. L'action est irréversible.
 - `AlertDialogAction` ne ferme pas le dialog tout seul : il ne se ferme

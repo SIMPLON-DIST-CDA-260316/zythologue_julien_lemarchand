@@ -1,4 +1,4 @@
-# Séquence — modification d'une bière côté client
+# Séquence — modification d'une bière côté client (livré)
 
 Du menu « ⋯ » d'une ligne à la liste rechargée :
 
@@ -40,7 +40,8 @@ sequenceDiagram
         D-->>U: dialog fermé, aucune requête
     end
 
-    F->>A: updateBeer(beer.id, changes)
+    activate F
+    F->>+A: updateBeer(beer.id, changes)
     A->>API: PATCH /beers/:id { seulement les champs modifiés }
 
     break nom déjà pris dans la brasserie
@@ -56,16 +57,20 @@ sequenceDiagram
     end
 
     API-->>A: 200 { data: beer }
-    A-->>F: ok
+    A-->>-F: ok
     F-->>U: toast « Bière modifiée »
     F->>D: onUpdated()
     D->>R: onOpenChange(false)
     D->>P: onUpdated() = reload()
+    deactivate F
     Note over P,API: GET /beers?page=N, on reste sur la page en cours
 ```
 
 ## Notes
 
+- Les barres d'activation montrent qui attend la réponse. Celle de
+  `EditBeerForm` correspond à `pending` : le bouton reste désactivé
+  (« Enregistrement… ») de l'appel jusqu'au `finally`, une fois le callback du parent appelé. Le `GET` de rechargement part ensuite, depuis l'effet de `useBeers`.
 - `PATCH` et non `PUT` : une clé absente laisse la colonne intacte, `null`
   l'efface. `getChangedFields` n'envoie donc que ce qui diffère de `beer`.
 - Un champ vidé part à `null` (« effacer »), pas absent (« ne pas toucher ») :
