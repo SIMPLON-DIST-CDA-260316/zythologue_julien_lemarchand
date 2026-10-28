@@ -76,4 +76,5 @@ sequenceDiagram
   qui dit au client qui est connecté.
 - Toute autre erreur (API injoignable, 500, échec de `refreshUser`) remonte
   au formulaire, qui affiche « Connexion impossible, réessayez plus tard ».
-- La déconnexion suit la [séquence de logout](logout-sequence.md).
+- La création de compte suit la [séquence d'inscription](register-sequence.md),
+  la déconnexion la [séquence de logout](logout-sequence.md).
