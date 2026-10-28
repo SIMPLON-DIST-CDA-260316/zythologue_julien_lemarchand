@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-import { emailSchema, passwordSchema } from "@/entities/user"
+import { emailSchema } from "@/entities/user"
 
 export const loginSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: z.string().min(1, "Mot de passe requis"),
 })
 
 export type LoginValues = z.infer<typeof loginSchema>
