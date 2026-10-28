@@ -1,4 +1,5 @@
 export { createBeer } from './api/create-beer'
+export { deleteBeer } from './api/delete-beer'
 export { getBeers } from './api/get-beers'
 export { updateBeer } from './api/update-beer'
 export { formatAlcoholContent } from './model/beer'
