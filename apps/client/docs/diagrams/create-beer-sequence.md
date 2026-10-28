@@ -14,11 +14,11 @@ Du bouton « Ajouter une bière » à la liste rechargée :
 sequenceDiagram
     autonumber
     actor U as Utilisateur
-    participant P as BeersPage
-    participant D as CreateBeerDialog
-    participant F as CreateBeerForm
-    participant B as BreweryField
-    participant A as createBeer
+    participant P as BeersPage (page beers)
+    participant D as CreateBeerDialog (feature create-beer)
+    participant F as CreateBeerForm (feature create-beer)
+    participant B as BreweryField (entity brewery)
+    participant A as createBeer (entity beer)
     participant API as API
 
     U->>D: clic « Ajouter une bière »
@@ -68,13 +68,20 @@ sequenceDiagram
     else autre page
         P->>P: goToPage(1)
     end
-    Note over P,API: GET /beers?page=1 (voir la séquence de liste)
+    Note over P,API: GET /beers?page=1 (séquence de liste)
 ```
 
 ## Notes
 
 - La liste est triée de la plus récente à la plus ancienne : on revient en
-  page 1, où la nouvelle bière apparaît en tête.
+  page 1, où la nouvelle bière apparaît en tête. Le rechargement suit la
+  [séquence de liste](list-beers-sequence.md).
+- Chaque participant porte sa couche FSD. `BreweryField` vient de l'entité
+  `brewery` alors que le formulaire est celui d'une bière : `BeerFormFields`
+  (entité `beer`) l'importe via la notation `@x`. `BeerFormFields` n'est pas
+  dessiné, il ne fait qu'afficher les champs. `apiFetch` (`shared/api`) non
+  plus : `createBeer` s'en sert et lève une `ApiError` si la réponse n'est
+  pas `ok`.
 - Le formulaire n'est pas contrôlé (`defaultValue`, `FormData`) : le dialog
   démonte son contenu à la fermeture, il repart vide à chaque ouverture.
 - Le bouton n'est désactivé que pendant l'envoi (« Ajout… »), jamais pendant

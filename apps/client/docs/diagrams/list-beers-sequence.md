@@ -10,9 +10,9 @@ De l'URL `/beers?page=N` au tableau paginé :
 sequenceDiagram
     autonumber
     actor U as Utilisateur
-    participant P as BeersPage
-    participant H as useBeers
-    participant A as getBeers
+    participant P as BeersPage (page beers)
+    participant H as useBeers (page beers)
+    participant A as getBeers (entity beer)
     participant API as API
 
     U->>P: ouvre /beers?page=N
@@ -52,7 +52,13 @@ sequenceDiagram
   conservent.
 - `useBeers` passe un `AbortController` à `getBeers` : la réponse d'une page
   quittée ne peut pas écraser celle de la page suivante.
-- `reload()` relance la même requête sans changer de page. Création,
-  modification et suppression s'en servent pour rafraîchir la liste.
+- `reload()` relance la même requête sans changer de page. La
+  [création](create-beer-sequence.md), la
+  [modification](edit-beer-sequence.md) et la
+  [suppression](delete-beer-sequence.md) s'en servent pour rafraîchir la
+  liste.
+- Chaque participant porte sa couche FSD : `page` importe `entity`, jamais
+  l'inverse. `apiFetch` (`shared/api`) n'est pas dessiné : `getBeers` s'en
+  sert pour l'appel HTTP et lève une `ApiError` si la réponse n'est pas `ok`.
 - `GET /beers` ne renvoie que la brasserie (id et nom) : le détail d'une bière
   passe par `GET /beers/:id`, non utilisé par le client à ce stade.

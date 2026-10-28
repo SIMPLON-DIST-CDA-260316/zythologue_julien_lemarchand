@@ -13,11 +13,11 @@ Du menu « ⋯ » d'une ligne à la liste rechargée :
 sequenceDiagram
     autonumber
     actor U as Utilisateur
-    participant P as BeersPage
-    participant R as BeerActions
-    participant D as EditBeerDialog
-    participant F as EditBeerForm
-    participant A as updateBeer
+    participant P as BeersPage (page beers)
+    participant R as BeerActions (page beers)
+    participant D as EditBeerDialog (feature edit-beer)
+    participant F as EditBeerForm (feature edit-beer)
+    participant A as updateBeer (entity beer)
     participant API as API
 
     U->>R: clic « ⋯ » puis « Modifier »
@@ -74,3 +74,8 @@ sequenceDiagram
   au schéma mais oublié ici ne compile pas.
 - C'est `BeerActions` qui tient `open` : le menu se démonte en se fermant, il
   ne peut pas porter le `DialogTrigger`.
+- Chaque participant porte sa couche FSD. Non dessinés : `BeerRow`, qui ne
+  fait que transmettre `onUpdated` de `BeersPage` à `BeerActions`,
+  `BeerFormFields`, qui affiche les champs, et `apiFetch` (`shared/api`), dont
+  `updateBeer` se sert et qui lève une `ApiError` si la réponse n'est pas `ok`.
+- Le rechargement suit la [séquence de liste](list-beers-sequence.md).

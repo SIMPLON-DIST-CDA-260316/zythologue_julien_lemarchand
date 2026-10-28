@@ -10,10 +10,10 @@ Du menu « ⋯ » d'une ligne à la liste rechargée :
 sequenceDiagram
     autonumber
     actor U as Utilisateur
-    participant P as BeersPage
-    participant R as BeerActions
-    participant D as DeleteBeerDialog
-    participant A as deleteBeer
+    participant P as BeersPage (page beers)
+    participant R as BeerActions (page beers)
+    participant D as DeleteBeerDialog (feature delete-beer)
+    participant A as deleteBeer (entity beer)
     participant API as API
 
     U->>R: clic « ⋯ » puis « Supprimer »
@@ -61,3 +61,8 @@ sequenceDiagram
   dernière page afficherait une page vide.
 - Côté API, la suppression part en cascade : avis, favoris, photos,
   compositions, catégorisations et mises en vente liés à la bière.
+- Chaque participant porte sa couche FSD. Non dessinés : `BeerRow`, qui ne
+  fait que transmettre `onDeleted` de `BeersPage` à `BeerActions`, et
+  `apiFetch` (`shared/api`), dont `deleteBeer` se sert et qui lève une
+  `ApiError` si la réponse n'est pas `ok`.
+- Le rechargement suit la [séquence de liste](list-beers-sequence.md).
