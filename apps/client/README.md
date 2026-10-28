@@ -1,6 +1,6 @@
 # Zythologue — client
 
-Dashboard d'administration de Zythologue : inscription, connexion, déconnexion, tableau de bord, liste des bières.
+Dashboard d'administration de Zythologue : inscription, connexion, déconnexion, tableau de bord, liste, création et modification des bières.
 
 ## Stack
 
@@ -46,11 +46,11 @@ Le code suit [Feature-Sliced Design](https://feature-sliced.design/docs/get-star
 
 1. `app/` : routeur (`App.tsx`), gardes de routes (`routes/`), cadre des pages connectées (`layouts/`), point d'entrée (`main.tsx`), styles globaux
 2. `pages/` : un dossier par page (dashboard, beers, login, register, not-found)
-3. `features/` : actions utilisateur réutilisables (logout, create-beer)
-4. `entities/` : objets métier (user : session et schémas email et mot de passe ; beer : type et appels `GET` et `POST /beers` ; brewery : type et appel `GET /breweries`)
+3. `features/` : actions utilisateur réutilisables (logout, create-beer, edit-beer)
+4. `entities/` : objets métier (user : session et schémas email et mot de passe ; beer : type, schéma et champs du formulaire, appels `GET`, `POST` et `PATCH /beers` ; brewery : appel `GET /breweries` et champ de sélection)
 5. `shared/` : code sans métier — `api/` (apiFetch, ApiError, enveloppes `ApiResponse` et `ApiListResponse`), `ui/` (composants shadcn), `lib/` (utilitaires)
 
-Une couche n'importe que les couches situées en dessous : `pages` peut importer `features`, jamais l'inverse.
+Une couche n'importe que les couches situées en dessous : `pages` peut importer `features`, jamais l'inverse. Deux slices d'une même couche ne s'importent pas non plus. Seule exception, entre entités : la [notation `@x`](https://feature-sliced.design/docs/reference/public-api#public-api-for-cross-imports), où une entité déclare ce qu'elle expose à une autre (`entities/brewery/@x/beer.ts` expose `BreweryField` à `beer`).
 
 Chaque [slice se découpe en segments](https://feature-sliced.design/docs/reference/slices-segments) `ui/` (composants), `model/` (schémas, données) et `api/` (appels réseau), et n'expose que ce que son `index.ts` exporte ([public API](https://feature-sliced.design/docs/reference/public-api)). On importe donc `@/pages/login`, jamais `@/pages/login/ui/LoginForm`. À l'intérieur d'un slice, les imports sont relatifs.
 
