@@ -6,7 +6,6 @@
   "description": "API Zythologue (Express).",
   "imports": {
     "#features/*": "./src/features/*",
-    "#shared/*": "./src/shared/*",
     "#config/*": "./src/config/*",
     "#http/*": "./src/http/*",
     "#errors/*": "./src/errors/*"

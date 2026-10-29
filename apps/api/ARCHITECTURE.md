@@ -23,7 +23,6 @@ src/
 │   ├── categories/
 │   ├── ingredients/
 │   └── outlets/
-├── shared/           # schémas zod communs à plusieurs ressources (Id, dates)
 └── http/             # tout ce qui touche au cycle req/res
     ├── apiResponse.js   # forme des réponses (enveloppe)
     ├── httpStatus.js    # codes HTTP nommés
@@ -70,6 +69,8 @@ Chaque schéma zod de ressource est structuré en blocs commentés :
 
 - **Model** (`BeerFields`) — forme et bornes d'un champ, sans comportement.
   Clés en PascalCase, jamais spreadées telles quelles dans un DTO.
+  Quand le client applique les mêmes règles, le bloc vit dans `@zytho/schemas`
+  (`BeerFields`, `BreweryFields`) et le fichier l'importe.
 - **DTOs entrée** (`NewBeer`, `UpdateBeer`) — contrat d'un endpoint,
   l'optionalité y est déclarée, pas dans le model.
 - **Params** (`BeerIdParam`) — un segment d'URL, donc une coercition : la brique
@@ -197,9 +198,12 @@ sur les corps de requête.
 Convention appliquée à tout `src/` :
 
 - **Même dossier (même feature)** → import relatif (`./beers.controller.js`).
-- **Dossier différent** (autre feature, `shared/`, `config/`, `errors/`, `http/`)
+- **Dossier différent** (autre feature, `config/`, `errors/`, `http/`)
   → alias déclaré dans le champ `imports` de `package.json` :
-  `#features/*`, `#shared/*`, `#config/*`, `#http/*`, `#errors/*`.
+  `#features/*`, `#config/*`, `#http/*`, `#errors/*`.
+- **Schémas partagés avec le client** (`Id`, dates, email, mot de passe,
+  champs d'une bière) → package du workspace `@zytho/schemas`
+  (`packages/schemas`).
 
 Un alias pointe une racine, pas chaque sous-dossier : les middlewares vivant
 sous `src/http/middlewares/`, ils s'importent via `#http/middlewares/…` — il n'y

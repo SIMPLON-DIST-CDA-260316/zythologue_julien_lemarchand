@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Id } from "#shared/common.schemas.js";
+import { Id } from "@zytho/schemas";
 
 // Model -------------------------------------------------------------
 export const IngredientFields = {

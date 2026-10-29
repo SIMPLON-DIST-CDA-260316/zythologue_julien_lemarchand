@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 import { Address } from "#features/addresses/addresses.schemas.js";
-import { Id } from "#shared/common.schemas.js";
+import { Id } from "@zytho/schemas";
 
 // Model -------------------------------------------------------------
 export const OutletFields = {

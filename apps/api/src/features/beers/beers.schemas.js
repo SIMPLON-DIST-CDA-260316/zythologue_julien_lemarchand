@@ -1,45 +1,11 @@
 import * as z from "zod";
 
-import { BreweryFields, Brewery } from "#features/breweries/breweries.schemas.js";
+import { BeerFields, BeerListItem, Brewery } from "@zytho/schemas";
 import { Ingredient } from "#features/ingredients/ingredients.schemas.js";
 import { Category } from "#features/categories/categories.schemas.js";
 import { Photo } from "#features/photos/photos.schemas.js";
 import { Outlet } from "#features/outlets/outlets.schemas.js";
-import { Id, CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
 import { ApiResponse, ApiListResponse } from "#http/apiResponse.js";
-
-// Model -------------------------------------------------------------
-// Forme et bornes d'un champ, sans comportement ni persistance. Clés en
-// PascalCase : un spread depuis ce bloc produirait des clés de DTO invalides,
-// donc les DTO les reprennent une par une, en snake_case.
-//
-// `nullable` se déclare ici, c'est une propriété de la colonne.
-export const BeerFields = {
-  Id: Id.meta({ example: 1 }),
-  Name: z
-    .string()
-    .trim()
-    .min(1)
-    .max(120)
-    .describe("unique par brasserie, la comparaison ignore la casse")
-    .meta({ example: "Blonde du Nord" }),
-  Description: z
-    .string()
-    .trim()
-    .min(1)
-    .nullable()
-    .meta({ example: "Blonde légère et désaltérante." }),
-  AlcoholContent: z
-    .number()
-    .min(0)
-    .max(99.99)
-    .nullable()
-    .describe("teneur en alcool en % vol.")
-    .meta({ example: 5.2 }),
-  CreatedAt,
-  UpdatedAt,
-  BreweryId: BreweryFields.Id,
-};
 
 // Params ------------------------------------------------------------
 // Un segment d'URL est toujours une string, d'où la coercition.
@@ -86,19 +52,6 @@ export const Beer = z.strictObject({
   created_at: BeerFields.CreatedAt,
   updated_at: BeerFields.UpdatedAt,
   brewery_id: BeerFields.BreweryId,
-});
-
-// - sortie, liste ---------------------------------------------
-// La brasserie avec son nom, à la place de `brewery_id`, pour l'afficher sans
-// requête de plus.
-export const BeerListItem = z.strictObject({
-  id: BeerFields.Id,
-  name: BeerFields.Name,
-  description: BeerFields.Description,
-  alcohol_content: BeerFields.AlcoholContent,
-  created_at: BeerFields.CreatedAt,
-  updated_at: BeerFields.UpdatedAt,
-  brewery: Brewery,
 });
 
 // - sortie, détail --------------------------------------------

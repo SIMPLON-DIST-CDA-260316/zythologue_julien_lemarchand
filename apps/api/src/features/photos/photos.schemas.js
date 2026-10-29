@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Id, CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
+import { Id, CreatedAt, UpdatedAt } from "@zytho/schemas";
 import { ApiResponse } from "#http/apiResponse.js";
 
 export const ALLOWED_PHOTO_MIMETYPES = [

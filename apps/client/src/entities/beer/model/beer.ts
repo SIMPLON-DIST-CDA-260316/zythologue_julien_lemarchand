@@ -1,13 +1,8 @@
-// Forme renvoyée par `GET /beers` (schéma `BeerListItem` de l'API).
-export type Beer = {
-  id: number
-  name: string
-  description: string | null
-  alcohol_content: number | null
-  created_at: string
-  updated_at: string
-  brewery: { id: number; name: string }
-}
+import type { BeerListItem } from "@zytho/schemas"
+import type { z } from "zod"
+
+// Forme renvoyée par `GET /beers`.
+export type Beer = z.infer<typeof BeerListItem>
 
 export type NewBeer = {
   name: string

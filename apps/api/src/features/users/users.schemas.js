@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { Id, CreatedAt, UpdatedAt } from "#shared/common.schemas.js";
+import { Id, CreatedAt, UpdatedAt, Email, Password } from "@zytho/schemas";
 import { ApiResponse } from "#http/apiResponse.js";
 
 // Model -------------------------------------------------------------
@@ -11,14 +11,7 @@ import { ApiResponse } from "#http/apiResponse.js";
 // `nullable` se déclare ici, c'est une propriété de la colonne.
 export const UserFields = {
   Id: Id.meta({ example: 1 }),
-  // Pas `z.email().trim()` : le format y est contrôlé avant le trim.
-  Email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .pipe(z.email({ pattern: z.regexes.rfc5322Email })) // https://www.rfc-editor.org/info/rfc5322/
-    .describe("unique par utilisateur, la comparaison ignore la casse")
-    .meta({ example: "user@domain.com" }),
+  Email,
   HashedPassword: z
     .string()
     .min(1)
@@ -41,13 +34,6 @@ export const UserIdParam = z.coerce.number().pipe(UserFields.Id);
 // ==========================================================================
 
 // - entrée ----------------------------------------------------
-export const Password = z
-  .string()
-  .min(8)
-  .max(255)
-  .regex(/[0-9]/, "doit contenir au moins un chiffre")
-  .regex(/[^a-zA-Z0-9]/, "doit contenir au moins un caractère spécial");
-
 export const NewUser = z.strictObject({
   email: UserFields.Email,
   password: Password,
