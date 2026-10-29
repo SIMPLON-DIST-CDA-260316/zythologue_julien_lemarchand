@@ -62,6 +62,15 @@ services:
           path: ./pnpm-lock.yaml
         - action: rebuild
           path: ./apps/api/package.json
+        - action: sync
+          path: ./packages/schemas
+          target: /app/packages/schemas
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - package.json
+        - action: rebuild
+          path: ./packages/schemas/package.json
 
   client:
     build:
@@ -90,6 +99,15 @@ services:
           path: ./pnpm-lock.yaml
         - action: rebuild
           path: ./apps/client/package.json
+        - action: sync
+          path: ./packages/schemas
+          target: /app/packages/schemas
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - package.json
+        - action: rebuild
+          path: ./packages/schemas/package.json
 
   adminer:
     image: adminer

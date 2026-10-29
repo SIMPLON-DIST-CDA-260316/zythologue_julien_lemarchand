@@ -7,7 +7,9 @@ RUN corepack enable
 # Manifestes seuls d'abord : la couche d'install reste en cache tant qu'ils ne changent pas
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/client/package.json ./apps/client/package.json
-RUN pnpm install --filter client --frozen-lockfile
+COPY packages/schemas/package.json ./packages/schemas/package.json
+# `client...` : le client et les packages du workspace dont il dépend
+RUN pnpm install --filter client... --frozen-lockfile
 
 COPY . .
 
