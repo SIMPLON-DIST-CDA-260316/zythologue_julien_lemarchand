@@ -14,11 +14,16 @@ import errorHandler from "#http/middlewares/errorHandler.js";
 
 export default () =>
   express()
-    // En premier, pour répondre aux preflight OPTIONS
+    // En premier : le navigateur envoie un preflight (OPTIONS) avant toute
+    // requête cross-origin "non simple" (PATCH, DELETE, corps JSON…) pour
+    // demander la permission ; la vraie requête ne part que si on l'autorise ici.
+    // TODO : verifier la politique cors.
     .use(
       cors({
         origin: process.env.CORS_ORIGIN || "http://localhost:5173",
         credentials: true,
+        methods: ["GET", "POST", "PATCH", "DELETE"],
+        maxAge: 600, // secondes de cache du preflight côté navigateur
       }),
     )
     .use(express.json())
