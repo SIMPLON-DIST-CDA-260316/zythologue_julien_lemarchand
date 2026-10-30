@@ -6,17 +6,17 @@
   "description": "API Zythologue (Express).",
   "imports": {
     "#features/*": "./src/features/*",
-    "#shared/*": "./src/shared/*",
     "#config/*": "./src/config/*",
     "#http/*": "./src/http/*",
     "#errors/*": "./src/errors/*"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --watch src --watch server.js --exec \"node --env-file-if-exists=../../.env server.js\"",
+    "dev": "NODE_ENV=development nodemon --watch src --watch server.js --watch ../../packages/schemas/src --ext js,ts,json --exec \"node --env-file-if-exists=../../.env server.js\"",
     "start": "NODE_ENV=production node --env-file-if-exists=../../.env server.js",
     "test:bruno": "cd bruno && bru run . --env Local -r"
   },
   "dependencies": {
+    "@zytho/schemas": "workspace:*",
     "argon2": "^0.45.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

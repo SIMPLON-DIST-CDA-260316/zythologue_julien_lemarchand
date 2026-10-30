@@ -1,25 +1,19 @@
+import { BeerFields } from "@zytho/schemas"
 import { z } from "zod"
 
+// Les champs du formulaire sont des strings : on les convertit, puis les
+// règles du package s'appliquent.
 export const beerFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nom requis")
-    .max(120, "120 caractères maximum"),
+  name: BeerFields.Name,
   description: z
     .string()
     .trim()
-    .transform((value) => value || null),
+    .transform((value) => value || null)
+    .pipe(BeerFields.Description),
   alcohol_content: z
     .string()
     .transform((value) => (value === "" ? null : Number(value)))
-    .pipe(
-      z
-        .number("Degré invalide")
-        .min(0, "Le degré ne peut pas être négatif")
-        .max(99.99, "99,99 % maximum")
-        .nullable(),
-    ),
+    .pipe(BeerFields.AlcoholContent),
   brewery_id: z.coerce
     .number("Choisissez une brasserie")
     .int()

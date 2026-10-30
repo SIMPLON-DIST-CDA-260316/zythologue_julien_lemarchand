@@ -1,6 +1,5 @@
 export { getMe } from './api/get-me'
 export { useAuth } from './model/auth-context'
 export { AuthProvider } from './model/AuthProvider'
-export { emailSchema, passwordSchema } from './model/credentials'
 export { getFullName, getInitials } from './model/user'
 export type { User } from './model/user'
